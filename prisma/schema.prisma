@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [citext(map: "citext")]
+}
+
+enum ContributorType {
+  INDIVIDUAL
+  CONFERENCE
+}
+
+model Contributor {
+  id Int     @default(autoincrement()) @id
+
+  firstName String
+  lastName String
+  fullName String @unique @db.Citext
+  description String?
+  imageUrl String?
+  featured Boolean @default(false)
+
+  type ContributorType @default(INDIVIDUAL)
+
+  sermons Sermon[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Sermon {
+  @@unique([title, contributorId])
+
+  id Int @default(autoincrement()) @id
+  mysqlId Int?
+
+  contributor Contributor @relation(fields: [contributorId], references: [id])
+  contributorId Int
+
+  title String @db.Citext
+  description String?
+
+  audioUrl String?
+  videoUrl String?
+
+  bibleReferences BibleReference[]
+  topics Topic[]
+
+  hits Int @default(0)
+  featured Boolean @default(false)
+
+  preachedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Topic {
+  name String @unique @id @db.Citext
+
+  sermon Sermon[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BibleReference {
+  id Int @default(autoincrement()) @id  
+
+  book String
+
+  startChapter Int?
+  endChapter Int?
+  
+  startVerse Int?
+  endVerse Int?
+
+  text String
+
+  sermon Sermon @relation(fields: [sermonId], references: [id])
+  sermonId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// TODO: Recommended books by speaker table?
