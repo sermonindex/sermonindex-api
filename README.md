@@ -16,6 +16,7 @@ $ npm install
 
 ```bash
 # Start a postgresql container
+# Note: use `docker compose up -d` if using the newer compose plugin for docker
 $ docker-compose up -d
 
 # Create the db/tables in postgresql
