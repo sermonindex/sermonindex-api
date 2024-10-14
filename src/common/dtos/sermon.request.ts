@@ -1,0 +1,36 @@
+import { Transform } from 'class-transformer';
+import { IsOptional, IsPositive } from 'class-validator';
+
+export class SermonRequest {
+  @IsOptional()
+  @IsPositive()
+  @Transform(({ value }) => parseInt(value))
+  id: number;
+
+  @IsOptional()
+  title: string;
+
+  @IsOptional()
+  fullName: string;
+
+  @IsOptional()
+  @IsPositive()
+  @Transform(({ value }) => parseInt(value))
+  contributorId: number;
+
+  @IsOptional()
+  topic: string;
+
+  @IsOptional()
+  book: string;
+
+  @IsOptional()
+  @IsPositive()
+  @Transform(({ value }) => parseInt(value))
+  chapter: number;
+
+  @IsOptional()
+  @IsPositive()
+  @Transform(({ value }) => parseInt(value))
+  verse: number;
+}

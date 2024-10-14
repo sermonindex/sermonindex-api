@@ -58,6 +58,7 @@ model Sermon {
 
   hits Int @default(0)
   featured Boolean @default(false)
+  previouslyFeatured Boolean @default(false)
 
   preachedAt DateTime?
 
@@ -77,7 +78,7 @@ model Topic {
 model BibleReference {
   id Int @default(autoincrement()) @id  
 
-  book String
+  book String @db.Citext
 
   startChapter Int?
   endChapter Int?

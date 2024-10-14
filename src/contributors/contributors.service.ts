@@ -31,28 +31,6 @@ export class ContributorsService {
     });
   }
 
-  async listMinimalContributors(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.ContributorWhereUniqueInput;
-    where?: Prisma.ContributorWhereInput;
-    orderBy?: Prisma.ContributorOrderByWithRelationInput;
-  }): Promise<Pick<Contributor, 'id' | 'fullName' | 'imageUrl'>[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.db.contributor.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-      select: {
-        id: true,
-        fullName: true,
-        imageUrl: true,
-      },
-    });
-  }
-
   async createContributor(
     data: Prisma.ContributorCreateInput,
   ): Promise<Contributor> {

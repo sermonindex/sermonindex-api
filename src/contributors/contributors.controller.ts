@@ -1,6 +1,16 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { Contributor } from '@prisma/client';
-import { GetContributorDto } from 'src/common/dtos/get-contributor.dto';
+import { ContributorRequest } from 'src/common/dtos/contributor.request';
+import { ContributorResponse } from 'src/common/dtos/contributor.response';
 import { ContributorsService } from './contributors.service';
 
 @Controller('contributors')
@@ -8,26 +18,44 @@ export class ContributorsController {
   constructor(private readonly contributorsService: ContributorsService) {}
 
   @Get('/')
-  async listContributors(@Query() query?: GetContributorDto) {
-    return this.contributorsService.listContributors({
-      where: { fullName: query?.fullName, id: query?.id },
+  async listContributors(@Query() query: ContributorRequest) {
+    const { fullName, id } = query;
+
+    const result = await this.contributorsService.listContributors({
+      where: { fullName: fullName, id: id },
       orderBy: { fullName: 'asc' },
     });
+
+    return {
+      values: result.map((contributor) =>
+        ContributorResponse.fromDB(contributor),
+      ),
+    };
   }
 
-  @Get('/minimal')
-  async listMinimalContributors() {
-    return this.contributorsService.listMinimalContributors({
-      orderBy: { fullName: 'asc' },
-    });
+  @Get('/id/:id')
+  async getContributorById(@Param('id') id: number) {
+    const result = await this.contributorsService.getContributor({ id });
+
+    if (!result) {
+      throw NotFoundException;
+    }
+
+    return ContributorResponse.fromDB(result);
   }
 
   @Get('/featured')
   async listFeaturedContributors() {
-    return this.contributorsService.listMinimalContributors({
+    const result = await this.contributorsService.listContributors({
       where: { featured: true },
       orderBy: { fullName: 'asc' },
     });
+
+    return {
+      values: result.map((contributor) =>
+        ContributorResponse.fromDB(contributor),
+      ),
+    };
   }
 
   @Post('/')

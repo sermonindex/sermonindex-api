@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Sermon } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
+import { SermonFullType } from './sermon.types';
 
 @Injectable()
 export class SermonsService {
@@ -8,9 +9,14 @@ export class SermonsService {
 
   async sermon(
     sermonWhereUniqueInput: Prisma.SermonWhereUniqueInput,
-  ): Promise<Sermon | null> {
+  ): Promise<SermonFullType | null> {
     return this.db.sermon.findUnique({
       where: sermonWhereUniqueInput,
+      include: {
+        contributor: true,
+        bibleReferences: true,
+        topics: true,
+      },
     });
   }
 
@@ -20,8 +26,9 @@ export class SermonsService {
     cursor?: Prisma.SermonWhereUniqueInput;
     where?: Prisma.SermonWhereInput;
     orderBy?: Prisma.SermonOrderByWithRelationInput;
-  }): Promise<Sermon[]> {
+  }): Promise<SermonFullType[]> {
     const { skip, take, cursor, where, orderBy } = params;
+
     return this.db.sermon.findMany({
       skip,
       take,
@@ -34,40 +41,6 @@ export class SermonsService {
         topics: true,
       },
     });
-  }
-
-  async listMinimalSermons(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.SermonWhereUniqueInput;
-    where?: Prisma.SermonWhereInput;
-    orderBy?: Prisma.SermonOrderByWithRelationInput;
-  }): Promise<
-    // TODO: Fix this return type
-    Partial<Sermon>[]
-  > {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.db.sermon.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        hits: true,
-        contributor: { select: { id: true, fullName: true } },
-        bibleReferences: { select: { text: true } },
-        topics: { select: { name: true } },
-        createdAt: true,
-      },
-    });
-  }
-
-  async searchSermons() {
-    throw new Error('Method not implemented.');
   }
 
   async createSermon(data: Prisma.SermonCreateInput): Promise<Sermon> {

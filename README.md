@@ -12,12 +12,11 @@ $ npm install
 
 **Note:**: Currently the postgresql db is seeded with production data via a [script](./prisma/old_schema/convert-schema.ts) that migrates the data from the current mysql db json file exports. This will be removed once the final schema is determined and moves to production.
 
-**Note:**: This is a one-time setup (unless you make changes to the seed script). In that case you will need to recreate the docker container.
+**Note:**: If you make changes to the seed script or pull changes to the api you will most likely want to nuke the db and start from scratch: `rm -rf prisma/migrations && docker-compose up --force-recreate`
 
 ```bash
 # Start a postgresql container
-# Note: use `docker compose up -d` if using the newer compose plugin for docker
-$ docker-compose up -d
+$ docker-compose up
 
 # Create the db/tables in postgresql
 $ npx prisma migrate dev --name init
@@ -59,12 +58,12 @@ $ npm run test:cov
 
 ## TODOs
 
-- get sermons by bible reference
-- get sermons by topic
-- search sermons / contributors
-- define return types
+- return sermon count on contributor
+- Add descriptions and references to video sermons
+- Add descriptions to audio sermons
+- Add manuscript table for sermon text (audio and video)
+- search sermons & contributors endpoint
 - pagination
-- validate requests (partially complete)
 - swagger docs
 - api client
 - contract tests

@@ -1,5 +1,13 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { GetSermonsDto } from 'src/common/dtos/get-sermons-dto';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Query,
+} from '@nestjs/common';
+import { ListSermonsResponse } from 'src/common/dtos/list-sermons.response';
+import { SermonRequest } from 'src/common/dtos/sermon.request';
+import { SermonResponse } from 'src/common/dtos/sermon.response';
 import { SermonsService } from './sermons.service';
 
 @Controller('sermons')
@@ -7,54 +15,87 @@ export class SermonsController {
   constructor(private readonly sermonService: SermonsService) {}
 
   @Get('/')
-  async listSermons(@Query() query: GetSermonsDto) {
-    return this.sermonService.listSermons({
+  async listSermons(
+    @Query() query: SermonRequest,
+  ): Promise<ListSermonsResponse> {
+    const { id, title, fullName, contributorId, topic, book, chapter, verse } =
+      query;
+
+    const result = await this.sermonService.listSermons({
       where: {
-        title: query.title,
-        id: query.id,
-        contributor: { id: query.contributorId, fullName: query.fullName },
+        id,
+        title,
+        contributor: { id: contributorId, fullName: fullName },
+        topics: topic ? { some: { name: topic } } : undefined,
+        bibleReferences:
+          book || chapter || verse
+            ? {
+                some: {
+                  book: book,
+                  startChapter: chapter ? { gte: chapter } : undefined,
+                  endChapter: chapter ? { lte: chapter } : undefined,
+                  startVerse: verse ? { gte: verse } : undefined,
+                  endVerse: verse ? { lte: verse } : undefined,
+                },
+              }
+            : undefined,
+      },
+      take: 1000,
+      orderBy: {
+        hits: 'desc',
       },
     });
+
+    return {
+      values: result.map((sermon) => SermonResponse.fromDB(sermon)),
+    };
   }
 
-  @Get('/minimal')
-  async listMinimalSermons() {
-    return this.sermonService.listMinimalSermons({});
-  }
+  @Get('/id/:id')
+  async getSermonById(@Param('id') sermonId: number): Promise<SermonResponse> {
+    const result = await this.sermonService.sermon({ id: sermonId });
 
-  @Get('/featured')
-  async listFeaturedSermons() {
-    return this.sermonService.listSermons({
-      where: { featured: true },
-    });
-  }
+    if (!result) {
+      throw NotFoundException;
+    }
 
-  // TODO: Implement searchSermons
-  @Get('/search')
-  async searchSermons() {
-    return this.sermonService.searchSermons();
+    return SermonResponse.fromDB(result);
   }
 
   @Get('/recent')
-  async listRecentSermons() {
-    return this.sermonService.listMinimalSermons({
+  async listRecentSermons(): Promise<ListSermonsResponse> {
+    const result = await this.sermonService.listSermons({
       orderBy: { createdAt: 'desc' },
-      // TODO: Implement pagination
-      take: 10,
+      take: 15,
     });
+
+    return {
+      values: result.map((sermon) => SermonResponse.fromDB(sermon)),
+    };
   }
 
   @Get('/popular')
-  async listPopularSermons() {
-    return this.sermonService.listMinimalSermons({
+  async listPopularSermons(): Promise<ListSermonsResponse> {
+    const result = await this.sermonService.listSermons({
       orderBy: { hits: 'desc' },
-      // TODO: Implement pagination
-      take: 10,
+      take: 15,
     });
+
+    return {
+      values: result.map((sermon) => SermonResponse.fromDB(sermon)),
+    };
   }
 
-  // speaker -> name | id
-  // featured
-  // scripture -> book | chapter | verse
-  // topic -> topic
+  @Get('/featured')
+  async getFeaturedSermon(): Promise<SermonResponse> {
+    const result = await this.sermonService.listSermons({
+      where: { featured: true },
+    });
+
+    if (!result.length) {
+      throw NotFoundException;
+    }
+
+    return SermonResponse.fromDB(result[0]);
+  }
 }
