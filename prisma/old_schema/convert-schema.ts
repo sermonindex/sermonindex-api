@@ -82,6 +82,21 @@ const findContributor = (contributors: TransientContributor[], id: number) => {
   });
 };
 
+const findVideoTranscript = (videoId: string) => {
+  // Loop through all the files in the video_transcripts directory
+  const files = fs.readdirSync('prisma/old_schema/video_transcripts');
+  for (const file of files) {
+    if (file.includes(videoId)) {
+      return fs.readFileSync(
+        `prisma/old_schema/video_transcripts/${file}`,
+        'utf8',
+      );
+    }
+  }
+
+  return undefined;
+};
+
 const upsertTopics = async (topics: string[]): Promise<string[]> => {
   const topicNames: string[] = [];
 
@@ -123,7 +138,8 @@ const upsertSermon = async (
   url: string,
   type: 'audio' | 'video',
   featured: boolean,
-  mysqlId?: number,
+  transcript?: string,
+  originalId?: string,
   description?: string,
 ) => {
   const existingSermon = await prisma.sermon.findFirst({
@@ -139,7 +155,7 @@ const upsertSermon = async (
 
   const newSermon = await prisma.sermon.create({
     data: {
-      mysqlId: mysqlId,
+      originalId,
       title: title,
       hits: parseInt(hits),
       audioUrl: type === 'audio' ? url : null,
@@ -147,6 +163,13 @@ const upsertSermon = async (
       description: description,
       contributorId: contributorId,
       featured: featured,
+      transcript: transcript
+        ? {
+            create: {
+              text: transcript,
+            },
+          }
+        : undefined,
       topics: {
         connect: topics.map((name) => ({ name })),
       },
@@ -327,6 +350,20 @@ export const convertSchema = async () => {
       continue;
     }
 
+    const pathMatch = audioSermon.url.match(/(\/\d+\/SID\d+)/);
+    const path = pathMatch ? pathMatch[1] : null;
+
+    let originalId = audioSermon.url.split('/').pop().split('.')[0];
+    let transcript;
+    try {
+      transcript = fs.readFileSync(
+        `prisma/old_schema/audio_transcripts/${originalId}.txt`,
+        'utf8',
+      );
+    } catch (e) {
+      console.log(`No transcript found for sermon ${originalId}`);
+    }
+
     let audioSermonDescription = findObject(
       audioSermonDescriptions,
       'lid',
@@ -446,10 +483,11 @@ export const convertSchema = async () => {
       bibleReferences,
       audioSermon.title,
       audioSermon.hits,
-      audioSermon.url,
+      path ? `https://sermonindex1.b-cdn.net${path}.mp3` : audioSermon.url,
       'audio',
       audioSermon.lid === featuredSermonId ? true : false,
-      audioSermon.lid,
+      transcript,
+      originalId,
       audioSermonDescription.description,
     );
   }
@@ -476,10 +514,43 @@ export const convertSchema = async () => {
       videoSermonDescription = { description: null };
     }
 
-    const videoSrcMatch = videoSermon.videoBlockText.match(
-      /<embed[^>]+src="([^"]+)"/,
-    );
-    const videoSrc = videoSrcMatch ? videoSrcMatch[1] : null;
+    let videoSrc, originalId;
+    try {
+      if (videoSermon.videoBlockText.includes('iframe')) {
+        const videoSrcMatch = videoSermon.videoBlockText.match(/src="([^"]+)"/);
+        videoSrc = videoSrcMatch ? videoSrcMatch[1] : null;
+
+        const videoIdMatch = videoSrc.match(/embed\/([^?]+)/);
+        originalId = videoIdMatch ? videoIdMatch[1] : null;
+      } else {
+        const videoSrcMatch = videoSermon.videoBlockText.match(
+          /<embed[^>]+src="([^"]+)"/,
+        );
+        videoSrc = videoSrcMatch ? videoSrcMatch[1] : null;
+
+        const videoIdMatch = videoSrc.match(/\/v\/([^&]+)/);
+        originalId = videoIdMatch ? videoIdMatch[1] : null;
+      }
+    } catch (e) {
+      console.log(
+        `No video source found for video sermon id: ${videoSermon.lid}`,
+      );
+      console.log(videoSermon);
+    }
+
+    if (!videoSrc) {
+      console.log(
+        `No video source found for video sermon id: ${videoSermon.lid}`,
+      );
+      continue;
+    }
+
+    let transcript;
+    try {
+      transcript = findVideoTranscript(originalId);
+    } catch (e) {
+      console.log(`No transcript found for video ${originalId}`, videoSermon);
+    }
 
     const sermonId = await upsertSermon(
       contributor.contributor.id,
@@ -490,7 +561,8 @@ export const convertSchema = async () => {
       videoSrc,
       'video',
       videoSermon.lid === featuredSermonId ? true : false,
-      videoSermon.lid,
+      transcript,
+      originalId,
       videoSermonDescription.description,
     );
   }

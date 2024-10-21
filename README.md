@@ -5,55 +5,65 @@ An api for the SermonIndex content
 ## Installation
 
 ```bash
-$ npm install
+npm install
 ```
 
 ## Setting up the Database
 
-**Note:**: Currently the postgresql db is seeded with production data via a [script](./prisma/old_schema/convert-schema.ts) that migrates the data from the current mysql db json file exports. This will be removed once the final schema is determined and moves to production.
+Unfortunately the database dump is too large to host on GitHub. You'll need to download it from [here](https://drive.google.com/file/d/1uMFtwCr6kb3TRLwDr034XiftNBge9RkV/view?usp=drive_link) and save it in the project's root directory. Currently we're using all the production data to get a better feel for what the POC will look like, but in the future the api will only seed a small amount of data into a container for test purposes and this step will no longer be required for api deveopment.
 
-**Note:**: If you make changes to the seed script or pull changes to the api you will most likely want to nuke the db and start from scratch: `rm -rf prisma/migrations && docker-compose up --force-recreate`
+Once you've downloaded the database dump:
 
 ```bash
-# Start a postgresql container
-$ docker-compose up
+# Start the postgresql container
+docker-compose up
 
-# Create the db/tables in postgresql
-$ npx prisma migrate dev --name init
+# Generate ts types from prisma schema for api (one time unless schema changes)
+npx prisma generate
+```
 
-# **NOTE** This command will take several minutes. Seed the db with prod data.
-$ npx ts-node prisma/old_schema/convert-schema.ts
+**Note:**: If you've setup the db before with the previous methods, you'll need to destroy the postgres container: `docker rm si-api_pgsql_1`
 
-# Generate ts types from prisma schema for api
-$ npx prisma generate
+**Note:**: The postgresql database is seeded each time the docker-compose command is run, so it may take 20-30 seconds for the data to exist. Just FYI when you're running the api.
+
+## Dumping the Database
+
+Any changes to the schema or db content will need to be dumped:
+
+```bash
+docker run --rm -it \
+    --network host \
+    -v ./:/backup \
+    postgres:16 \
+    pg_dump -U root -h localhost -F c -b -v -f /backup/sermonindex.dump sermonindex_local
 ```
 
 ## Running the app
 
-Ensure the postgresql db is up (via `docker-compose up`), then:
+Ensure the postgresql db is up (via `docker-compose up`) and the db schema is defined (via `npx prisma generate`), then:
 
 ```bash
 # development
-$ npm run start
+npm run start
 
 # watch mode
-$ npm run start:dev
+npm run start:dev
 
 # production mode
-$ npm run start:prod
+npm run start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+npm run test
 
 # e2e tests
-$ npm run test:e2e
+npm run test:e2e
 
 # test coverage
-$ npm run test:cov
+npm run test:cov
 ```
 
 ## TODOs

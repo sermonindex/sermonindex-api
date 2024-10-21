@@ -42,7 +42,7 @@ model Sermon {
   @@unique([title, contributorId])
 
   id Int @default(autoincrement()) @id
-  mysqlId Int?
+  originalId String?
 
   contributor Contributor @relation(fields: [contributorId], references: [id])
   contributorId Int
@@ -55,6 +55,7 @@ model Sermon {
 
   bibleReferences BibleReference[]
   topics Topic[]
+  transcript Transcript?
 
   hits Int @default(0)
   featured Boolean @default(false)
@@ -96,3 +97,15 @@ model BibleReference {
 }
 
 // TODO: Recommended books by speaker table?
+
+model Transcript {
+  id Int @default(autoincrement()) @id
+
+  sermon Sermon @relation(fields: [sermonId], references: [id])
+  sermonId Int @unique
+
+  text String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

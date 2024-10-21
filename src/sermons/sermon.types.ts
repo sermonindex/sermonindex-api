@@ -5,5 +5,6 @@ export type SermonFullType = Prisma.SermonGetPayload<{
     contributor: true;
     bibleReferences: true;
     topics: true;
+    transcript: true;
   };
 }>;

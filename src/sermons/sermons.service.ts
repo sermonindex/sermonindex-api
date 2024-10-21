@@ -16,6 +16,7 @@ export class SermonsService {
         contributor: true,
         bibleReferences: true,
         topics: true,
+        transcript: true,
       },
     });
   }
@@ -39,6 +40,7 @@ export class SermonsService {
         contributor: true,
         bibleReferences: true,
         topics: true,
+        transcript: true,
       },
     });
   }

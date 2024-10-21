@@ -2,7 +2,7 @@ import { SermonFullType } from 'src/sermons/sermon.types';
 
 export class SermonResponseData {
   id: number;
-  mysqlId: number | null;
+  originalId: string | null;
 
   contributorId: number;
   contributorFullName: string;
@@ -16,6 +16,7 @@ export class SermonResponseData {
 
   bibleReferences: string[];
   topics: string[];
+  transcript: string | null;
 
   hits: number;
   featured: boolean;
@@ -35,7 +36,7 @@ export class SermonResponse extends SermonResponseData {
   static fromDB(data: SermonFullType): SermonResponse {
     return new SermonResponse({
       id: data.id,
-      mysqlId: data.mysqlId,
+      originalId: data.originalId,
 
       contributorId: data.contributorId,
       contributorFullName: data.contributor.fullName,
@@ -49,6 +50,7 @@ export class SermonResponse extends SermonResponseData {
 
       bibleReferences: data.bibleReferences.map((ref) => ref.text),
       topics: data.topics.map((topic) => topic.name),
+      transcript: data.transcript?.text ?? null,
 
       hits: data.hits,
       featured: data.featured,
