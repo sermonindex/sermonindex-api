@@ -8,13 +8,20 @@ services:
       POSTGRES_DB: sermonindex_local
     ports: [5432:5432]
     command: postgres
-  # pgsql_init:
-  #   image: postgres:16
-  #   command: pg_restore -h pgsql --no-owner --no-privileges --no-password --clean -d sermonindex_local -U root sermonindex.dump
-  #   volumes:
-  #     - ./sermonindex.dump:/sermonindex.dump
-  #   environment:
-  #     PGPASSWORD: root
-  #   depends_on:
-  #     pgsql:
-  #       condition: service_started
+  pgsql_init:
+    build: . # This will build the Dockerfile in the current directory
+    command: pg_restore -h pgsql --no-owner --no-privileges --no-password --clean -d sermonindex_local -U root /sermonindex.dump
+    environment:
+      PGPASSWORD: root
+    depends_on:
+      pgsql:
+        condition: service_started
+    # image: postgres:16
+    # command: pg_restore -h pgsql --no-owner --no-privileges --no-password --clean -d sermonindex_local -U root sermonindex.dump
+    # volumes:
+    #   - ./sermonindex.dump:/sermonindex.dump
+    # environment:
+    #   PGPASSWORD: root
+    # depends_on:
+    #   pgsql:
+    #     condition: service_started
