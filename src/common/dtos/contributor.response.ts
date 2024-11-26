@@ -1,16 +1,17 @@
-import { $Enums, Contributor } from '@prisma/client';
+import { $Enums } from '@prisma/client';
+import { ContributorFullType } from 'src/contributors/contributor.types';
 
 export class ContributorResponseData {
   id: number;
-  firstName: string;
-  lastName: string;
   fullName: string;
+  fullNameSlug: string;
   description: string | null;
   imageUrl: string | null;
   featured: boolean;
   type: $Enums.ContributorType;
   createdAt: Date;
   updatedAt: Date;
+  sermonCount: number;
 }
 
 export class ContributorResponse extends ContributorResponseData {
@@ -19,18 +20,18 @@ export class ContributorResponse extends ContributorResponseData {
     Object.assign(this, data);
   }
 
-  static fromDB(data: Contributor): ContributorResponse {
+  static fromDB(data: ContributorFullType): ContributorResponse {
     return new ContributorResponse({
       id: data.id,
-      firstName: data.firstName,
-      lastName: data.lastName,
       fullName: data.fullName,
+      fullNameSlug: data.fullNameSlug,
       description: data.description,
       imageUrl: data.imageUrl,
       featured: data.featured,
       type: data.type,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
+      sermonCount: data._count.sermons,
     });
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Contributor, Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
+import { ContributorFullType } from './contributor.types';
 
 @Injectable()
 export class ContributorsService {
@@ -8,9 +9,14 @@ export class ContributorsService {
 
   async getContributor(
     contributorWhereUniqueInput: Prisma.ContributorWhereUniqueInput,
-  ): Promise<Contributor | null> {
+  ): Promise<ContributorFullType | null> {
     return this.db.contributor.findUnique({
       where: contributorWhereUniqueInput,
+      include: {
+        _count: {
+          select: { sermons: true },
+        },
+      },
     });
   }
 
@@ -20,7 +26,7 @@ export class ContributorsService {
     cursor?: Prisma.ContributorWhereUniqueInput;
     where?: Prisma.ContributorWhereInput;
     orderBy?: Prisma.ContributorOrderByWithRelationInput;
-  }): Promise<Contributor[]> {
+  }): Promise<ContributorFullType[]> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.db.contributor.findMany({
       skip,
@@ -28,6 +34,11 @@ export class ContributorsService {
       cursor,
       where,
       orderBy,
+      include: {
+        _count: {
+          select: { sermons: true },
+        },
+      },
     });
   }
 

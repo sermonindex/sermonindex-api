@@ -1,3 +1,4 @@
+import { MediaSource, MediaType } from '@prisma/client';
 import { SermonFullType } from 'src/sermons/sermon.types';
 
 export class SermonResponseData {
@@ -45,8 +46,17 @@ export class SermonResponse extends SermonResponseData {
       title: data.title,
       description: data.description,
 
-      audioUrl: data.audioUrl,
-      videoUrl: data.videoUrl,
+      // TODO: Make this toggle based on a config value
+      audioUrl:
+        data.urls.find(
+          (url) =>
+            url.type === MediaType.AUDIO && url.source === MediaSource.ARCHIVE,
+        )?.url ?? null,
+      videoUrl:
+        data.urls.find(
+          (url) =>
+            url.type === MediaType.VIDEO && url.source === MediaSource.YOUTUBE,
+        )?.url ?? null,
 
       bibleReferences: data.bibleReferences.map((ref) => ref.text),
       topics: data.topics.map((topic) => topic.name),

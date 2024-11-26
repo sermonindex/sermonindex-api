@@ -20,12 +20,24 @@ enum ContributorType {
   CONFERENCE
 }
 
+enum MediaType {
+  AUDIO
+  VIDEO
+  TEXT
+}
+
+enum MediaSource {
+  ARCHIVE
+  YOUTUBE
+  BUNNY
+}
+
 model Contributor {
   id Int     @default(autoincrement()) @id
 
-  firstName String
-  lastName String
   fullName String @unique @db.Citext
+  fullNameSlug String @db.Citext
+
   description String?
   imageUrl String?
   featured Boolean @default(false)
@@ -50,12 +62,11 @@ model Sermon {
   title String @db.Citext
   description String?
 
-  audioUrl String?
-  videoUrl String?
+  urls SermonUrl[]
 
-  bibleReferences BibleReference[]
+  bibleReferences SermonBibleReference[]
   topics Topic[]
-  transcript Transcript?
+  transcript SermonText?
 
   hits Int @default(0)
   featured Boolean @default(false)
@@ -67,16 +78,19 @@ model Sermon {
   updatedAt DateTime @updatedAt
 }
 
-model Topic {
-  name String @unique @id @db.Citext
+model SermonUrl {
+  id Int @default(autoincrement()) @id
 
-  sermon Sermon[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  type MediaType
+  source MediaSource
+
+  sermon Sermon @relation(fields: [sermonId], references: [id])
+  sermonId Int
+
+  url String @db.Citext
 }
 
-model BibleReference {
+model SermonBibleReference {
   id Int @default(autoincrement()) @id  
 
   book String @db.Citext
@@ -96,9 +110,7 @@ model BibleReference {
   updatedAt DateTime @updatedAt
 }
 
-// TODO: Recommended books by speaker table?
-
-model Transcript {
+model SermonText {
   id Int @default(autoincrement()) @id
 
   sermon Sermon @relation(fields: [sermonId], references: [id])
@@ -106,6 +118,15 @@ model Transcript {
 
   text String
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Topic {
+  name String @unique @id @db.Citext
+
+  sermon Sermon[]
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

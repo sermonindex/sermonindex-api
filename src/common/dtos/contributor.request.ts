@@ -9,4 +9,7 @@ export class ContributorRequest {
 
   @IsOptional()
   fullName: string;
+
+  @IsOptional()
+  fullNameSlug: string;
 }

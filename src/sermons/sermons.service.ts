@@ -14,6 +14,7 @@ export class SermonsService {
       where: sermonWhereUniqueInput,
       include: {
         contributor: true,
+        urls: true,
         bibleReferences: true,
         topics: true,
         transcript: true,
@@ -38,6 +39,7 @@ export class SermonsService {
       orderBy,
       include: {
         contributor: true,
+        urls: true,
         bibleReferences: true,
         topics: true,
         transcript: true,

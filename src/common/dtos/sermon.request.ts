@@ -14,6 +14,9 @@ export class SermonRequest {
   fullName: string;
 
   @IsOptional()
+  fullNameSlug: string;
+
+  @IsOptional()
   @IsPositive()
   @Transform(({ value }) => parseInt(value))
   contributorId: number;
