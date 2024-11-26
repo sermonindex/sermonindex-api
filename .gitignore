@@ -40,3 +40,4 @@ lerna-debug.log*
 /prisma/old_schema/audio_transcripts/*
 /prisma/old_schema/video_transcripts/*
 sermonindex.dump
+/prisma/data/*

@@ -19,10 +19,10 @@ export class ContributorsController {
 
   @Get('/')
   async listContributors(@Query() query: ContributorRequest) {
-    const { fullName, id } = query;
+    const { fullName, fullNameSlug, id } = query;
 
     const result = await this.contributorsService.listContributors({
-      where: { fullName: fullName, id: id },
+      where: { fullName: fullName, fullNameSlug: fullNameSlug, id: id },
       orderBy: { fullName: 'asc' },
     });
 

@@ -68,10 +68,8 @@ npm run test:cov
 
 ## TODOs
 
-- return sermon count on contributor
-- Add descriptions and references to video sermons
-- Add descriptions to audio sermons
-- Add manuscript table for sermon text (audio and video)
+- remove csv-parse, jsdom, @types/jsdom, titlecase dependencies once db scrubbing complete
+- contributor images endpoint
 - search sermons & contributors endpoint
 - pagination
 - swagger docs

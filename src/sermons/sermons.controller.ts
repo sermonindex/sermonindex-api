@@ -18,14 +18,27 @@ export class SermonsController {
   async listSermons(
     @Query() query: SermonRequest,
   ): Promise<ListSermonsResponse> {
-    const { id, title, fullName, contributorId, topic, book, chapter, verse } =
-      query;
+    const {
+      id,
+      title,
+      fullName,
+      fullNameSlug,
+      contributorId,
+      topic,
+      book,
+      chapter,
+      verse,
+    } = query;
 
     const result = await this.sermonService.listSermons({
       where: {
         id,
         title,
-        contributor: { id: contributorId, fullName: fullName },
+        contributor: {
+          id: contributorId,
+          fullName: fullName,
+          fullNameSlug: fullNameSlug,
+        },
         topics: topic ? { some: { name: topic } } : undefined,
         bibleReferences:
           book || chapter || verse
@@ -40,7 +53,7 @@ export class SermonsController {
               }
             : undefined,
       },
-      take: 1000,
+      take: 5000,
       orderBy: {
         hits: 'desc',
       },
