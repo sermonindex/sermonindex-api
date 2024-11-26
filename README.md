@@ -5,7 +5,11 @@ An api for the SermonIndex content
 ## Installation
 
 ```bash
+# Install node packages
 npm install
+
+# Generate ts types from prisma schema for api (one time unless schema changes)
+npx prisma generate
 ```
 
 ## Setting up the Database
@@ -15,16 +19,17 @@ Unfortunately the database dump is too large to host on GitHub. You'll need to d
 Once you've downloaded the database dump:
 
 ```bash
-# Start the postgresql container
+# Start the postgresql container (use --force-recreate to start from scratch)
 docker-compose up
 
-# Generate ts types from prisma schema for api (one time unless schema changes)
-npx prisma generate
+# Apply schema migrations
+npx prisma migrate dev
+
+# Seed the data
+docker exec -i si-api_pgsql_1 pg_restore --verbose --clean --no-owner --no-privileges -U root -d sermonindex_local < ./sermonindex.dump
 ```
 
 **Note:**: If you've setup the db before with the previous methods, you'll need to destroy the postgres container: `docker rm si-api_pgsql_1`
-
-**Note:**: The postgresql database is seeded each time the docker-compose command is run, so it may take 20-30 seconds for the data to exist. Just FYI when you're running the api.
 
 ## Dumping the Database
 
