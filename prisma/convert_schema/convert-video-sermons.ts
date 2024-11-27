@@ -84,13 +84,16 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
 
     const fullNameSlug = videoContributor.title
       .toLowerCase()
+      .replace(/  /g, ' ')
       .replace(/ /g, '-')
       .replace(/\./g, '');
+
+    const fullName = videoContributor.title.replace(/  /g, ' ');
 
     // Check if this contributor already exists in the new schema
     const existingContributor = await prisma.contributor.findUnique({
       where: {
-        fullName: videoContributor.title,
+        fullName: fullName,
       },
     });
     if (existingContributor) {
@@ -109,10 +112,10 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
     const c = await prisma.contributor.create({
       data: {
         fullNameSlug,
-        fullName: videoContributor.title,
+        fullName: fullName,
         description: description,
         imageUrl: imgSrc,
-        featured: featuredContributors.includes(videoContributor.title),
+        featured: featuredContributors.includes(fullName),
       },
     });
     uniqueContributors.set(c.id, [videoContributor.cid]);
@@ -250,6 +253,10 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
         title = title.replace(`by ${contributor.fullName}`, '');
       } else if (title.includes(`By ${contributor.fullName}`)) {
         title = title.replace(`By ${contributor.fullName}`, '');
+      }
+
+      if (title.includes(`- ${contributor.fullName}`)) {
+        title = title.replace(`- ${contributor.fullName}`, '');
       }
     }
 

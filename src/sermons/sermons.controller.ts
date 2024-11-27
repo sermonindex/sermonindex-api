@@ -111,4 +111,19 @@ export class SermonsController {
 
     return SermonResponse.fromDB(result[0]);
   }
+
+  @Get('/search')
+  async searchSermons(
+    @Query('title') title: string,
+  ): Promise<ListSermonsResponse> {
+    const result = await this.sermonService.listSermons({
+      where: {
+        title: { contains: title },
+      },
+    });
+
+    return {
+      values: result.map((sermon) => SermonResponse.fromDB(sermon)),
+    };
+  }
 }

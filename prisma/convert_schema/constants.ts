@@ -339,6 +339,7 @@ export const audioContributorNamesToIgnore = [
   'Westminster Shorter Catechism',
   'Zacharias Tanee Fomum',
   'Zac Poonen Books',
+  'Trevor Baker', //Musician
 ];
 
 export const videoContributorNamesToIgnore = [

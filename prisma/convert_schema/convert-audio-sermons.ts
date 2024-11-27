@@ -93,13 +93,16 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
 
     const fullNameSlug = audioContributor.title
       .toLowerCase()
+      .replace(/  /g, ' ')
       .replace(/ /g, '-')
       .replace(/\./g, '');
+
+    const fullName = audioContributor.title.replace(/  /g, ' ');
 
     // Check if this contributor already exists in the new schema
     const existingContributor = await prisma.contributor.findUnique({
       where: {
-        fullName: audioContributor.title,
+        fullName: fullName,
       },
     });
     if (existingContributor) {
@@ -118,10 +121,10 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
     const c = await prisma.contributor.create({
       data: {
         fullNameSlug,
-        fullName: audioContributor.title,
+        fullName: fullName,
         description: description,
         imageUrl: imgSrc,
-        featured: featuredContributors.includes(audioContributor.title),
+        featured: featuredContributors.includes(fullName),
       },
     });
     uniqueContributors.set(c.id, [audioContributor.cid]);
@@ -251,6 +254,10 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
           title = title.replace(`by ${contributor.fullName}`, '');
         } else if (title.includes(`By ${contributor.fullName}`)) {
           title = title.replace(`By ${contributor.fullName}`, '');
+        }
+
+        if (title.includes(`- ${contributor.fullName}`)) {
+          title = title.replace(`- ${contributor.fullName}`, '');
         }
       }
 

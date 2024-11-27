@@ -67,10 +67,18 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
       continue;
     }
 
+    const fullNameSlug = textContributor.name
+      .toLowerCase()
+      .replace(/  /g, ' ')
+      .replace(/ /g, '-')
+      .replace(/\./g, '');
+
+    const fullName = textContributor.name.replace(/  /g, ' ');
+
     // Check if this contributor already exists in the new schema
     const existingContributor = await prisma.contributor.findUnique({
       where: {
-        fullName: textContributor.name,
+        fullName: fullName,
       },
     });
     if (existingContributor) {
@@ -100,15 +108,10 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
         '',
       ) ?? null;
 
-    const fullNameSlug = textContributor.name
-      .toLowerCase()
-      .replace(/ /g, '-')
-      .replace(/\./g, '');
-
     const c = await prisma.contributor.create({
       data: {
         fullNameSlug,
-        fullName: textContributor.name,
+        fullName: fullName,
         description: description,
         imageUrl: textContributor.image_url,
       },
