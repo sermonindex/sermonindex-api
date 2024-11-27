@@ -91,7 +91,7 @@ export class SermonsController {
   async listPopularSermons(): Promise<ListSermonsResponse> {
     const result = await this.sermonService.listSermons({
       orderBy: { hits: 'desc' },
-      take: 15,
+      take: 100,
     });
 
     return {
