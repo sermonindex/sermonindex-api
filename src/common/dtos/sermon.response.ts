@@ -7,6 +7,7 @@ export class SermonResponseData {
 
   contributorId: number;
   contributorFullName: string;
+  contributorFullNameSlug: string;
   contributorImageUrl: string | null;
 
   title: string;
@@ -41,6 +42,7 @@ export class SermonResponse extends SermonResponseData {
 
       contributorId: data.contributorId,
       contributorFullName: data.contributor.fullName,
+      contributorFullNameSlug: data.contributor.fullNameSlug,
       contributorImageUrl: data.contributor.imageUrl,
 
       title: data.title,

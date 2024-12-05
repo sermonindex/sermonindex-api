@@ -73,6 +73,8 @@ npm run test:cov
 
 ## TODOs
 
+- remove ~Miscellaneous Contributor
+- reduce hits for top 4 sermons
 - remove csv-parse, jsdom, @types/jsdom, titlecase dependencies once db scrubbing complete
 - contributor images endpoint
 - search sermons & contributors endpoint

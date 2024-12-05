@@ -118,8 +118,10 @@ export class SermonsController {
   ): Promise<ListSermonsResponse> {
     const result = await this.sermonService.listSermons({
       where: {
-        title: { contains: title },
+        title: { contains: title, mode: 'insensitive' },
       },
+      orderBy: { hits: 'desc' },
+      take: 50,
     });
 
     return {

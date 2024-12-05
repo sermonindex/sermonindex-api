@@ -36,5 +36,5 @@ lerna-debug.log*
 
 # TODO: Remove these later
 sermonindex.sql
-sermonindex.tar.gz
+sermonindex.tar.xz
 /prisma/data/*
