@@ -125,8 +125,35 @@ model SermonText {
 model Topic {
   name String @unique @id @db.Citext
 
+  // TODO: rename this to sermons
   sermon Sermon[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// publication & sections
+// type book, commentary, article, devotional...
+
+// model Book {
+//   name String @unique @id @db.Citext
+
+//   chapters Chapter[]
+  
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Chapter {
+//   id Int @default(autoincrement()) @id
+
+//   book Book @relation(fields: [bookName], references: [name])
+//   bookName String
+
+//   number Int
+
+//   verses Verse[]
+  
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
