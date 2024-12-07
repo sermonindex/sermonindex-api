@@ -61,7 +61,7 @@ export class SermonResponse extends SermonResponseData {
         )?.url ?? null,
 
       bibleReferences: data.bibleReferences.map((ref) => ref.text),
-      topics: data.topics.map((topic) => topic.name),
+      topics: data.topics ? data.topics.map((topic) => topic.name) : [],
       transcript: data.transcript?.text ?? null,
 
       hits: data.hits,
