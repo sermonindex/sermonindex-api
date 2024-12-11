@@ -1,4 +1,5 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import { TopicInfoResponse } from 'src/common/dtos/topic-info.response';
 import { TopicResponse } from 'src/common/dtos/topic.response';
 import { TopicsService } from './topics.service';
 
@@ -13,11 +14,23 @@ export class TopicsController {
     });
 
     return {
-      values: topics.map((topic) => topic.name),
+      values: topics.map((topic) => TopicInfoResponse.fromDB(topic)),
     };
   }
 
-  @Get('/:name')
+  @Get('/popular')
+  async listPopularTopics() {
+    const topics = await this.topicsService.listTopics({
+      take: 20,
+      orderBy: { sermon: { _count: 'desc' } },
+    });
+
+    return {
+      values: topics.map((topic) => TopicInfoResponse.fromDB(topic)),
+    };
+  }
+
+  @Get('/name/:name')
   async getTopic(@Param('name') topicName: string) {
     const result = await this.topicsService.getTopic(topicName);
 
