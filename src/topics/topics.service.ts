@@ -21,6 +21,11 @@ export class TopicsService {
       cursor,
       where,
       orderBy,
+      include: {
+        _count: {
+          select: { sermon: true },
+        },
+      },
     });
   }
 
