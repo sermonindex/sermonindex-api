@@ -30,7 +30,7 @@ export class TopicsController {
     };
   }
 
-  @Get('/name/:name')
+  @Get('/topicName/:name')
   async getTopic(@Param('name') topicName: string) {
     const result = await this.topicsService.getTopic(topicName);
 
