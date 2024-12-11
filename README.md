@@ -73,8 +73,11 @@ npm run test:cov
 
 ## TODOs
 
+- pull out Martyrs of the Catacombs
+- remove duplicate/misspelt topics
+- if the contributor doesn't have a description or image, update them...
+- replace speaker images with cdn url: https://sermonindex3.b-cdn.net/pdf/andrewmurray.png
 - remove ~Miscellaneous Contributor
-- reduce hits for top 4 sermons
 - remove csv-parse, jsdom, @types/jsdom, titlecase dependencies once db scrubbing complete
 - contributor images endpoint
 - search sermons & contributors endpoint
