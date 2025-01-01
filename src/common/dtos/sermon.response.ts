@@ -15,6 +15,9 @@ export class SermonResponseData {
 
   audioUrl: string | null;
   videoUrl: string | null;
+  videoDownloadUrl: string | null;
+  srtUrl: string | null;
+  vttUrl: string | null;
 
   bibleReferences: string[];
   topics: string[];
@@ -49,6 +52,7 @@ export class SermonResponse extends SermonResponseData {
       description: data.description,
 
       // TODO: Make this toggle based on a config value
+      // TODO: Rename to streamUrl and downloadUrl
       audioUrl:
         data.urls.find(
           (url) =>
@@ -59,6 +63,20 @@ export class SermonResponse extends SermonResponseData {
           (url) =>
             url.type === MediaType.VIDEO && url.source === MediaSource.YOUTUBE,
         )?.url ?? null,
+
+      // TODO: Save these urls in the database
+      videoDownloadUrl:
+        data.urls.find(
+          (url) =>
+            url.type === MediaType.VIDEO && url.source === MediaSource.BUNNY,
+        )?.url ?? null,
+
+      srtUrl: data.urls
+        ? `https://sermonindex3.b-cdn.net/srt/${data.originalId}.srt`
+        : null,
+      vttUrl: data.urls
+        ? `https://sermonindex3.b-cdn.net/vtt/${data.originalId}.vtt`
+        : null,
 
       bibleReferences: data.bibleReferences.map((ref) => ref.text),
       topics: data.topics ? data.topics.map((topic) => topic.name) : [],
