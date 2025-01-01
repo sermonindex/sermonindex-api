@@ -14,7 +14,7 @@ export class TopicInfoResponse extends TopicInfoResponseData {
   static fromDB(data: TopicInfoType): TopicInfoResponse {
     return new TopicInfoResponse({
       name: data.name,
-      sermonCount: data._count.sermon,
+      sermonCount: data._count.sermons,
     });
   }
 }

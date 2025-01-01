@@ -21,7 +21,7 @@ export class TopicResponse extends TopicResponseData {
     return new TopicResponse({
       name: data.name,
 
-      sermons: data.sermon.map((sermon) =>
+      sermons: data.sermons.map((sermon) =>
         SermonResponse.fromDB(sermon as SermonFullType),
       ),
 

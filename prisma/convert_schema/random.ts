@@ -87,6 +87,32 @@ const textSermonBooks = [
 ];
 // id 596, 446, 597 | 598, 600, 601 hyms
 
+const imagesToProcess = [
+  // TODO: A conference has images on it....
+  `Keswick Week 1959`,
+  `History of Methodism`,
+  `Preaching & Misc.`,
+  `New England Primer`,
+  `Church of Scotland`,
+  `SermonIndex Classic Quotes`,
+  `~Misc.`,
+  `Bible College of Wales`,
+  `Gospel Center`,
+  `Scripture Comics`,
+  `Revival Meetings`,
+  `Revival Conference Canton 2007`,
+  `Charity Leadership 2008`,
+  `Revival Conference Greenock 2008`,
+  `Revival Conference Atlanta 2008`,
+  `Revival Conference Nepal 2010`,
+  `Revival Conference Barnsdall 2009`,
+  `Revival Conference Wales 2009`,
+  `Revival Conference Indiana 2009`,
+  `Revival Conference Ireland 2009`,
+  `SermonIndex Quotes`,
+  `SermonIndex Christian Quotes`,
+];
+
 const textSermonCommentaries = [
   'Expository Thoughts On', // -> J.C. Ryle (missing some of mathhew)
   'Matthew chapter', // -> J.C. Ryle (only matthew)

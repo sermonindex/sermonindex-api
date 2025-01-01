@@ -23,7 +23,7 @@ export class TopicsService {
       orderBy,
       include: {
         _count: {
-          select: { sermon: true },
+          select: { sermons: true },
         },
       },
     });
@@ -35,7 +35,7 @@ export class TopicsService {
         name: topicName,
       },
       include: {
-        sermon: {
+        sermons: {
           include: {
             contributor: true,
             urls: true,

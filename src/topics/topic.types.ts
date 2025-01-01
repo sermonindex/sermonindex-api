@@ -3,14 +3,14 @@ import { Prisma } from '@prisma/client';
 export type TopicInfoType = Prisma.TopicGetPayload<{
   include: {
     _count: {
-      select: { sermon: true };
+      select: { sermons: true };
     };
   };
 }>;
 
 export type TopicFullType = Prisma.TopicGetPayload<{
   include: {
-    sermon: {
+    sermons: {
       include: {
         contributor: true;
         urls: true;

@@ -148,7 +148,7 @@ export const upsertSermon = async (
       },
       bibleReferences: {
         create: bibleReferences.map((reference) => ({
-          book: reference.book,
+          bookId: reference.bookId,
           startChapter: reference.startChapter,
           endChapter: reference.endChapter,
           startVerse: reference.startVerse,
