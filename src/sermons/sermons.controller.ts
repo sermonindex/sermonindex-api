@@ -5,6 +5,7 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 import { ListSermonsResponse } from 'src/common/dtos/list-sermons.response';
 import { SermonRequest } from 'src/common/dtos/sermon.request';
 import { SermonResponse } from 'src/common/dtos/sermon.response';
@@ -14,6 +15,10 @@ import { SermonsService } from './sermons.service';
 export class SermonsController {
   constructor(private readonly sermonService: SermonsService) {}
 
+  @ApiOperation({
+    summary: 'Retrieve a list of sermons with optional filters (max 100).',
+    operationId: 'listSermons',
+  })
   @Get('/')
   async listSermons(
     @Query() query: SermonRequest,
@@ -44,7 +49,7 @@ export class SermonsController {
           book || chapter || verse
             ? {
                 some: {
-                  book: book,
+                  bookId: book,
                   startChapter: chapter ? { gte: chapter } : undefined,
                   endChapter: chapter ? { lte: chapter } : undefined,
                   startVerse: verse ? { gte: verse } : undefined,
@@ -118,6 +123,8 @@ export class SermonsController {
   ): Promise<ListSermonsResponse> {
     const result = await this.sermonService.listSermons({
       where: {
+        // TODO: Prisma supports full-text search
+        // https://www.prisma.io/docs/orm/prisma-client/queries/full-text-search#enabling-full-text-search-for-postgresql
         title: { contains: title, mode: 'insensitive' },
       },
       orderBy: { hits: 'desc' },

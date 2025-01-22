@@ -1,6 +1,15 @@
 import { MediaSource, MediaType } from '@prisma/client';
 import { SermonFullType } from 'src/sermons/sermon.types';
 
+interface BiblePassage {
+  text: string;
+  book: string;
+  startChapter: number | null;
+  startVerse: number | null;
+  endChapter: number | null;
+  endVerse: number | null;
+}
+
 export class SermonResponseData {
   id: number;
   originalId: string | null;
@@ -19,7 +28,7 @@ export class SermonResponseData {
   srtUrl: string | null;
   vttUrl: string | null;
 
-  bibleReferences: string[];
+  bibleReferences: BiblePassage[];
   topics: string[];
   transcript: string | null;
 
@@ -78,7 +87,14 @@ export class SermonResponse extends SermonResponseData {
         ? `https://sermonindex3.b-cdn.net/vtt/${data.originalId}.vtt`
         : null,
 
-      bibleReferences: data.bibleReferences.map((ref) => ref.text),
+      bibleReferences: data.bibleReferences.map((ref) => ({
+        text: ref.text,
+        book: ref.bookId,
+        startChapter: ref.startChapter,
+        startVerse: ref.startVerse,
+        endChapter: ref.endChapter,
+        endVerse: ref.endVerse,
+      })),
       topics: data.topics ? data.topics.map((topic) => topic.name) : [],
       transcript: data.transcript?.text ?? null,
 

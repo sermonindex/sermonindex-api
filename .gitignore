@@ -37,4 +37,5 @@ lerna-debug.log*
 # TODO: Remove these later
 sermonindex.sql
 sermonindex.tar.xz
+bible.eng.db
 /prisma/data/*

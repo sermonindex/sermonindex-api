@@ -22,7 +22,7 @@ export class TopicsController {
   async listPopularTopics() {
     const topics = await this.topicsService.listTopics({
       take: 20,
-      orderBy: { sermon: { _count: 'desc' } },
+      orderBy: { sermons: { _count: 'desc' } },
     });
 
     return {

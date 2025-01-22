@@ -1,0 +1,40 @@
+enum ContributorType {
+  INDIVIDUAL
+  CONFERENCE
+}
+
+model Contributor {
+  id Int     @default(autoincrement()) @id
+
+  fullName String @unique @db.Citext
+  fullNameSlug String @db.Citext
+
+  description String? // todo: bio
+  imageUrl String? // todo: profileImage
+  featured Boolean @default(false)
+
+  type ContributorType @default(INDIVIDUAL)
+
+  images ContributorImage[]
+  sermons Sermon[]
+  // hymns Hymn[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContributorImage {
+  id Int @default(autoincrement()) @id
+  originalId Int?
+
+  contributor Contributor @relation(fields: [contributorId], references: [id])
+  contributorId Int
+
+  url String @db.Citext
+
+  title String?
+  description String?
+
+  takenAt DateTime?
+  createdAt DateTime @default(now())
+}

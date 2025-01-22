@@ -1,0 +1,83 @@
+enum MediaType {
+  AUDIO
+  VIDEO
+  TEXT
+}
+
+enum MediaSource {
+  ARCHIVE
+  YOUTUBE
+  BUNNY
+}
+
+model Sermon {
+  @@unique([title, contributorId])
+
+  id Int @default(autoincrement()) @id
+  originalId String?
+
+  contributor Contributor @relation(fields: [contributorId], references: [id])
+  contributorId Int
+
+  title String @db.Citext
+  description String?
+
+  urls SermonUrl[]
+
+  bibleReferences SermonBibleReference[]
+  topics Topic[]
+  transcript SermonText?
+
+  hits Int @default(0)
+  featured Boolean @default(false)
+  previouslyFeatured Boolean @default(false)
+
+  preachedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SermonUrl {
+  id Int @default(autoincrement()) @id
+
+  type MediaType
+  source MediaSource
+
+  sermon Sermon @relation(fields: [sermonId], references: [id])
+  sermonId Int
+
+  url String @db.Citext
+}
+
+model SermonBibleReference {
+  id Int @default(autoincrement()) @id  
+
+  bookId String @db.Citext
+
+  startChapter Int?
+  endChapter Int?
+  
+  startVerse Int?
+  endVerse Int?
+
+  text String
+
+  sermon Sermon @relation(fields: [sermonId], references: [id])
+  sermonId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SermonText {
+  id Int @default(autoincrement()) @id
+
+  sermon Sermon @relation(fields: [sermonId], references: [id])
+  sermonId Int @unique
+
+  text String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

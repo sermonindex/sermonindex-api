@@ -66,7 +66,13 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
       continue;
     }
 
-    const imgSrc = videoContributor.imgurl ?? null;
+    // Extract the src attribute from the <img> tag
+    const imgSrcMatch = videoContributor.description.match(
+      /<img[^>]+src="([^"]+)"/,
+    );
+    let imgSrc = imgSrcMatch ? imgSrcMatch[1] : null;
+    imgSrc =
+      imgSrc?.replace('img.sermonindex.net', 'sermonindex3.b-cdn.net') ?? null;
 
     // Just get the bulk of the description for now. We can parse the rest later.
     let description = extractTextBetween(
@@ -215,7 +221,7 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
         for (const reference of references) {
           if (reference.is_range) {
             bibleReferences.push({
-              book: reference.start.book,
+              bookId: reference.start.book,
               startChapter: reference.start.chapter,
               endChapter: reference.end.chapter,
               startVerse: reference.start.verse,
@@ -227,7 +233,7 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
             });
           } else {
             bibleReferences.push({
-              book: reference.book,
+              bookId: reference.book,
               startChapter: reference.chapter,
               endChapter: reference.chapter,
               startVerse: reference.verse,
