@@ -1,6 +1,10 @@
 import { Prisma } from '@prisma/client';
 
-export type BibleTranslationType = Prisma.TranslationGetPayload<{}>;
+export type BibleTranslationType = Prisma.TranslationGetPayload<{
+  include: {
+    books: true;
+  };
+}>;
 
 export type BibleVerseWithTranslationType = Prisma.ChapterVerseGetPayload<{
   include: {

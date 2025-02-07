@@ -43,6 +43,25 @@ export class BibleController {
     };
   }
 
+  @Get('/:language/:translation')
+  async getTranslation(
+    @Param('language') language: string,
+    @Param('translation') translation: string,
+  ) {
+    const result = await this.bibleService.getTranslation({
+      where: {
+        language,
+        shortName: translation,
+      },
+    });
+
+    if (!result) {
+      throw NotFoundException;
+    }
+
+    return BibleTranslationResponse.fromDB(result);
+  }
+
   @Get('/:language/parallel/:book/:chapter/:verse')
   async getParallel(
     @Param('language') language: string,

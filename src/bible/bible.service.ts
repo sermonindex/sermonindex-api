@@ -107,7 +107,25 @@ export class BibleService {
   async getTranslations(params: { where?: Prisma.TranslationWhereInput }) {
     const { where } = params;
 
-    return this.db.translation.findMany({ where });
+    return this.db.translation.findMany({
+      where,
+      include: { books: { orderBy: { order: 'asc' } } },
+    });
+  }
+
+  async getTranslation(params: { where: Prisma.TranslationWhereInput }) {
+    const { where } = params;
+
+    return this.db.translation.findFirst({
+      where,
+      include: {
+        books: {
+          orderBy: {
+            order: 'asc',
+          },
+        },
+      },
+    });
   }
 
   async getParallel(
