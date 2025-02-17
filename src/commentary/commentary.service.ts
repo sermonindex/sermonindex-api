@@ -12,6 +12,19 @@ export class CommentaryService {
     });
   }
 
+  getCommentariesByChapter(params: {
+    where: Prisma.CommentaryChapterWhereInput;
+  }) {
+    const { where } = params;
+
+    return this.db.commentaryChapter.findMany({
+      where,
+      // include: {
+      //   commentary: true,
+      // },
+    });
+  }
+
   getCommentariesByVerse(params: {
     where: Prisma.CommentaryChapterVerseWhereInput;
     orderBy?: Prisma.CommentaryChapterVerseOrderByWithRelationInput;
@@ -24,6 +37,19 @@ export class CommentaryService {
       include: {
         commentary: true,
       },
+    });
+  }
+
+  getCommentaryByChapter(params: {
+    where: Prisma.CommentaryChapterWhereInput;
+  }) {
+    const { where } = params;
+
+    return this.db.commentaryChapter.findFirst({
+      where,
+      // include: {
+      //   commentary: true,
+      // },
     });
   }
 }

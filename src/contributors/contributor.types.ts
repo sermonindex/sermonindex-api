@@ -7,5 +7,6 @@ export type ContributorFullType = Prisma.ContributorGetPayload<{
         sermons: true;
       };
     };
+    images: true;
   };
 }>;

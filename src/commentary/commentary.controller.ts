@@ -17,7 +17,26 @@ export class CommentaryController {
     return result;
   }
 
-  @Get('/:language/:book/:chapter/:verse')
+  @Get('/:language/parallel/:book/:chapter')
+  async getCommentariesByChapter(
+    @Param('language') language: string,
+    @Param('book') book: string,
+    @Param('chapter') chapter: number,
+  ) {
+    const result = await this.commentaryService.getCommentariesByChapter({
+      where: {
+        commentary: {
+          language: language,
+        },
+        bookId: book,
+        number: chapter,
+      },
+    });
+
+    return result;
+  }
+
+  @Get('/:language/parallel/:book/:chapter/:verse')
   async getCommentariesByVerse(
     @Param('language') language: string,
     @Param('book') book: string,
@@ -43,5 +62,26 @@ export class CommentaryController {
     return {
       values: result.map((verse) => CommentaryVerseResponse.fromDB(verse)),
     };
+  }
+
+  @Get('/:language/:commentaryId/:book/:chapter')
+  async getCommentaryByChapter(
+    @Param('language') language: string,
+    @Param('commentaryId') commentaryId: string,
+    @Param('book') book: string,
+    @Param('chapter') chapter: number,
+  ) {
+    const result = await this.commentaryService.getCommentaryByChapter({
+      where: {
+        commentary: {
+          language: language,
+          id: commentaryId,
+        },
+        bookId: book,
+        number: chapter,
+      },
+    });
+
+    return result;
   }
 }

@@ -1,6 +1,12 @@
 import { $Enums } from '@prisma/client';
 import { ContributorFullType } from 'src/contributors/contributor.types';
 
+export interface ContributorImage {
+  url: string;
+  title: string | null;
+  description: string | null;
+}
+
 export class ContributorResponseData {
   id: number;
   fullName: string;
@@ -12,6 +18,7 @@ export class ContributorResponseData {
   createdAt: Date;
   updatedAt: Date;
   sermonCount: number;
+  images: ContributorImage[];
 }
 
 export class ContributorResponse extends ContributorResponseData {
@@ -32,6 +39,11 @@ export class ContributorResponse extends ContributorResponseData {
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
       sermonCount: data._count.sermons,
+      images: data.images.map((image) => ({
+        url: image.url,
+        title: image.title,
+        description: image.description,
+      })),
     });
   }
 }

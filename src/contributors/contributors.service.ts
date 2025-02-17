@@ -16,6 +16,7 @@ export class ContributorsService {
         _count: {
           select: { sermons: true },
         },
+        images: true,
       },
     });
   }
@@ -38,6 +39,7 @@ export class ContributorsService {
         _count: {
           select: { sermons: true },
         },
+        images: true,
       },
     });
   }
