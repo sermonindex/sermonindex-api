@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { MediaType } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsOptional, IsPositive } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsPositive } from 'class-validator';
 
 export class SermonRequest {
   @IsOptional()
@@ -47,4 +48,10 @@ export class SermonRequest {
   @IsPositive()
   @Transform(({ value }) => parseInt(value))
   verse: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsEnum(MediaType, { each: true })
+  @Transform(({ value }) => String(value).split(','))
+  mediaType: MediaType[];
 }

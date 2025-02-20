@@ -33,6 +33,7 @@ export class SermonsController {
       book,
       chapter,
       verse,
+      mediaType,
     } = query;
 
     const result = await this.sermonService.listSermons({
@@ -57,6 +58,7 @@ export class SermonsController {
                 },
               }
             : undefined,
+        urls: mediaType ? { some: { type: { in: mediaType } } } : undefined,
       },
       take: 5000,
       orderBy: {
