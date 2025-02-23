@@ -1,5 +1,14 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Query,
+} from '@nestjs/common';
+import { CommentaryChapterResponse } from 'src/common/dtos/commentary-chapter.response';
 import { CommentaryVerseResponse } from 'src/common/dtos/commentary-verse.response';
+import { CommentaryResponse } from 'src/common/dtos/commentary.response';
+import { ListCommentaryResponse } from 'src/common/dtos/list-commentary.response';
 import { CommentaryService } from './commentary.service';
 
 @Controller('commentary')
@@ -7,14 +16,18 @@ export class CommentaryController {
   constructor(private readonly commentaryService: CommentaryService) {}
 
   @Get('/')
-  async getCommentaryBooks(@Query('language') language: string) {
+  async getCommentaryBooks(
+    @Query('language') language: string,
+  ): Promise<ListCommentaryResponse> {
     const result = await this.commentaryService.getCommentaries({
       where: {
         language: language,
       },
     });
 
-    return result;
+    return {
+      values: result.map((commentary) => CommentaryResponse.fromDB(commentary)),
+    };
   }
 
   @Get('/:language/parallel/:book/:chapter')
@@ -32,6 +45,10 @@ export class CommentaryController {
         number: chapter,
       },
     });
+
+    if (!result) {
+      throw NotFoundException;
+    }
 
     return result;
   }
@@ -59,6 +76,10 @@ export class CommentaryController {
       },
     });
 
+    if (!result) {
+      throw NotFoundException;
+    }
+
     return {
       values: result.map((verse) => CommentaryVerseResponse.fromDB(verse)),
     };
@@ -82,6 +103,10 @@ export class CommentaryController {
       },
     });
 
-    return result;
+    if (!result) {
+      throw NotFoundException;
+    }
+
+    return CommentaryChapterResponse.fromDB(result);
   }
 }

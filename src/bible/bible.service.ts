@@ -65,36 +65,6 @@ export class BibleService {
     return result;
   }
 
-  getAdjacentChapters(
-    bookId: string,
-    bookNumber: number,
-    numberOfChapters: number,
-    chapterNumber: number,
-  ) {
-    const nextBookId =
-      chapterNumber + 1 <= numberOfChapters
-        ? bookId
-        : OSIS_BOOK_ORDER.get(bookNumber + 1);
-    const previousBookId =
-      chapterNumber - 1 > 0 ? bookId : OSIS_BOOK_ORDER.get(bookNumber - 1);
-
-    const nextChapterNumber =
-      nextBookId === bookId ? chapterNumber + 1 : nextBookId ? 1 : undefined;
-    const previousChapterNumber =
-      previousBookId === bookId
-        ? chapterNumber - 1
-        : previousBookId
-          ? OSIS_BOOK_CHAPTER_COUNT.get(previousBookId)
-          : undefined;
-
-    return {
-      nextBookId,
-      nextChapterNumber,
-      previousBookId,
-      previousChapterNumber,
-    };
-  }
-
   async getLanguages() {
     return this.db.translation.findMany({
       distinct: ['language'],
@@ -223,7 +193,7 @@ export class BibleService {
     if (!result) return null;
 
     // We need to check if the next book exists because some translations are incomplete
-    // TODO: Link to the next book and previous book if it exists
+    // TODO: Link to the next book and previous book if it exists in the database
     let nextChapterNumber: number | null = result.number + 1;
     let nextBookId: string | null = result.bookId;
     if (nextChapterNumber > result.book.numberOfChapters) {

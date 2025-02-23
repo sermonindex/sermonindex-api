@@ -10,6 +10,25 @@ export enum CommentaryAuthors {
   ['tyndale'] = 'Tyndale',
 }
 
+export type CommentaryType = Prisma.CommentaryGetPayload<{
+  include: {
+    books: true;
+  };
+}>;
+
+export type CommentaryChapter = Prisma.CommentaryChapterGetPayload<{
+  include: {
+    commentary: true;
+    book: true;
+  };
+}> & {
+  // TODO: add these as columns in the database
+  nextChapter?: number | null;
+  nextBook?: string | null;
+  previousChapter?: number | null;
+  previousBook?: string | null;
+};
+
 export type CommentaryVerse = Prisma.CommentaryChapterVerseGetPayload<{
   include: {
     commentary: true;

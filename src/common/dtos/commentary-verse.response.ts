@@ -4,14 +4,12 @@ import {
 } from 'src/commentary/commentary.types';
 
 export class CommentaryVerseResponseData {
+  id: string;
+  name: string;
+  author?: string;
   book: string;
   chapter: number;
   verse: number;
-
-  commentaryId: string;
-  commentaryName: string;
-  commentaryAuthor?: string;
-
   text: string;
   contentJson: string;
 }
@@ -27,9 +25,9 @@ export class CommentaryVerseResponse extends CommentaryVerseResponseData {
       book: data.bookId,
       chapter: data.chapterNumber,
       verse: data.number,
-      commentaryId: data.commentary.id,
-      commentaryName: data.commentary.name,
-      commentaryAuthor:
+      id: data.commentary.id,
+      name: data.commentary.name,
+      author:
         CommentaryAuthors[data.commentary.id as keyof typeof CommentaryAuthors],
       text: data.text,
       contentJson: data.contentJson,
