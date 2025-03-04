@@ -9,6 +9,7 @@ import {
 import { BibleTranslationRequest } from 'src/common/dtos/bible-translation.request';
 import { BibleTranslationResponse } from 'src/common/dtos/bible-translation.response';
 import { BibleVerseRequest } from 'src/common/dtos/bible-verse.request';
+import { BibleVerseResponse } from 'src/common/dtos/bible-verse.response';
 import { ListBibleLanguageResponse } from 'src/common/dtos/list-bible-language.response';
 import { ListBibleTranslationResponse } from 'src/common/dtos/list-bible-translation.response';
 import { BibleService } from './bible.service';
@@ -60,6 +61,31 @@ export class BibleController {
     }
 
     return BibleTranslationResponse.fromDB(result);
+  }
+
+  @Get('/:language/:translation/search')
+  async searchVerses(
+    @Param('language') language: string,
+    @Param('translation') translation: string,
+    @Query('text') text: string,
+  ) {
+    const result = await this.bibleService.searchVerses({
+      where: {
+        translation: {
+          language,
+          shortName: translation,
+        },
+        // TODO: Prisma supports full-text search
+        // https://www.prisma.io/docs/orm/prisma-client/queries/full-text-search#enabling-full-text-search-for-postgresql
+        // TODO: Make text column case-insensitive
+        text: { contains: text, mode: 'insensitive' },
+      },
+      take: 50,
+    });
+
+    return {
+      values: result.map((verse) => BibleVerseResponse.fromDB(verse)),
+    };
   }
 
   @Get('/:language/parallel/:book/:chapter/:verse')

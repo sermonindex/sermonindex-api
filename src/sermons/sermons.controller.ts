@@ -58,6 +58,7 @@ export class SermonsController {
                 },
               }
             : undefined,
+        // TODO: fix mediaType filter. Include null SermonUrls in table
         urls: mediaType ? { some: { type: { in: mediaType } } } : undefined,
       },
       take: 5000,

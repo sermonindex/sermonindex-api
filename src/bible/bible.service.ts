@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client';
 import { BibleVerseRequest } from 'src/common/dtos/bible-verse.request';
 import { BibleVerseResponse } from 'src/common/dtos/bible-verse.response';
 import { DatabaseService } from 'src/database/database.service';
-import { OSIS_BOOK_CHAPTER_COUNT, OSIS_BOOK_ORDER } from './bible.types';
 
 @Injectable()
 export class BibleService {
@@ -94,6 +93,21 @@ export class BibleService {
             order: 'asc',
           },
         },
+      },
+    });
+  }
+
+  async searchVerses(params: {
+    take?: number;
+    where: Prisma.ChapterVerseWhereInput;
+  }) {
+    const { where, take } = params;
+
+    return this.db.chapterVerse.findMany({
+      where,
+      take,
+      include: {
+        translation: true,
       },
     });
   }
