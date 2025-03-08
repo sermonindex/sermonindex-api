@@ -80,12 +80,14 @@ export class SermonResponse extends SermonResponseData {
             url.type === MediaType.VIDEO && url.source === MediaSource.BUNNY,
         )?.url ?? null,
 
-      srtUrl: data.urls
-        ? `https://sermonindex3.b-cdn.net/srt/${data.originalId}.srt`
-        : null,
-      vttUrl: data.urls
-        ? `https://sermonindex3.b-cdn.net/vtt/${data.originalId}.vtt`
-        : null,
+      srtUrl:
+        data.urls.length > 0
+          ? `https://sermonindex3.b-cdn.net/srt/${data.originalId}.srt`
+          : null,
+      vttUrl:
+        data.urls.length > 0
+          ? `https://sermonindex3.b-cdn.net/vtt/${data.originalId}.vtt`
+          : null,
 
       bibleReferences: data.bibleReferences.map((ref) => ({
         text: ref.text,
