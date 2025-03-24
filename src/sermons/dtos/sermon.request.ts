@@ -2,8 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { MediaType } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import { IsArray, IsEnum, IsOptional, IsPositive } from 'class-validator';
+import { PaginationDTO } from 'src/common/dtos/pagination.dto';
 
-export class SermonRequest {
+export class SermonRequest extends PaginationDTO {
   @IsOptional()
   @IsPositive()
   @Transform(({ value }) => parseInt(value))

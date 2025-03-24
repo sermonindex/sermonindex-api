@@ -2,6 +2,7 @@ import { TopicInfoType } from 'src/topics/topic.types';
 
 export class TopicInfoResponseData {
   name: string;
+  slug: string | null;
   sermonCount: number;
 }
 
@@ -14,6 +15,7 @@ export class TopicInfoResponse extends TopicInfoResponseData {
   static fromDB(data: TopicInfoType): TopicInfoResponse {
     return new TopicInfoResponse({
       name: data.name,
+      slug: data.slug,
       sermonCount: data._count.sermons,
     });
   }

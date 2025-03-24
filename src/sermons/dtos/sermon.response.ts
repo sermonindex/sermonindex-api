@@ -1,4 +1,4 @@
-import { MediaSource, MediaType } from '@prisma/client';
+import { MediaFormat, MediaSource, MediaType } from '@prisma/client';
 import { SermonFullType } from 'src/sermons/sermon.types';
 
 interface BiblePassage {
@@ -21,15 +21,16 @@ export class SermonResponseData {
 
   title: string;
   description: string | null;
+  mediaType: MediaType;
 
-  audioUrl: string | null;
-  videoUrl: string | null;
-  videoDownloadUrl: string | null;
+  streamUrl: string | null;
+  downloadUrl: string | null;
+  thumbnailUrl: string | null;
   srtUrl: string | null;
   vttUrl: string | null;
 
   bibleReferences: BiblePassage[];
-  topics: string[];
+  topics: { name: string; slug: string | null }[];
   transcript: string | null;
 
   hits: number;
@@ -59,34 +60,43 @@ export class SermonResponse extends SermonResponseData {
 
       title: data.title,
       description: data.description,
+      mediaType: data.mediaType,
 
       // TODO: Make this toggle based on a config value
-      // TODO: Rename to streamUrl and downloadUrl
-      audioUrl:
+      streamUrl:
         data.urls.find(
           (url) =>
-            url.type === MediaType.AUDIO && url.source === MediaSource.ARCHIVE,
+            url.type ===
+              (data.mediaType === MediaType.AUDIO
+                ? MediaType.AUDIO
+                : MediaType.VIDEO) &&
+            url.source ===
+              (data.mediaType === MediaType.AUDIO
+                ? MediaSource.ARCHIVE
+                : MediaSource.YOUTUBE),
         )?.url ?? null,
-      videoUrl:
+      downloadUrl:
         data.urls.find(
           (url) =>
-            url.type === MediaType.VIDEO && url.source === MediaSource.YOUTUBE,
-        )?.url ?? null,
-
-      // TODO: Save these urls in the database
-      videoDownloadUrl:
-        data.urls.find(
-          (url) =>
-            url.type === MediaType.VIDEO && url.source === MediaSource.BUNNY,
+            url.type ===
+              (data.mediaType === MediaType.AUDIO
+                ? MediaType.AUDIO
+                : MediaType.VIDEO) &&
+            url.source ===
+              (data.mediaType === MediaType.AUDIO
+                ? MediaSource.ARCHIVE
+                : MediaSource.BUNNY),
         )?.url ?? null,
 
       srtUrl:
-        data.urls.length > 0
-          ? `https://sermonindex3.b-cdn.net/srt/${data.originalId}.srt`
-          : null,
+        data.urls.find((url) => url.format === MediaFormat.SRT)?.url ?? null,
       vttUrl:
-        data.urls.length > 0
-          ? `https://sermonindex3.b-cdn.net/vtt/${data.originalId}.vtt`
+        data.urls.find((url) => url.format === MediaFormat.VTT)?.url ?? null,
+
+      // TODO: Store thumbnail URLs in the database
+      thumbnailUrl:
+        data.mediaType === MediaType.VIDEO
+          ? `https://img.youtube.com/vi/${data.originalId}/0.jpg`
           : null,
 
       bibleReferences: data.bibleReferences.map((ref) => ({
@@ -97,7 +107,11 @@ export class SermonResponse extends SermonResponseData {
         endChapter: ref.endChapter,
         endVerse: ref.endVerse,
       })),
-      topics: data.topics ? data.topics.map((topic) => topic.name) : [],
+      topics: data.topics
+        ? data.topics.map((topic) => {
+            return { name: topic.name, slug: topic.slug };
+          })
+        : [],
       transcript: data.transcript?.text ?? null,
 
       hits: data.hits,

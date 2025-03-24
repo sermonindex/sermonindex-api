@@ -1,0 +1,32 @@
+model Hymn {
+  id Int @default(autoincrement()) @id
+  originalId String?
+
+  contributor Contributor @relation(fields: [contributorId], references: [id])
+  contributorId Int
+
+  title String @db.Citext
+  lyrics String? @db.Citext
+
+  mediaType MediaType
+  urls HymnMedia[]
+  length Int?
+
+  hits Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HymnMedia {
+  id Int @default(autoincrement()) @id
+
+  type MediaType
+  source MediaSource
+  format MediaFormat
+
+  hymn Hymn @relation(fields: [hymnId], references: [id])
+  hymnId Int
+
+  url String @db.Citext
+}

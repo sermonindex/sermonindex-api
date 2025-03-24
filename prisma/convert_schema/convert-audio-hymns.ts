@@ -1,14 +1,16 @@
 import {
+  HymnMedia,
+  MediaFormat,
   MediaSource,
   MediaType,
   PrismaClient,
-  SermonUrl,
 } from '@prisma/client';
 import * as fs from 'fs';
 import {
   extractTextBetween,
   findContributorId,
   getArchiveAudioUrl,
+  upsertHymn,
 } from './common';
 import {
   audioContributorsThatAreHyms,
@@ -21,6 +23,7 @@ export const convertHymns = async (prisma: PrismaClient) => {
 
   let missingLyricsCount = 0;
   let hymnsCreated = 0;
+  let duplicateHymnCount = 0;
 
   const audioContributors = JSON.parse(
     fs.readFileSync('prisma/data/xoops_mydownloads_cat.json', 'utf8'),
@@ -51,15 +54,18 @@ export const convertHymns = async (prisma: PrismaClient) => {
     description = description?.replace('<p>', '') ?? null;
     description =
       description?.replace(
-        /Listen to freely downloadable audio sermons by the speaker [\w\s.,]+ in mp3 format\./,
+        /Listen to freely downloadable audio sermons by the speaker [\w\s.,'"]+ in mp3 format\./,
         '',
       ) ?? null;
 
     const fullNameSlug = audioContributor.title
       .toLowerCase()
+      .replace(/\./g, '')
+      .replace(/\'/g, '')
+      .replace(/ & /g, '')
+      .replace(/ - /g, '')
       .replace(/  /g, ' ')
-      .replace(/ /g, '-')
-      .replace(/\./g, '');
+      .replace(/ /g, '-');
     const fullName = audioContributor.title.replace(/  /g, ' ');
 
     // Check if this contributor already exists in the new schema
@@ -110,7 +116,7 @@ export const convertHymns = async (prisma: PrismaClient) => {
         continue;
       }
 
-      const urls: Omit<SermonUrl, 'id' | 'sermonId'>[] = [];
+      const urls: Omit<HymnMedia, 'id' | 'hymnId'>[] = [];
       const archiveUrl = await getArchiveAudioUrl(
         audioSermon.lid,
         audioSermon.url,
@@ -118,8 +124,9 @@ export const convertHymns = async (prisma: PrismaClient) => {
       if (archiveUrl) {
         urls.push({
           url: archiveUrl,
-          type: MediaType.AUDIO,
           source: MediaSource.ARCHIVE,
+          type: MediaType.AUDIO,
+          format: MediaFormat.MP3,
         });
       }
 
@@ -128,8 +135,9 @@ export const convertHymns = async (prisma: PrismaClient) => {
       if (path) {
         urls.push({
           url: `https://sermonindex1.b-cdn.net${path}.mp3`,
-          type: MediaType.AUDIO,
           source: MediaSource.BUNNY,
+          type: MediaType.AUDIO,
+          format: MediaFormat.MP3,
         });
       }
 
@@ -141,16 +149,9 @@ export const convertHymns = async (prisma: PrismaClient) => {
           'utf8',
         );
       } catch (e) {
-        console.log(`No transcript found for sermon ${originalId}`);
+        console.log(`No transcript found for hymn ${originalId}`);
         missingLyricsCount++;
       }
-
-      //   let topics = audioSermon.topic
-      //     .split(',')
-      //     .map((topic: string) => topic.trim());
-      //   if (topics?.length > 0) {
-      //     topics = await upsertTopics(prisma, topics as string[]);
-      //   }
 
       const contributor = await prisma.contributor.findUnique({
         where: {
@@ -170,29 +171,30 @@ export const convertHymns = async (prisma: PrismaClient) => {
         }
       }
 
-      //   const sermonId = await upsertSermon(
-      //     prisma,
-      //     contributorId,
-      //     topics,
-      //     bibleReferences,
-      //     title,
-      //     audioSermon.hits,
-      //     urls,
-      //     audioSermon.lid === featuredSermonId ? true : false,
-      //     transcript,
-      //     originalId,
-      //     description,
-      //   );
+      const hymnId = await upsertHymn(
+        prisma,
+        contributorId,
+        title,
+        audioSermon.hits,
+        urls,
+        MediaType.AUDIO,
+        transcript,
+        originalId,
+      );
       hymnsCreated++;
+
+      if (!hymnId) {
+        duplicateHymnCount++;
+      }
     } catch (e) {
-      console.log(`Failed to convert sermon: ${audioSermon.title}`);
+      console.log(`Failed to convert hymn: ${audioSermon.title}`);
       console.log(e);
 
       throw e;
     }
   }
 
-  console.log('Finished converting audio sermons. Summary:');
+  console.log('Finished converting audio hymn. Summary:');
   console.log(`- Hymns created: ${hymnsCreated}`);
-  console.log(`- No lyrics found for ${missingLyricsCount} sermons`);
+  console.log(`- No lyrics found for ${missingLyricsCount} hymns`);
 };

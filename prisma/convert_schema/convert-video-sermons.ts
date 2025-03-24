@@ -1,23 +1,19 @@
 import {
+  MediaFormat,
   MediaSource,
   MediaType,
-  PrismaClient,
-  SermonBibleReference,
+  PrismaClient, SermonBibleReference
 } from '@prisma/client';
 import AwokenRef from 'awoken-bible-reference';
 import { parse } from 'csv-parse/sync';
 import * as fs from 'fs';
 import {
-  extractTextBetween,
-  findContributorId,
-  findVideoTranscript,
-  parseBibleReferences,
-  upsertSermon,
+  extractTextBetween, findContributorId, findVideoTranscript, parseBibleReferences, upsertSermon
 } from './common';
 import {
   featuredContributors,
   featuredSermonId,
-  videoContributorNamesToIgnore,
+  videoContributorNamesToIgnore
 } from './constants';
 
 export const convertVideoSermons = async (prisma: PrismaClient) => {
@@ -84,7 +80,7 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
     description = description?.replace('<p>', '') ?? null;
     description =
       description?.replace(
-        /Watch video sermons by the speaker [\w\s.,]+ in youtube format\./,
+        /Watch video sermons by the speaker [\w\s.,'"]+ in youtube format\./,
         '',
       ) ?? null;
 
@@ -111,6 +107,21 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
           ? [...existingIds, videoContributor.cid]
           : [videoContributor.cid],
       );
+
+        if (!existingContributor.imageUrl && imgSrc) {
+          await prisma.contributor.update({
+            where: {
+              id: existingContributor.id,
+            },
+            data: {
+              fullNameSlug,
+              fullName: fullName,
+              description: description,
+              imageUrl: imgSrc,
+              featured: featuredContributors.includes(fullName),
+            },
+          });
+        }
 
       continue;
     }
@@ -178,11 +189,29 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
     }
 
     const urls = [
-      { url: videoSrc, type: MediaType.VIDEO, source: MediaSource.YOUTUBE },
+      {
+        url: videoSrc,
+        type: MediaType.VIDEO,
+        source: MediaSource.YOUTUBE,
+        format: MediaFormat.NONE,
+      },
       {
         url: `https://sermonindex2.b-cdn.net/${originalId}.mp4`,
         type: MediaType.VIDEO,
         source: MediaSource.BUNNY,
+        format: MediaFormat.MP4,
+      },
+      {
+        url: `https://sermonindex3.b-cdn.net/srt-video/${originalId}.srt`,
+        type: MediaType.VIDEO,
+        source: MediaSource.BUNNY,
+        format: MediaFormat.SRT,
+      },
+      {
+        url: `https://sermonindex3.b-cdn.net/vtt-video/${originalId}.vtt`,
+        type: MediaType.VIDEO,
+        source: MediaSource.BUNNY,
+        format: MediaFormat.VTT,
       },
     ];
 
@@ -214,7 +243,7 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
       const references = parseBibleReferences(metadata.references);
       if (!references) {
         console.log(
-          `Could not parse bible references for audio sermon: ${videoSermon.title}, ${metadata.references}, ${videoSermon.lid}`,
+          `Could not parse bible references for video sermon: ${videoSermon.title}, ${metadata.references}, ${videoSermon.lid}`,
         );
         failedToParseScriptureCount++;
       } else {
@@ -275,6 +304,7 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
       videoSermon.hits,
       urls,
       videoSermon.lid === featuredSermonId ? true : false,
+      MediaType.VIDEO,
       transcript,
       originalId,
       description,

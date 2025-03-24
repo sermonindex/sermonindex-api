@@ -29,10 +29,10 @@ export class TopicsService {
     });
   }
 
-  getTopic(topicName: string) {
+  getTopic(slug: string) {
     return this.db.topic.findFirst({
       where: {
-        name: topicName,
+        slug,
       },
       include: {
         sermons: {

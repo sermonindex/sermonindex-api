@@ -6,9 +6,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
-import { ListSermonsResponse } from 'src/common/dtos/list-sermons.response';
-import { SermonRequest } from 'src/common/dtos/sermon.request';
-import { SermonResponse } from 'src/common/dtos/sermon.response';
+import { ListSermonResponse } from './dtos/list-sermon.response';
+import { SermonInfoResponse } from './dtos/sermon-info.response';
+import { SermonRequest } from './dtos/sermon.request';
+import { SermonResponse } from './dtos/sermon.response';
 import { SermonsService } from './sermons.service';
 
 @Controller('sermons')
@@ -22,7 +23,7 @@ export class SermonsController {
   @Get('/')
   async listSermons(
     @Query() query: SermonRequest,
-  ): Promise<ListSermonsResponse> {
+  ): Promise<ListSermonResponse> {
     const {
       id,
       title,
@@ -34,12 +35,16 @@ export class SermonsController {
       chapter,
       verse,
       mediaType,
+      limit,
+      offset,
     } = query;
 
     const result = await this.sermonService.listSermons({
       where: {
         id,
-        title,
+        // TODO: Prisma supports full-text search
+        // https://www.prisma.io/docs/orm/prisma-client/queries/full-text-search#enabling-full-text-search-for-postgresql
+        title: { contains: title, mode: 'insensitive' },
         contributor: {
           id: contributorId,
           fullName: fullName,
@@ -58,18 +63,17 @@ export class SermonsController {
                 },
               }
             : undefined,
-        // TODO: fix mediaType filter. Include null SermonUrls in table
-        urls: mediaType ? { some: { type: { in: mediaType } } } : undefined,
+        mediaType: { in: mediaType },
       },
-      take: 5000,
+      // TODO: make orderBy a query parameter. That would remove endpoints for popular and recent sermons
       orderBy: {
         hits: 'desc',
       },
+      limit,
+      offset,
     });
 
-    return {
-      values: result.map((sermon) => SermonResponse.fromDB(sermon)),
-    };
+    return result;
   }
 
   @Get('/id/:id')
@@ -84,46 +88,43 @@ export class SermonsController {
   }
 
   @Get('/recent')
-  async listRecentSermons(): Promise<ListSermonsResponse> {
+  async listRecentSermons(): Promise<ListSermonResponse> {
     const result = await this.sermonService.listSermons({
       orderBy: { createdAt: 'desc' },
-      take: 15,
+      limit: 15,
+      offset: 0,
     });
 
-    return {
-      values: result.map((sermon) => SermonResponse.fromDB(sermon)),
-    };
+    return result;
   }
 
   @Get('/popular')
-  async listPopularSermons(): Promise<ListSermonsResponse> {
+  async listPopularSermons(): Promise<ListSermonResponse> {
     const result = await this.sermonService.listSermons({
       orderBy: { hits: 'desc' },
-      take: 100,
     });
 
-    return {
-      values: result.map((sermon) => SermonResponse.fromDB(sermon)),
-    };
+    return result;
   }
 
   @Get('/featured')
-  async getFeaturedSermon(): Promise<SermonResponse> {
+  async getFeaturedSermon(): Promise<SermonInfoResponse> {
     const result = await this.sermonService.listSermons({
       where: { featured: true },
     });
 
-    if (!result.length) {
+    if (!result.values.length) {
       throw NotFoundException;
     }
 
-    return SermonResponse.fromDB(result[0]);
+    return result.values[0];
   }
 
+  // TODO: Get rid of this endpoint. It's not useful
   @Get('/search')
   async searchSermons(
     @Query('title') title: string,
-  ): Promise<ListSermonsResponse> {
+  ): Promise<ListSermonResponse> {
     const result = await this.sermonService.listSermons({
       where: {
         // TODO: Prisma supports full-text search
@@ -131,11 +132,8 @@ export class SermonsController {
         title: { contains: title, mode: 'insensitive' },
       },
       orderBy: { hits: 'desc' },
-      take: 50,
     });
 
-    return {
-      values: result.map((sermon) => SermonResponse.fromDB(sermon)),
-    };
+    return result;
   }
 }

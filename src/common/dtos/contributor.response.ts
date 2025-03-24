@@ -18,6 +18,7 @@ export class ContributorResponseData {
   createdAt: Date;
   updatedAt: Date;
   sermonCount: number;
+  hymnCount: number;
   images: ContributorImage[];
 }
 
@@ -39,6 +40,7 @@ export class ContributorResponse extends ContributorResponseData {
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
       sermonCount: data._count.sermons,
+      hymnCount: data._count.hymns,
       images: data.images.map((image) => ({
         url: image.url,
         title: image.title,

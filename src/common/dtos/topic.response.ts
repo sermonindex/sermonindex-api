@@ -1,9 +1,11 @@
 import { SermonFullType } from 'src/sermons/sermon.types';
 import { TopicFullType } from 'src/topics/topic.types';
-import { SermonResponse } from './sermon.response';
+import { SermonResponse } from '../../sermons/dtos/sermon.response';
 
 export class TopicResponseData {
   name: string;
+  slug: string | null;
+  summary: string;
 
   sermons: SermonResponse[];
 
@@ -20,6 +22,8 @@ export class TopicResponse extends TopicResponseData {
   static fromDB(data: TopicFullType): TopicResponse {
     return new TopicResponse({
       name: data.name,
+      slug: data.slug,
+      summary: data.summary,
 
       sermons: data.sermons.map((sermon) =>
         SermonResponse.fromDB(sermon as SermonFullType),

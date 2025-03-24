@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 // import { convertHymns } from './convert-hymns';
-import { convertImages } from './convert-images';
 // import { convertAudioSermons } from './convert-audio-sermons';
 // import { convertTextSermons } from './convert-text-sermons';
 // import { convertVideoSermons } from './convert-video-sermons';
@@ -27,9 +26,10 @@ const convertSchema = async () => {
   //     },
   //   });
   // }
-  await convertImages(prisma);
+  // await convertImages(prisma);
   // await convertHymns(prisma);
   // await insertVerseSummaries(prisma);
+  // await insertTopicSummaries(prisma);
 };
 
 convertSchema().then(() => {

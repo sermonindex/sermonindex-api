@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { Contributor, Prisma } from '@prisma/client';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { Contributor, ContributorType, Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 import { ContributorFullType } from './contributor.types';
+import { CreateContributorRequest } from './dtos/create-contributor.request';
 
 @Injectable()
 export class ContributorsService {
@@ -14,7 +15,7 @@ export class ContributorsService {
       where: contributorWhereUniqueInput,
       include: {
         _count: {
-          select: { sermons: true },
+          select: { sermons: true, hymns: true },
         },
         images: true,
       },
@@ -37,7 +38,7 @@ export class ContributorsService {
       orderBy,
       include: {
         _count: {
-          select: { sermons: true },
+          select: { sermons: true, hymns: true },
         },
         images: true,
       },
@@ -45,10 +46,26 @@ export class ContributorsService {
   }
 
   async createContributor(
-    data: Prisma.ContributorCreateInput,
+    data: CreateContributorRequest,
   ): Promise<Contributor> {
+    const fullNameSlug = data.fullName
+      .replace(/[^\w\s]|_/g, '')
+      .replace(/\s+/g, '-')
+      .toLocaleLowerCase();
+
+    const existingRecord = await this.db.contributor.findFirst({
+      where: { fullNameSlug },
+    });
+    if (existingRecord) {
+      throw new ConflictException('Contributor already exists');
+    }
+
     return this.db.contributor.create({
-      data,
+      data: {
+        ...data,
+        fullNameSlug,
+        type: ContributorType.INDIVIDUAL,
+      },
     });
   }
 

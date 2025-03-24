@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Sermon } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
+import { SermonInfoResponse } from './dtos/sermon-info.response';
 import { SermonFullType } from './sermon.types';
 
 @Injectable()
@@ -23,28 +24,36 @@ export class SermonsService {
   }
 
   async listSermons(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.SermonWhereUniqueInput;
     where?: Prisma.SermonWhereInput;
     orderBy?: Prisma.SermonOrderByWithRelationInput;
-  }): Promise<SermonFullType[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+    limit?: number;
+    offset?: number;
+  }): Promise<any> {
+    const { where, orderBy, limit = 100, offset = 0 } = params;
 
-    return this.db.sermon.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-      include: {
-        contributor: true,
-        urls: true,
-        bibleReferences: true,
-        topics: true,
-        transcript: true,
-      },
-    });
+    const [result, totalCount] = await this.db.$transaction([
+      this.db.sermon.findMany({
+        skip: offset,
+        take: limit,
+        where,
+        orderBy,
+        include: {
+          contributor: true,
+          urls: true,
+          bibleReferences: true,
+          topics: true,
+        },
+      }),
+      this.db.sermon.count({ where }),
+    ]);
+
+    return {
+      values: result.map((sermon) => SermonInfoResponse.fromDB(sermon)),
+      total: totalCount,
+      limit,
+      offset,
+      nextPage: totalCount > offset + limit ? offset + limit : null,
+    };
   }
 
   async createSermon(data: Prisma.SermonCreateInput): Promise<Sermon> {

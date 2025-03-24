@@ -161,12 +161,22 @@ export class BibleService {
       });
     }
 
+    const summary = await this.db.chapterVerseSummary.findFirst({
+      where: {
+        language,
+        bookId: book,
+        chapterNumber: chapter,
+        verseNumber: verse,
+      },
+    });
+
     return {
       book,
       chapter: chapter,
       verse: verse,
       verses: verses.map((verse) => BibleVerseResponse.fromDB(verse)),
       contextJson,
+      summary: summary ? summary.text : null,
     };
   }
 

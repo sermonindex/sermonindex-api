@@ -63,14 +63,14 @@ export const convertImages = async (prisma: PrismaClient) => {
     //   description: imagePhoto.description,
     // });
 
-    // await prisma.contributorImage.create({
-    //   data: {
-    //     contributorId: contributorId,
-    //     url: imageUrl,
-    //     title: imagePhoto.title,
-    //     description: imagePhoto.description,
-    //   },
-    // });
+    await prisma.contributorImage.create({
+      data: {
+        contributorId: contributorId,
+        url: imageUrl,
+        title: imagePhoto.title,
+        description: imagePhoto.description,
+      },
+    });
     imagesCreated++;
   }
 

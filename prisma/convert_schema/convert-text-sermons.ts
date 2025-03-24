@@ -1,4 +1,4 @@
-import { PrismaClient, SermonBibleReference } from '@prisma/client';
+import { MediaType, PrismaClient, SermonBibleReference } from '@prisma/client';
 import AwokenRef from 'awoken-bible-reference';
 import { parse } from 'csv-parse/sync';
 import * as fs from 'fs';
@@ -112,7 +112,7 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
     description = description?.replace('<p>', '') ?? null;
     description =
       description?.replace(
-        /Read freely text sermons and articles by the speaker [\w\s.,]+ in text and pdf format\./,
+        /Read freely text sermons and articles by the speaker [\w\s.,'"]+ in text and pdf format\./,
         '',
       ) ?? null;
 
@@ -295,6 +295,7 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
         '0',
         [],
         false,
+        MediaType.TEXT,
         transcript,
         textSermon.id.toString(),
         description ?? null,

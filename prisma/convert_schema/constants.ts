@@ -341,7 +341,7 @@ export const audioContributorsThatAreHyms = [
   'Mennonite Singing',
   'Michelle Utley Thompson',
   'Mike Helms',
-  'miscellaneous~',
+  'Miscellaneous',
   'Obey God',
   'One Faith One Body',
   'Pierre Chiasson',
@@ -416,7 +416,10 @@ export const audioContributorNamesToIgnore = [
   ...audioContributorsThatAreHyms,
 ];
 
-export const videoContributorsThatAreHymns = ['Anabaptist Hymns'];
+export const videoContributorsThatAreHymns = [
+  'Anabaptist Hymns',
+  'Mennonite Hymns',
+];
 
 export const videoContributorNamesToIgnore = [
   ...videoContributorsThatAreHymns,

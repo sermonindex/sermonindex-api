@@ -7,7 +7,7 @@ model Contributor {
   id Int     @default(autoincrement()) @id
 
   fullName String @unique @db.Citext
-  fullNameSlug String @db.Citext
+  fullNameSlug String @unique @db.Citext
 
   description String? // todo: bio
   imageUrl String? // todo: profileImage
@@ -17,7 +17,7 @@ model Contributor {
 
   images ContributorImage[]
   sermons Sermon[]
-  // hymns Hymn[]
+  hymns Hymn[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

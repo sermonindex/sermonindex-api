@@ -11,7 +11,9 @@ import {
 import { Contributor } from '@prisma/client';
 import { ContributorRequest } from 'src/common/dtos/contributor.request';
 import { ContributorResponse } from 'src/common/dtos/contributor.response';
+import { ContributorContent } from './contributor.types';
 import { ContributorsService } from './contributors.service';
+import { CreateContributorRequest } from './dtos/create-contributor.request';
 
 @Controller('contributors')
 export class ContributorsController {
@@ -19,10 +21,22 @@ export class ContributorsController {
 
   @Get('/')
   async listContributors(@Query() query: ContributorRequest) {
-    const { fullName, fullNameSlug, id } = query;
+    const { fullName, fullNameSlug, id, contentType } = query;
 
     const result = await this.contributorsService.listContributors({
-      where: { fullName: fullName, fullNameSlug: fullNameSlug, id: id },
+      where: {
+        fullName: fullName,
+        fullNameSlug: fullNameSlug,
+        id: id,
+        hymns:
+          contentType && contentType.includes(ContributorContent.Hymns)
+            ? { some: {} }
+            : undefined,
+        sermons:
+          contentType && contentType.includes(ContributorContent.Sermons)
+            ? { some: {} }
+            : undefined,
+      },
       orderBy: { fullName: 'asc' },
     });
 
@@ -59,7 +73,7 @@ export class ContributorsController {
   }
 
   @Post('/')
-  async createContributor(@Body() data: Contributor) {
+  async createContributor(@Body() data: CreateContributorRequest) {
     return this.contributorsService.createContributor(data);
   }
 

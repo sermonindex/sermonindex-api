@@ -30,9 +30,9 @@ export class TopicsController {
     };
   }
 
-  @Get('/topicName/:name')
-  async getTopic(@Param('name') topicName: string) {
-    const result = await this.topicsService.getTopic(topicName);
+  @Get('/slug/:slug')
+  async getTopic(@Param('slug') slug: string) {
+    const result = await this.topicsService.getTopic(slug);
 
     if (!result) {
       throw NotFoundException;

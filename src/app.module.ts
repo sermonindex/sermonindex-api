@@ -7,6 +7,7 @@ import { TopicsModule } from './topics/topics.module';
 import { CommentaryController } from './commentary/commentary.controller';
 import { CommentaryService } from './commentary/commentary.service';
 import { CommentaryModule } from './commentary/commentary.module';
+import { HymnsModule } from './hymns/hymns.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CommentaryModule } from './commentary/commentary.module';
     TopicsModule,
     BibleModule,
     CommentaryModule,
+    HymnsModule,
   ],
   controllers: [CommentaryController],
   providers: [CommentaryService],

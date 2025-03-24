@@ -1,15 +1,3 @@
-enum MediaType {
-  AUDIO
-  VIDEO
-  TEXT
-}
-
-enum MediaSource {
-  ARCHIVE
-  YOUTUBE
-  BUNNY
-}
-
 model Sermon {
   @@unique([title, contributorId])
 
@@ -22,7 +10,9 @@ model Sermon {
   title String @db.Citext
   description String?
 
-  urls SermonUrl[]
+  mediaType MediaType
+  urls SermonMedia[]
+  length Int?
 
   bibleReferences SermonBibleReference[]
   topics Topic[]
@@ -38,11 +28,12 @@ model Sermon {
   updatedAt DateTime @updatedAt
 }
 
-model SermonUrl {
+model SermonMedia {
   id Int @default(autoincrement()) @id
 
-  type MediaType
   source MediaSource
+  format MediaFormat
+  type MediaType
 
   sermon Sermon @relation(fields: [sermonId], references: [id])
   sermonId Int

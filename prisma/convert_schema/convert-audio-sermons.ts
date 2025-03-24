@@ -1,9 +1,10 @@
 import {
+  MediaFormat,
   MediaSource,
   MediaType,
   PrismaClient,
   SermonBibleReference,
-  SermonUrl,
+  SermonMedia,
 } from '@prisma/client';
 import AwokenRef from 'awoken-bible-reference';
 import { parse } from 'csv-parse/sync';
@@ -88,7 +89,7 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
     description = description?.replace('<p>', '') ?? null;
     description =
       description?.replace(
-        /Listen to freely downloadable audio sermons by the speaker [\w\s.,]+ in mp3 format\./,
+        /Listen to freely downloadable audio sermons by the speaker [\w\s.,'"]+ in mp3 format\./,
         '',
       ) ?? null;
 
@@ -116,6 +117,20 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
           : [audioContributor.cid],
       );
 
+      if (existingContributor.imageUrl !== imgSrc) {
+        await prisma.contributor.update({
+          where: {
+            id: existingContributor.id,
+          },
+          data: {
+            fullNameSlug,
+            fullName: fullName,
+            description: description,
+            imageUrl: imgSrc,
+            featured: featuredContributors.includes(fullName),
+          },
+        });
+      }
       continue;
     }
 
@@ -148,7 +163,7 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
         continue;
       }
 
-      const urls: Omit<SermonUrl, 'id' | 'sermonId'>[] = [];
+      const urls: Omit<SermonMedia, 'id' | 'sermonId'>[] = [];
       const archiveUrl = await getArchiveAudioUrl(
         audioSermon.lid,
         audioSermon.url,
@@ -156,8 +171,9 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
       if (archiveUrl) {
         urls.push({
           url: archiveUrl,
-          type: MediaType.AUDIO,
           source: MediaSource.ARCHIVE,
+          type: MediaType.AUDIO,
+          format: MediaFormat.MP3,
         });
       }
 
@@ -166,8 +182,23 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
       if (path) {
         urls.push({
           url: `https://sermonindex1.b-cdn.net${path}.mp3`,
-          type: MediaType.AUDIO,
           source: MediaSource.BUNNY,
+          type: MediaType.AUDIO,
+          format: MediaFormat.MP3,
+        });
+
+        urls.push({
+          url: `https://sermonindex3.b-cdn.net/srt${path}.srt`,
+          source: MediaSource.BUNNY,
+          type: MediaType.AUDIO,
+          format: MediaFormat.SRT,
+        });
+
+        urls.push({
+          url: `https://sermonindex3.b-cdn.net/vtt${path}.vtt`,
+          source: MediaSource.BUNNY,
+          type: MediaType.AUDIO,
+          format: MediaFormat.VTT,
         });
       }
 
@@ -271,6 +302,7 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
         audioSermon.hits,
         urls,
         audioSermon.lid === featuredSermonId ? true : false,
+        MediaType.AUDIO,
         transcript,
         originalId,
         description,

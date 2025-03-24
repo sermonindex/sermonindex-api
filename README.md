@@ -14,7 +14,7 @@ npx prisma generate
 
 ## Setting up the Database
 
-Unfortunately the database dump is too large to host on GitHub. You'll need to download it from [here](https://drive.google.com/file/d/16DLt8Qvst6wHuNWl5kAEmw5cs7Bs6qVx/view?usp=drive_link), extract it, and save it in the project's root directory. Currently we're using all the production data to get a better feel for what the POC will look like, but in the future the api will only seed a small amount of data into a container for test purposes and this step will no longer be required for api development.
+Unfortunately the database dump is too large to host on GitHub. You'll need to download it from [here](https://drive.google.com/file/d/1xGUHcElaS9ldEWaeSgbjxKi9dI1y9olK/view?usp=drive_link), extract it, and save it in the project's root directory. Currently we're using all the production data to get a better feel for what the POC will look like, but in the future the api will only seed a small amount of data into a container for test purposes and this step will no longer be required for api development.
 
 Once you've downloaded the database dump:
 
@@ -86,13 +86,9 @@ npm run test:cov
 - add language column to sermons in prep for multi-language support
 - pull out Martyrs of the Catacombs
 - remove duplicate/misspelt topics
-- if the contributor doesn't have a description or image, update them...
-- replace speaker images with cdn url: https://sermonindex3.b-cdn.net/pdf/andrewmurray.png
-- remove ~Miscellaneous Contributor
 - remove csv-parse, jsdom, @types/jsdom, titlecase dependencies once db scrubbing complete
-- contributor images endpoint
-- search sermons & contributors endpoint
-- pagination
+- unique visits/hits/downloads by IP
+- finish pagination
 - swagger docs
 - api client
 - contract tests
