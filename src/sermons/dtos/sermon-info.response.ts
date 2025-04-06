@@ -15,6 +15,7 @@ export class SermonInfoResponseData {
 
   streamUrl: string | null;
   downloadUrl: string | null;
+  thumbnailUrl: string | null;
 
   bibleReferences: BiblePassage[];
   topics: string[];
@@ -68,6 +69,12 @@ export class SermonInfoResponse extends SermonInfoResponseData {
                 ? MediaSource.ARCHIVE
                 : MediaSource.YOUTUBE),
         )?.url ?? null,
+
+      // TODO: Store thumbnail URLs in the database
+      thumbnailUrl:
+        data.mediaType === MediaType.VIDEO
+          ? `https://img.youtube.com/vi/${data.originalId}/0.jpg`
+          : null,
 
       bibleReferences: data.bibleReferences.map((ref) => ({
         text: ref.text,
