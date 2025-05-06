@@ -2,18 +2,24 @@ import {
   MediaFormat,
   MediaSource,
   MediaType,
-  PrismaClient, SermonBibleReference
+  PrismaClient,
+  SermonBibleReference,
 } from '@prisma/client';
 import AwokenRef from 'awoken-bible-reference';
 import { parse } from 'csv-parse/sync';
 import * as fs from 'fs';
 import {
-  extractTextBetween, findContributorId, findVideoTranscript, parseBibleReferences, upsertSermon
+  extractTextBetween,
+  findContributorId,
+  findVideoTranscript,
+  parseBibleReferences,
+  upsertSermon,
 } from './common';
 import {
   featuredContributors,
   featuredSermonId,
-  videoContributorNamesToIgnore
+  videoContributorNamesToIgnore,
+  videoSermonsToIgnore,
 } from './constants';
 
 export const convertVideoSermons = async (prisma: PrismaClient) => {
@@ -108,20 +114,20 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
           : [videoContributor.cid],
       );
 
-        if (!existingContributor.imageUrl && imgSrc) {
-          await prisma.contributor.update({
-            where: {
-              id: existingContributor.id,
-            },
-            data: {
-              fullNameSlug,
-              fullName: fullName,
-              description: description,
-              imageUrl: imgSrc,
-              featured: featuredContributors.includes(fullName),
-            },
-          });
-        }
+      if (!existingContributor.imageUrl && imgSrc) {
+        await prisma.contributor.update({
+          where: {
+            id: existingContributor.id,
+          },
+          data: {
+            fullNameSlug,
+            fullName: fullName,
+            description: description,
+            imageUrl: imgSrc,
+            featured: featuredContributors.includes(fullName),
+          },
+        });
+      }
 
       continue;
     }
@@ -184,6 +190,13 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
     if (!videoSrc) {
       console.log(
         `No video source found for video sermon id: ${videoSermon.lid}`,
+      );
+      continue;
+    }
+
+    if (videoSermonsToIgnore.includes(originalId)) {
+      console.log(
+        `Skipping video sermon: ${videoSermon.title}, ID: ${videoSermon.lid}`,
       );
       continue;
     }

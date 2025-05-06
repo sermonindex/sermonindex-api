@@ -12,6 +12,7 @@ export class SermonInfoResponseData {
   title: string;
   description: string | null;
   mediaType: MediaType;
+  duration: number | null;
 
   streamUrl: string | null;
   downloadUrl: string | null;
@@ -43,6 +44,7 @@ export class SermonInfoResponse extends SermonInfoResponseData {
       title: data.title,
       description: data.description,
       mediaType: data.mediaType,
+      duration: data.length,
 
       // TODO: Make this toggle based on a config value
       streamUrl:

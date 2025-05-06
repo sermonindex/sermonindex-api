@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { insertSermonLengths } from './insert-sermon-lengths';
 // import { convertHymns } from './convert-hymns';
 // import { convertAudioSermons } from './convert-audio-sermons';
 // import { convertTextSermons } from './convert-text-sermons';
@@ -20,6 +21,9 @@ const convertSchema = async () => {
   // });
   // // Delete all contributors with no sermons
   // for (const contributor of contributors) {
+  //   console.log(
+  //     `Deleting contributor: ${contributor.fullName} (${contributor.id})`,
+  //   );
   //   await prisma.contributor.delete({
   //     where: {
   //       id: contributor.id,
@@ -30,6 +34,9 @@ const convertSchema = async () => {
   // await convertHymns(prisma);
   // await insertVerseSummaries(prisma);
   // await insertTopicSummaries(prisma);
+  await insertSermonLengths(prisma);
+  // await updateContributors(prisma);
+  // await findMissingVideoTranscripts(prisma);
 };
 
 convertSchema().then(() => {

@@ -19,6 +19,7 @@ import {
 } from './common';
 import {
   audioContributorNamesToIgnore,
+  audioSermonsToIgnore,
   featuredContributors,
   featuredSermonId,
 } from './constants';
@@ -60,7 +61,7 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
   });
 
   for (const audioContributor of audioContributors) {
-    // Check if video contributor is in the list of video contributors to ignore
+    // Check if audio contributor is in the list of audio contributors to ignore
     if (audioContributorNamesToIgnore.includes(audioContributor.title)) {
       console.log(
         `Skipping audio contributor: Name: ${audioContributor.title}, ID ${audioContributor.cid}`,
@@ -203,6 +204,13 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
       }
 
       let originalId = audioSermon.url.split('/').pop().split('.')[0];
+      if (audioSermonsToIgnore.includes(originalId)) {
+        console.log(
+          `Skipping audio sermon: ${audioSermon.title}, ID: ${originalId}`,
+        );
+        continue;
+      }
+
       let transcript;
       try {
         transcript = fs.readFileSync(

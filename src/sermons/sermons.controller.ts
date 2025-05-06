@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Ip,
   NotFoundException,
   Param,
   Query,
@@ -77,7 +78,12 @@ export class SermonsController {
   }
 
   @Get('/id/:id')
-  async getSermonById(@Param('id') sermonId: number): Promise<SermonResponse> {
+  async getSermonById(
+    @Param('id') sermonId: number,
+    @Ip() ip: string,
+  ): Promise<SermonResponse> {
+    console.log(ip);
+
     const result = await this.sermonService.sermon({ id: sermonId });
 
     if (!result) {

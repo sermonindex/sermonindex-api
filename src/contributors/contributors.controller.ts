@@ -8,10 +8,10 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { Contributor } from '@prisma/client';
+import { Contributor, Prisma } from '@prisma/client';
 import { ContributorRequest } from 'src/common/dtos/contributor.request';
 import { ContributorResponse } from 'src/common/dtos/contributor.response';
-import { ContributorContent } from './contributor.types';
+import { ContributorContent, ContributorSortBy } from './contributor.types';
 import { ContributorsService } from './contributors.service';
 import { CreateContributorRequest } from './dtos/create-contributor.request';
 
@@ -21,11 +21,21 @@ export class ContributorsController {
 
   @Get('/')
   async listContributors(@Query() query: ContributorRequest) {
-    const { fullName, fullNameSlug, id, contentType } = query;
+    const { fullName, fullNameSlug, id, contentType, sortBy, sortOrder } =
+      query;
+
+    let orderBy: Prisma.ContributorOrderByWithRelationInput = {
+      [sortBy]: sortOrder,
+    };
+    if (sortBy === ContributorSortBy.Sermons) {
+      orderBy = {
+        sermons: { _count: sortOrder },
+      };
+    }
 
     const result = await this.contributorsService.listContributors({
       where: {
-        fullName: fullName,
+        fullName: { contains: fullName, mode: 'insensitive' },
         fullNameSlug: fullNameSlug,
         id: id,
         hymns:
@@ -37,7 +47,7 @@ export class ContributorsController {
             ? { some: {} }
             : undefined,
       },
-      orderBy: { fullName: 'asc' },
+      orderBy: orderBy,
     });
 
     return {

@@ -318,6 +318,3 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
     `- Failed to parse ${failedToParseScriptureCount} bible references`,
   );
 };
-
-//A Bottle in the Ocean
-//AW TOZER

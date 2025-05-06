@@ -10,7 +10,7 @@ model Contributor {
   fullNameSlug String @unique @db.Citext
 
   description String? // todo: bio
-  imageUrl String? // todo: profileImage
+  imageUrl String? // todo: profileImage & make required
   featured Boolean @default(false)
 
   type ContributorType @default(INDIVIDUAL)

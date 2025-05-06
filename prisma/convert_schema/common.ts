@@ -44,8 +44,9 @@ export const findContributorId = (
 export const findVideoTranscript = (videoId: string) => {
   // Loop through all the files in the video_transcripts directory
   const files = fs.readdirSync('prisma/data/video_transcripts');
+  const modifiedId = videoId.replace(/_/g, ' ');
   for (const file of files) {
-    if (file.includes(videoId)) {
+    if (file.includes(videoId) || file.includes(modifiedId)) {
       return fs.readFileSync(`prisma/data/video_transcripts/${file}`, 'utf8');
     }
   }
@@ -62,9 +63,16 @@ export const upsertTopics = async (
   for (const topic of topics) {
     if (!topic) continue;
 
+    // replace spaces with dashes
+    const slug = topic
+      .toLowerCase()
+      .replace(/  /g, ' ')
+      .replace(/ /g, '-')
+      .replace(/\./g, '');
+
     const existingTopic = await prisma.topic.findFirst({
       where: {
-        name: topic,
+        OR: [{ name: topic }, { slug: slug }],
       },
     });
 
@@ -72,12 +80,6 @@ export const upsertTopics = async (
       topicNames.push(existingTopic.name);
       continue;
     }
-    // replace spaces with dashes
-    const slug = topic
-      .toLowerCase()
-      .replace(/  /g, ' ')
-      .replace(/ /g, '-')
-      .replace(/\./g, '');
 
     const newTopic = await prisma.topic.create({
       data: {
