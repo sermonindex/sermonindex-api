@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { insertSermonLengths } from './insert-sermon-lengths';
 // import { convertHymns } from './convert-hymns';
 // import { convertAudioSermons } from './convert-audio-sermons';
 // import { convertTextSermons } from './convert-text-sermons';
@@ -32,11 +31,16 @@ const convertSchema = async () => {
   // }
   // await convertImages(prisma);
   // await convertHymns(prisma);
+  // await convertBooks(prisma);
+  // await convertTextSermonsToBooks(prisma);
+  // await convertAdhocTextSermonsToBooks(prisma);
+  // await convertAudioBooks(prisma);
   // await insertVerseSummaries(prisma);
   // await insertTopicSummaries(prisma);
-  await insertSermonLengths(prisma);
+  // await insertSermonLengths(prisma);
   // await updateContributors(prisma);
   // await findMissingVideoTranscripts(prisma);
+  // await addFeaturedContributors(prisma);
 };
 
 convertSchema().then(() => {

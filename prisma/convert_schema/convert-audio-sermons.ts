@@ -20,13 +20,12 @@ import {
 import {
   audioContributorNamesToIgnore,
   audioSermonsToIgnore,
-  featuredContributors,
   featuredSermonId,
 } from './constants';
 
 export const convertAudioSermons = async (prisma: PrismaClient) => {
   const contributorIdsToSkip: number[] = [];
-  const uniqueContributors: Map<number, number[]> = new Map();
+  const uniqueContributors: Map<string, number[]> = new Map();
 
   let missingTranscriptCount = 0;
   let missingMetadataCount = 0;
@@ -124,11 +123,10 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
             id: existingContributor.id,
           },
           data: {
-            fullNameSlug,
+            slug: fullNameSlug,
             fullName: fullName,
-            description: description,
+            bio: description,
             imageUrl: imgSrc,
-            featured: featuredContributors.includes(fullName),
           },
         });
       }
@@ -137,11 +135,10 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
 
     const c = await prisma.contributor.create({
       data: {
-        fullNameSlug,
+        slug: fullNameSlug,
         fullName: fullName,
-        description: description,
+        bio: description,
         imageUrl: imgSrc,
-        featured: featuredContributors.includes(fullName),
       },
     });
     uniqueContributors.set(c.id, [audioContributor.cid]);
@@ -314,6 +311,7 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
         transcript,
         originalId,
         description,
+        audioSermon.lid.toString(),
       );
 
       if (!sermonId) {

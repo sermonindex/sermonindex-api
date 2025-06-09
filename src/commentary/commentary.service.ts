@@ -4,9 +4,9 @@ import {
   AdjacentBibleChapters,
   getAdjacentBibleChapters,
 } from 'src/common/adjacent-bible-chapters.fn';
-import { CommentaryChapterResponse } from 'src/common/dtos/commentary-chapter.response';
-import { ListCommentaryChapterResponse } from 'src/common/dtos/list-commentary-chapter.response';
 import { DatabaseService } from 'src/database/database.service';
+import { CommentaryChapterResponse } from './dtos/commentary-chapter.response';
+import { ListCommentaryChapterResponse } from './dtos/list-commentary-chapter.response';
 
 @Injectable()
 export class CommentaryService {

@@ -1,18 +1,128 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma, Sermon } from '@prisma/client';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  MediaFormat,
+  MediaSource,
+  MediaType,
+  Prisma,
+  Sermon,
+} from '@prisma/client';
+import AwokenRef from 'awoken-bible-reference';
+import { PaginationDTO } from 'src/common/dtos/pagination.dto';
+import { getMediaFormat } from 'src/common/get-media-format.fn';
 import { DatabaseService } from 'src/database/database.service';
+import { AddSermonRequest } from './dtos/add-sermon.request';
 import { SermonInfoResponse } from './dtos/sermon-info.response';
-import { SermonFullType } from './sermon.types';
+import { SermonRequest } from './dtos/sermon.request';
 
 @Injectable()
 export class SermonsService {
   constructor(private db: DatabaseService) {}
 
-  async sermon(
-    sermonWhereUniqueInput: Prisma.SermonWhereUniqueInput,
-  ): Promise<SermonFullType | null> {
+  private getMediaUrls(
+    mediaType: MediaType,
+    youtubeUrl: string | null | undefined,
+    bunnyUrl: string | null | undefined,
+    archiveUrl: string | null | undefined,
+    thumbnailUrl: string | null | undefined,
+    srtUrl: string | null | undefined,
+    vttUrl: string | null | undefined,
+  ) {
+    const sources = [
+      {
+        url: youtubeUrl,
+        source: MediaSource.YOUTUBE,
+        format: getMediaFormat(youtubeUrl),
+      },
+      {
+        url: bunnyUrl,
+        source: MediaSource.BUNNY,
+        format: getMediaFormat(bunnyUrl),
+      },
+      {
+        url: archiveUrl,
+        source: MediaSource.ARCHIVE,
+        format: getMediaFormat(archiveUrl),
+      },
+      {
+        url: thumbnailUrl,
+        source: MediaSource.BUNNY,
+        format: getMediaFormat(thumbnailUrl),
+        type: MediaType.IMAGE,
+      },
+      { url: srtUrl, source: MediaSource.BUNNY, format: MediaFormat.SRT },
+      { url: vttUrl, source: MediaSource.BUNNY, format: MediaFormat.VTT },
+    ];
+
+    return sources
+      .filter(({ url }) => !!url)
+      .map(({ url, source, format, type }) => ({
+        url: url as string,
+        type: type ? type : mediaType,
+        format,
+        source,
+      }));
+  }
+
+  private async verifyTopicsExist(topics: string[]) {
+    for (const topic of topics) {
+      const exists = await this.db.topic.findFirst({
+        where: { name: topic },
+      });
+
+      if (!exists) {
+        throw new NotFoundException(
+          `Topic not found: ${topic}. Please create it first.`,
+        );
+      }
+    }
+
+    return true;
+  }
+
+  private parseBibleReferences(bibleReferences: string[]) {
+    return bibleReferences.map((text) => {
+      try {
+        const result = AwokenRef.parseOrThrow(text.trim());
+        for (const reference of result) {
+          if (reference.is_range) {
+            return {
+              bookId: reference.start.book,
+              startChapter: reference.start.chapter,
+              endChapter: reference.end.chapter,
+              startVerse: reference.start.verse,
+              endVerse: reference.end.verse,
+              text: AwokenRef.format(reference, {
+                combine_ranges: true,
+                compact: true,
+              }),
+            };
+          } else {
+            return {
+              bookId: reference.book,
+              startChapter: reference.chapter,
+              endChapter: reference.chapter,
+              startVerse: reference.verse,
+              endVerse: reference.verse,
+              text: AwokenRef.format(reference, {
+                combine_ranges: true,
+                compact: true,
+              }),
+            };
+          }
+        }
+      } catch (e) {
+        throw new BadRequestException(`Invalid bible reference: ${text}`);
+      }
+    });
+  }
+
+  async getSermon(id: string) {
     return this.db.sermon.findUnique({
-      where: sermonWhereUniqueInput,
+      where: { id },
       include: {
         contributor: true,
         urls: true,
@@ -23,20 +133,56 @@ export class SermonsService {
     });
   }
 
-  async listSermons(params: {
-    where?: Prisma.SermonWhereInput;
-    orderBy?: Prisma.SermonOrderByWithRelationInput;
-    limit?: number;
-    offset?: number;
-  }): Promise<any> {
-    const { where, orderBy, limit = 100, offset = 0 } = params;
+  async listSermons(query: SermonRequest) {
+    const {
+      id,
+      title,
+      contributorFullName,
+      contributorSlug,
+      contributorId,
+      topic,
+      book,
+      chapter,
+      verse,
+      mediaType,
+      limit = 25,
+      offset = 0,
+      sortBy,
+      sortOrder,
+    } = query;
+
+    const where: Prisma.SermonWhereInput = {
+      id,
+      // TODO: Prisma supports full-text search
+      // https://www.prisma.io/docs/orm/prisma-client/queries/full-text-search#enabling-full-text-search-for-postgresql
+      title: { contains: title, mode: 'insensitive' },
+      contributor: {
+        id: contributorId,
+        slug: contributorSlug,
+        fullName: contributorFullName,
+      },
+      topics: topic ? { some: { name: topic } } : undefined,
+      bibleReferences:
+        book || chapter || verse
+          ? {
+              some: {
+                bookId: book,
+                startChapter: chapter ? { gte: chapter } : undefined,
+                endChapter: chapter ? { lte: chapter } : undefined,
+                startVerse: verse ? { gte: verse } : undefined,
+                endVerse: verse ? { lte: verse } : undefined,
+              },
+            }
+          : undefined,
+      mediaType: { in: mediaType },
+    };
 
     const [result, totalCount] = await this.db.$transaction([
       this.db.sermon.findMany({
         skip: offset,
         take: limit,
         where,
-        orderBy,
+        orderBy: { [sortBy]: sortOrder },
         include: {
           contributor: true,
           urls: true,
@@ -56,26 +202,131 @@ export class SermonsService {
     };
   }
 
-  async createSermon(data: Prisma.SermonCreateInput): Promise<Sermon> {
+  async listFeaturedSermons(query: PaginationDTO) {
+    const { limit = 25, offset = 0 } = query;
+
+    const [result, totalCount] = await this.db.$transaction([
+      this.db.featuredSermon.findMany({
+        skip: offset,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          sermon: {
+            include: {
+              contributor: true,
+              urls: true,
+              bibleReferences: true,
+              topics: true,
+            },
+          },
+        },
+      }),
+      this.db.featuredSermon.count(),
+    ]);
+
+    return {
+      values: result.map((featured) =>
+        SermonInfoResponse.fromDB(featured.sermon),
+      ),
+      total: totalCount,
+      limit,
+      offset,
+      nextPage: totalCount > offset + limit ? offset + limit : null,
+    };
+  }
+
+  async addSermon(data: AddSermonRequest) {
+    const {
+      contributorId,
+      title,
+      description,
+      mediaType,
+      duration,
+      youtubeUrl,
+      bunnyUrl,
+      archiveUrl,
+      thumbnailUrl,
+      srtUrl,
+      vttUrl,
+      bibleReferences,
+      topics,
+      transcript,
+    } = data;
+
+    // Construct SermonMedia objects from the urls
+    const sources = this.getMediaUrls(
+      mediaType,
+      youtubeUrl,
+      bunnyUrl,
+      archiveUrl,
+      thumbnailUrl,
+      srtUrl,
+      vttUrl,
+    );
+
+    // Verify all topics exist
+    await this.verifyTopicsExist(topics);
+
+    // Parse the bible references and create SermonBibleReference objects
+    const references = this.parseBibleReferences(bibleReferences);
+
     return this.db.sermon.create({
-      data,
+      data: {
+        title,
+        description,
+        contributorId,
+        mediaType,
+        duration,
+        transcript: {
+          create: {
+            text: transcript.trim(),
+          },
+        },
+        topics: {
+          connect: topics.map((name) => ({ name })),
+        },
+        bibleReferences: {
+          create: references
+            .filter((ref): ref is NonNullable<typeof ref> => ref !== undefined)
+            .map((reference) => ({
+              bookId: reference.bookId,
+              startChapter: reference.startChapter,
+              endChapter: reference.endChapter,
+              startVerse: reference.startVerse,
+              endVerse: reference.endVerse,
+              text: reference.text,
+            })),
+        },
+        urls: {
+          create: sources.map((url) => ({
+            url: url.url,
+            type: url.type,
+            format: url.format,
+            source: url.source,
+          })),
+        },
+      },
     });
   }
 
-  async updateSermon(params: {
-    where: Prisma.SermonWhereUniqueInput;
-    data: Prisma.SermonUpdateInput;
-  }): Promise<Sermon> {
-    const { data, where } = params;
-    return this.db.sermon.update({
-      data,
-      where,
+  async updateFeaturedSermonList(id: string) {
+    const existingRecord = await this.db.featuredSermon.findFirst({
+      where: { sermonId: id },
+    });
+    if (existingRecord) {
+      await this.db.featuredSermon.delete({
+        where: { id: existingRecord.id },
+      });
+    }
+
+    return this.db.featuredSermon.create({
+      data: { sermonId: id },
     });
   }
 
-  async deleteSermon(where: Prisma.SermonWhereUniqueInput): Promise<Sermon> {
+  async deleteSermon(id: string): Promise<Sermon> {
     return this.db.sermon.delete({
-      where,
+      where: { id },
     });
   }
 }

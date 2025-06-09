@@ -1,45 +1,40 @@
-import { MediaFormat, MediaSource, MediaType } from '@prisma/client';
+import { ApiProperty } from '@nestjs/swagger';
+import { MediaFormat, MediaType } from '@prisma/client';
+import { IsString, ValidateIf } from 'class-validator';
+import { findDownloadUrl, findStreamUrl } from 'src/common/find-urls.fn';
 import { SermonFullType } from 'src/sermons/sermon.types';
+import { SermonInfoResponseData } from './sermon-info.response';
 
-interface BiblePassage {
-  text: string;
-  book: string;
-  startChapter: number | null;
-  startVerse: number | null;
-  endChapter: number | null;
-  endVerse: number | null;
-}
-
-export class SermonResponseData {
-  id: number;
-  originalId: string | null;
-
-  contributorId: number;
-  contributorFullName: string;
-  contributorFullNameSlug: string;
-  contributorImageUrl: string | null;
-
-  title: string;
-  description: string | null;
-  mediaType: MediaType;
-
-  streamUrl: string | null;
-  downloadUrl: string | null;
-  thumbnailUrl: string | null;
+export class SermonResponseData extends SermonInfoResponseData {
+  @ApiProperty({
+    description: 'A url used to show subtitles for the sermon',
+    example: 'https://sermonindex3.b-cdn.net/srt-video/_APxGs8wnM4.srt',
+    type: String,
+    nullable: true,
+  })
+  @IsString()
+  @ValidateIf((o, value) => value !== null)
   srtUrl: string | null;
+
+  @ApiProperty({
+    description: 'A url used to show subtitles for the sermon',
+    example: 'https://sermonindex3.b-cdn.net/vtt-video/_APxGs8wnM4.vtt',
+    type: String,
+    nullable: true,
+  })
+  @IsString()
+  @ValidateIf((o, value) => value !== null)
   vttUrl: string | null;
 
-  bibleReferences: BiblePassage[];
-  topics: { name: string; slug: string | null }[];
+  @ApiProperty({
+    description: 'The sermon transcript',
+    example: 'If you have a Bible, please turn to...',
+    type: String,
+    nullable: true,
+  })
+  @IsString()
+  @ValidateIf((o, value) => value !== null)
   transcript: string | null;
-
-  hits: number;
-  featured: boolean;
-  previouslyFeatured: boolean;
-
-  preachedAt: Date | null;
-  updatedAt: Date;
-  createdAt: Date;
 }
 
 export class SermonResponse extends SermonResponseData {
@@ -51,42 +46,18 @@ export class SermonResponse extends SermonResponseData {
   static fromDB(data: SermonFullType): SermonResponse {
     return new SermonResponse({
       id: data.id,
-      originalId: data.originalId,
 
-      contributorId: data.contributorId,
+      contributorSlug: data.contributor.slug,
       contributorFullName: data.contributor.fullName,
-      contributorFullNameSlug: data.contributor.fullNameSlug,
       contributorImageUrl: data.contributor.imageUrl,
 
       title: data.title,
       description: data.description,
       mediaType: data.mediaType,
+      duration: data.duration,
 
-      // TODO: Make this toggle based on a config value
-      streamUrl:
-        data.urls.find(
-          (url) =>
-            url.type ===
-              (data.mediaType === MediaType.AUDIO
-                ? MediaType.AUDIO
-                : MediaType.VIDEO) &&
-            url.source ===
-              (data.mediaType === MediaType.AUDIO
-                ? MediaSource.ARCHIVE
-                : MediaSource.YOUTUBE),
-        )?.url ?? null,
-      downloadUrl:
-        data.urls.find(
-          (url) =>
-            url.type ===
-              (data.mediaType === MediaType.AUDIO
-                ? MediaType.AUDIO
-                : MediaType.VIDEO) &&
-            url.source ===
-              (data.mediaType === MediaType.AUDIO
-                ? MediaSource.ARCHIVE
-                : MediaSource.BUNNY),
-        )?.url ?? null,
+      streamUrl: findStreamUrl(data.mediaType, data.urls),
+      downloadUrl: findDownloadUrl(data.mediaType, data.urls),
 
       srtUrl:
         data.urls.find((url) => url.format === MediaFormat.SRT)?.url ?? null,
@@ -96,7 +67,7 @@ export class SermonResponse extends SermonResponseData {
       // TODO: Store thumbnail URLs in the database
       thumbnailUrl:
         data.mediaType === MediaType.VIDEO
-          ? `https://img.youtube.com/vi/${data.originalId}/0.jpg`
+          ? `https://img.youtube.com/vi/${data.originalMediaId}/0.jpg`
           : null,
 
       bibleReferences: data.bibleReferences.map((ref) => ({
@@ -109,17 +80,13 @@ export class SermonResponse extends SermonResponseData {
       })),
       topics: data.topics
         ? data.topics.map((topic) => {
-            return { name: topic.name, slug: topic.slug };
+            return { slug: topic.slug, name: topic.name };
           })
         : [],
       transcript: data.transcript?.text ?? null,
 
-      hits: data.hits,
-      featured: data.featured,
-      previouslyFeatured: data.previouslyFeatured,
+      views: data.views,
 
-      preachedAt: data.preachedAt,
-      updatedAt: data.updatedAt,
       createdAt: data.createdAt,
     });
   }

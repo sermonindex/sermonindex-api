@@ -5,10 +5,17 @@ export enum ContributorSortBy {
   Sermons = 'sermons',
 }
 
-export enum ContributorContent {
-  Sermons = 'SERMONS',
-  Hymns = 'HYMNS',
-}
+export type ContributorInfoType = Prisma.ContributorGetPayload<{
+  include: {
+    _count: {
+      select: {
+        sermons: true;
+        hymns: true;
+        books: true;
+      };
+    };
+  };
+}>;
 
 export type ContributorFullType = Prisma.ContributorGetPayload<{
   include: {
@@ -16,6 +23,7 @@ export type ContributorFullType = Prisma.ContributorGetPayload<{
       select: {
         sermons: true;
         hymns: true;
+        books: true;
       };
     };
     images: true;

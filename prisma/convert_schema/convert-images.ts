@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { findContributorId } from './common';
 
 export const convertImages = async (prisma: PrismaClient) => {
-  const uniqueContributors: Map<number, number[]> = new Map();
+  const uniqueContributors: Map<string, number[]> = new Map();
 
   let missingContributors = 0;
   let missingContributorNames = [];

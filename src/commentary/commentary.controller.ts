@@ -5,13 +5,15 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
-import { CommentaryChapterResponse } from 'src/common/dtos/commentary-chapter.response';
-import { CommentaryVerseResponse } from 'src/common/dtos/commentary-verse.response';
-import { CommentaryResponse } from 'src/common/dtos/commentary.response';
-import { ListCommentaryResponse } from 'src/common/dtos/list-commentary.response';
+import { ApiExcludeController } from '@nestjs/swagger';
 import { CommentaryService } from './commentary.service';
+import { CommentaryChapterResponse } from './dtos/commentary-chapter.response';
+import { CommentaryVerseResponse } from './dtos/commentary-verse.response';
+import { CommentaryResponse } from './dtos/commentary.response';
+import { ListCommentaryResponse } from './dtos/list-commentary.response';
 
 @Controller('commentary')
+@ApiExcludeController()
 export class CommentaryController {
   constructor(private readonly commentaryService: CommentaryService) {}
 

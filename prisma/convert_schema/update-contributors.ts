@@ -36,11 +36,11 @@ export const updateContributors = async (prisma: PrismaClient) => {
 
       await prisma.contributor.update({
         where: {
-          fullNameSlug: slug,
+          slug,
         },
         data: {
           imageUrl: info.imageName ?? null,
-          description: info.description ?? null,
+          bio: info.description ?? null,
         },
       });
       //   console.log(`Updating contributor: ${slug}`);

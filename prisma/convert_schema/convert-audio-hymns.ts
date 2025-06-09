@@ -12,14 +12,11 @@ import {
   getArchiveAudioUrl,
   upsertHymn,
 } from './common';
-import {
-  audioContributorsThatAreHyms,
-  featuredContributors,
-} from './constants';
+import { audioContributorsThatAreHyms } from './constants';
 
 export const convertHymns = async (prisma: PrismaClient) => {
   const contributorIdsToSkip: number[] = [];
-  const uniqueContributors: Map<number, number[]> = new Map();
+  const uniqueContributors: Map<string, number[]> = new Map();
 
   let missingLyricsCount = 0;
   let hymnsCreated = 0;
@@ -89,11 +86,10 @@ export const convertHymns = async (prisma: PrismaClient) => {
 
     const c = await prisma.contributor.create({
       data: {
-        fullNameSlug,
+        slug: fullNameSlug,
         fullName: fullName,
-        description: description,
+        bio: description,
         imageUrl: imgSrc,
-        featured: featuredContributors.includes(fullName),
       },
     });
     uniqueContributors.set(c.id, [audioContributor.cid]);
@@ -180,6 +176,7 @@ export const convertHymns = async (prisma: PrismaClient) => {
         MediaType.AUDIO,
         transcript,
         originalId,
+        audioSermon.lid.toString(),
       );
       hymnsCreated++;
 

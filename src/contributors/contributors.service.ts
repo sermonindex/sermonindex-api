@@ -1,90 +1,179 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { Contributor, ContributorType, Prisma } from '@prisma/client';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  Contributor,
+  ContributorContent,
+  ContributorType,
+  Prisma,
+} from '@prisma/client';
+import { createSlug } from 'src/common/create-slug.fn';
 import { DatabaseService } from 'src/database/database.service';
-import { ContributorFullType } from './contributor.types';
-import { CreateContributorRequest } from './dtos/create-contributor.request';
+import { ContributorInfoType, ContributorSortBy } from './contributor.types';
+import { AddContributorRequest } from './dtos/add-contributor.request';
+import { ContributorInfoResponse } from './dtos/contributor-info.response';
+import { ContributorRequest } from './dtos/contributor.request';
 
 @Injectable()
 export class ContributorsService {
   constructor(private db: DatabaseService) {}
 
-  async getContributor(
-    contributorWhereUniqueInput: Prisma.ContributorWhereUniqueInput,
-  ): Promise<ContributorFullType | null> {
+  async getContributor(params: { id?: string; slug?: string }) {
+    const { id, slug } = params;
+
     return this.db.contributor.findUnique({
-      where: contributorWhereUniqueInput,
+      where: { id, slug },
       include: {
         _count: {
-          select: { sermons: true, hymns: true },
+          select: { sermons: true, hymns: true, books: true },
         },
         images: true,
       },
     });
   }
 
-  async listContributors(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.ContributorWhereUniqueInput;
-    where?: Prisma.ContributorWhereInput;
-    orderBy?: Prisma.ContributorOrderByWithRelationInput;
-  }): Promise<ContributorFullType[]> {
-    const { skip, take, cursor, where, orderBy } = params;
+  async listContributors(
+    query: ContributorRequest,
+  ): Promise<ContributorInfoType[]> {
+    const { id, slug, fullName, content, sortBy, sortOrder } = query;
+
+    let orderBy: Prisma.ContributorOrderByWithRelationInput = {
+      [sortBy]: sortOrder,
+    };
+    if (sortBy === ContributorSortBy.Sermons) {
+      orderBy = {
+        sermons: { _count: sortOrder },
+      };
+    }
+
     return this.db.contributor.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
+      where: {
+        id,
+        slug,
+        fullName: { contains: fullName, mode: 'insensitive' },
+        hymns:
+          content && content === ContributorContent.HYMNS
+            ? { some: {} }
+            : undefined,
+        sermons:
+          content && content === ContributorContent.SERMONS
+            ? { some: {} }
+            : undefined,
+        books:
+          content && content === ContributorContent.BOOKS
+            ? { some: {} }
+            : undefined,
+      },
+      orderBy: orderBy,
       include: {
         _count: {
-          select: { sermons: true, hymns: true },
+          select: { sermons: true, hymns: true, books: true },
         },
-        images: true,
       },
     });
   }
 
-  async createContributor(
-    data: CreateContributorRequest,
-  ): Promise<Contributor> {
-    const fullNameSlug = data.fullName
-      .replace(/[^\w\s]|_/g, '')
-      .replace(/\s+/g, '-')
-      .toLocaleLowerCase();
-
-    const existingRecord = await this.db.contributor.findFirst({
-      where: { fullNameSlug },
+  async listFeaturedContributors(content: ContributorContent) {
+    const featuredContributors = await this.db.featuredContributor.findMany({
+      where: {
+        content: content,
+      },
+      include: {
+        contributor: {
+          include: {
+            _count: {
+              select: { sermons: true, hymns: true, books: true },
+            },
+          },
+        },
+      },
     });
-    if (existingRecord) {
+
+    return {
+      values: featuredContributors.map((featuredContributor) =>
+        ContributorInfoResponse.fromDB(featuredContributor.contributor),
+      ),
+    };
+  }
+
+  async addContributor(data: AddContributorRequest): Promise<Contributor> {
+    const { fullName, bio, imageUrl } = data;
+    const slug = createSlug(fullName);
+
+    const existing = await this.db.contributor.findFirst({
+      where: { slug },
+    });
+    if (existing) {
       throw new ConflictException('Contributor already exists');
     }
 
     return this.db.contributor.create({
       data: {
-        ...data,
-        fullNameSlug,
+        slug,
+        fullName,
+        bio,
+        imageUrl,
         type: ContributorType.INDIVIDUAL,
       },
     });
   }
 
-  async updateContributor(params: {
-    where: Prisma.ContributorWhereUniqueInput;
-    data: Prisma.ContributorUpdateInput;
-  }): Promise<Contributor> {
-    const { where, data } = params;
+  async updateContributor(
+    id: string,
+    data: Partial<AddContributorRequest>,
+  ): Promise<Contributor> {
+    const { fullName, bio, imageUrl } = data;
+    const slug = createSlug(fullName);
+
+    const existing = await this.db.contributor.findUnique({
+      where: { id },
+    });
+    if (!existing) {
+      throw new NotFoundException('Contributor does not exist');
+    }
+
     return this.db.contributor.update({
-      data,
-      where,
+      data: { slug, fullName, bio, imageUrl },
+      where: { id },
     });
   }
 
-  async deleteContributor(
-    where: Prisma.ContributorWhereUniqueInput,
-  ): Promise<Contributor> {
+  async updateFeaturedContributorList(id: string, content: ContributorContent) {
+    const existing = await this.db.featuredContributor.findFirst({
+      where: { contributorId: id, content },
+    });
+    if (existing) {
+      throw new ConflictException(
+        'Contributor already exists in featured list',
+      );
+    }
+
+    return this.db.featuredContributor.create({
+      data: {
+        contributorId: id,
+        content,
+      },
+    });
+  }
+
+  async deleteContributor(id: string): Promise<Contributor> {
     return this.db.contributor.delete({
-      where,
+      where: { id },
+    });
+  }
+
+  async deleteFeaturedContributor(id: string, content: ContributorContent) {
+    const existing = await this.db.featuredContributor.findFirst({
+      where: { contributorId: id, content },
+    });
+    if (!existing) {
+      throw new NotFoundException('Featured contributor does not exist');
+    }
+
+    return this.db.featuredContributor.delete({
+      where: { id: existing.id },
     });
   }
 }

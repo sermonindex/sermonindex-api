@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { BibleVerseRequest } from 'src/common/dtos/bible-verse.request';
-import { BibleVerseResponse } from 'src/common/dtos/bible-verse.response';
 import { DatabaseService } from 'src/database/database.service';
+import { BibleVerseRequest } from './dtos/bible-verse.request';
+import { BibleVerseResponse } from './dtos/bible-verse.response';
 
 @Injectable()
 export class BibleService {
@@ -212,6 +212,7 @@ export class BibleService {
         book: true,
         footnotes: true,
         translation: true,
+        audioUrls: true,
       },
     });
     if (!result) return null;
@@ -250,6 +251,7 @@ export class BibleService {
 
     return {
       ...result,
+      streamUrl: result.audioUrls.find(u => u.reader === 'gilbert')?.url,
       translationName: result.translation.name,
       nextChapterNumber,
       nextBookId,

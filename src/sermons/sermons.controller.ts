@@ -1,14 +1,26 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   Ip,
   NotFoundException,
   Param,
+  ParseUUIDPipe,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiSecurity,
+} from '@nestjs/swagger';
+import { ApiKeyAuthGuard } from 'src/auth/api-key-auth.guard';
+import { PaginationDTO } from 'src/common/dtos/pagination.dto';
+import { AddSermonRequest } from './dtos/add-sermon.request';
 import { ListSermonResponse } from './dtos/list-sermon.response';
-import { SermonInfoResponse } from './dtos/sermon-info.response';
 import { SermonRequest } from './dtos/sermon.request';
 import { SermonResponse } from './dtos/sermon.response';
 import { SermonsService } from './sermons.service';
@@ -17,129 +29,104 @@ import { SermonsService } from './sermons.service';
 export class SermonsController {
   constructor(private readonly sermonService: SermonsService) {}
 
+  @Get('/')
   @ApiOperation({
-    summary: 'Retrieve a list of sermons with optional filters (max 100).',
+    summary: 'Retrieve a list of sermons with optional filters (max 50)',
     operationId: 'listSermons',
   })
-  @Get('/')
-  async listSermons(
-    @Query() query: SermonRequest,
-  ): Promise<ListSermonResponse> {
-    const {
-      id,
-      title,
-      fullName,
-      fullNameSlug,
-      contributorId,
-      topic,
-      book,
-      chapter,
-      verse,
-      mediaType,
-      limit,
-      offset,
-    } = query;
-
-    const result = await this.sermonService.listSermons({
-      where: {
-        id,
-        // TODO: Prisma supports full-text search
-        // https://www.prisma.io/docs/orm/prisma-client/queries/full-text-search#enabling-full-text-search-for-postgresql
-        title: { contains: title, mode: 'insensitive' },
-        contributor: {
-          id: contributorId,
-          fullName: fullName,
-          fullNameSlug: fullNameSlug,
-        },
-        topics: topic ? { some: { name: topic } } : undefined,
-        bibleReferences:
-          book || chapter || verse
-            ? {
-                some: {
-                  bookId: book,
-                  startChapter: chapter ? { gte: chapter } : undefined,
-                  endChapter: chapter ? { lte: chapter } : undefined,
-                  startVerse: verse ? { gte: verse } : undefined,
-                  endVerse: verse ? { lte: verse } : undefined,
-                },
-              }
-            : undefined,
-        mediaType: { in: mediaType },
-      },
-      // TODO: make orderBy a query parameter. That would remove endpoints for popular and recent sermons
-      orderBy: {
-        hits: 'desc',
-      },
-      limit,
-      offset,
-    });
-
-    return result;
+  @ApiOkResponse({
+    type: ListSermonResponse,
+  })
+  async listSermons(@Query() query: SermonRequest) {
+    return this.sermonService.listSermons(query);
   }
 
   @Get('/id/:id')
+  @ApiOperation({
+    summary: 'Retrieve a sermon by its ID',
+    operationId: 'getSermonById',
+  })
+  @ApiParam({
+    name: 'id',
+    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
+    description: 'The id of the sermon to retrieve',
+    type: String,
+  })
+  @ApiOkResponse({
+    type: SermonResponse,
+  })
   async getSermonById(
-    @Param('id') sermonId: number,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Ip() ip: string,
-  ): Promise<SermonResponse> {
+  ) {
+    // TODO: update the views count in the database
     console.log(ip);
 
-    const result = await this.sermonService.sermon({ id: sermonId });
+    const result = await this.sermonService.getSermon(id);
 
     if (!result) {
-      throw NotFoundException;
+      throw new NotFoundException(`Sermon with ID ${id} not found`);
     }
 
     return SermonResponse.fromDB(result);
   }
 
-  @Get('/recent')
-  async listRecentSermons(): Promise<ListSermonResponse> {
-    const result = await this.sermonService.listSermons({
-      orderBy: { createdAt: 'desc' },
-      limit: 15,
-      offset: 0,
-    });
-
-    return result;
-  }
-
-  @Get('/popular')
-  async listPopularSermons(): Promise<ListSermonResponse> {
-    const result = await this.sermonService.listSermons({
-      orderBy: { hits: 'desc' },
-    });
-
-    return result;
-  }
-
   @Get('/featured')
-  async getFeaturedSermon(): Promise<SermonInfoResponse> {
-    const result = await this.sermonService.listSermons({
-      where: { featured: true },
-    });
-
-    if (!result.values.length) {
-      throw NotFoundException;
-    }
-
-    return result.values[0];
+  @ApiOperation({
+    summary: 'Retrieve a list of featured sermons',
+    operationId: 'listFeaturedSermon',
+  })
+  @ApiOkResponse({
+    type: ListSermonResponse,
+  })
+  async getFeaturedSermon(@Query() query: PaginationDTO) {
+    return this.sermonService.listFeaturedSermons(query);
   }
 
-  // TODO: Get rid of this endpoint. It's not useful
-  @Get('/search')
-  async searchSermons(
-    @Query('title') title: string,
-  ): Promise<ListSermonResponse> {
-    const result = await this.sermonService.listSermons({
-      where: {
-        // TODO: Prisma supports full-text search
-        // https://www.prisma.io/docs/orm/prisma-client/queries/full-text-search#enabling-full-text-search-for-postgresql
-        title: { contains: title, mode: 'insensitive' },
-      },
-      orderBy: { hits: 'desc' },
-    });
+  @Post('/')
+  @ApiSecurity('Api-Key')
+  @UseGuards(ApiKeyAuthGuard)
+  @ApiOperation({
+    summary: 'Add a sermon',
+    operationId: 'addSermon',
+  })
+  async addSermon(@Body() data: AddSermonRequest) {
+    return this.sermonService.addSermon(data);
+  }
 
-    return result;
+  @Post('/featured/id/:id')
+  @ApiSecurity('Api-Key')
+  @UseGuards(ApiKeyAuthGuard)
+  @ApiOperation({
+    summary: 'Update the featured sermon list',
+    operationId: 'updateFeaturedSermonList',
+  })
+  @ApiParam({
+    name: 'id',
+    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
+    description: 'The id of the sermon to add to the featured list',
+    type: String,
+  })
+  async updateFeaturedSermonList(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.sermonService.updateFeaturedSermonList(id);
+  }
+
+  @Delete('/id/:id')
+  @ApiSecurity('Api-Key')
+  @UseGuards(ApiKeyAuthGuard)
+  @ApiOperation({
+    summary: 'Delete a sermon',
+    description:
+      '⚠️ WARNING: This action is irreversible and will permanently delete the sermon and all associated data.',
+    operationId: 'deleteSermon',
+  })
+  @ApiParam({
+    name: 'id',
+    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
+    description: 'The id of the sermon to delete',
+    type: String,
+  })
+  async deleteSermon(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.sermonService.deleteSermon(id);
   }
 }

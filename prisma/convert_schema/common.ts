@@ -31,7 +31,7 @@ export const findObject = <T extends Record<string, any>>(
 
 export const findContributorId = (
   id: number,
-  contributors: Map<number, number[]>,
+  contributors: Map<string, number[]>,
 ) => {
   for (const [contributorId, textContributorIds] of contributors) {
     if (textContributorIds.includes(id)) {
@@ -97,7 +97,7 @@ export const upsertTopics = async (
 
 export const upsertSermon = async (
   prisma: PrismaClient,
-  contributorId: number,
+  contributorId: string,
   topics: string[],
   bibleReferences: Omit<
     SermonBibleReference,
@@ -109,8 +109,9 @@ export const upsertSermon = async (
   featured: boolean,
   mediaType: MediaType,
   transcript?: string,
-  originalId?: string,
+  originalMediaId?: string,
   description?: string,
+  originalId?: string,
 ) => {
   const t = toTitleCase(title.trim().toLowerCase());
 
@@ -122,37 +123,38 @@ export const upsertSermon = async (
   });
 
   if (existingSermon) {
-    // const SermonMedias = await prisma.SermonMedia.findMany({
-    //   where: {
-    //     sermonId: existingSermon.id,
-    //   },
-    // });
+    const SermonMedias = await prisma.sermonMedia.findMany({
+      where: {
+        sermonId: existingSermon.id,
+      },
+    });
 
-    // for (const u of urls) {
-    //   const existingUrl = SermonMedias.find((url) => url.url === u.url);
-    //   if (!existingUrl) {
-    //     await prisma.SermonMedia.create({
-    //       data: {
-    //         sermonId: existingSermon.id,
-    //         url: u.url,
-    //         type: u.type,
-    //         source: u.source,
-    //       },
-    //     });
-    //   }
-    // }
+    for (const u of urls) {
+      const existingUrl = SermonMedias.find((url) => url.url === u.url);
+      if (!existingUrl) {
+        await prisma.sermonMedia.create({
+          data: {
+            sermonId: existingSermon.id,
+            url: u.url,
+            type: u.type,
+            format: u.format,
+            source: u.source,
+          },
+        });
+      }
+    }
 
     return null;
   }
 
   const newSermon = await prisma.sermon.create({
     data: {
-      originalId,
+      originalId: originalId,
+      originalMediaId: originalMediaId,
       title: t,
-      hits: parseInt(hits),
+      views: parseInt(hits),
       description: description?.trim(),
       contributorId: contributorId,
-      featured: featured,
       mediaType: mediaType,
       transcript: transcript
         ? {
@@ -190,12 +192,13 @@ export const upsertSermon = async (
 
 export const upsertHymn = async (
   prisma: PrismaClient,
-  contributorId: number,
+  contributorId: string,
   title: string,
   hits: string,
   urls: Omit<HymnMedia, 'id' | 'hymnId'>[],
   mediaType: MediaType,
   lyrics?: string,
+  originalMediaId?: string,
   originalId?: string,
 ) => {
   const t = toTitleCase(title.trim().toLowerCase());
@@ -234,9 +237,10 @@ export const upsertHymn = async (
 
   const newHymn = await prisma.hymn.create({
     data: {
-      originalId,
+      originalId: originalId,
+      originalMediaId: originalMediaId,
       title: t,
-      hits: parseInt(hits),
+      views: parseInt(hits),
       contributorId: contributorId,
       lyrics: lyrics,
       mediaType: mediaType,

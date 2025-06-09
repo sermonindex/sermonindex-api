@@ -5,16 +5,17 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
-
-import { BibleTranslationRequest } from 'src/common/dtos/bible-translation.request';
-import { BibleTranslationResponse } from 'src/common/dtos/bible-translation.response';
-import { BibleVerseRequest } from 'src/common/dtos/bible-verse.request';
-import { BibleVerseResponse } from 'src/common/dtos/bible-verse.response';
-import { ListBibleLanguageResponse } from 'src/common/dtos/list-bible-language.response';
-import { ListBibleTranslationResponse } from 'src/common/dtos/list-bible-translation.response';
+import { ApiExcludeController } from '@nestjs/swagger';
 import { BibleService } from './bible.service';
+import { BibleTranslationRequest } from './dtos/bible-translation.request';
+import { BibleTranslationResponse } from './dtos/bible-translation.response';
+import { BibleVerseRequest } from './dtos/bible-verse.request';
+import { BibleVerseResponse } from './dtos/bible-verse.response';
+import { ListBibleLanguageResponse } from './dtos/list-bible-language.response';
+import { ListBibleTranslationResponse } from './dtos/list-bible-translation.response';
 
 @Controller('bible')
+@ApiExcludeController()
 export class BibleController {
   constructor(private readonly bibleService: BibleService) {}
 

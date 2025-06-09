@@ -1,4 +1,4 @@
-import { AdjacentBibleChapters } from '../adjacent-bible-chapters.fn';
+import { AdjacentBibleChapters } from '../../common/adjacent-bible-chapters.fn';
 import { CommentaryChapterResponse } from './commentary-chapter.response';
 
 export type ListCommentaryChapterResponse = AdjacentBibleChapters & {

@@ -36,7 +36,7 @@ export const insertSermonLengths = async (prisma: PrismaClient) => {
 
       const existing = await prisma.sermon.findMany({
         where: {
-          originalId: originalId,
+          originalMediaId: originalId,
         },
       });
 
@@ -57,7 +57,7 @@ export const insertSermonLengths = async (prisma: PrismaClient) => {
           id: existing[0].id,
         },
         data: {
-          length: seconds,
+          duration: seconds,
         },
       });
       console.log(`Updating sermon: ${originalId}`);

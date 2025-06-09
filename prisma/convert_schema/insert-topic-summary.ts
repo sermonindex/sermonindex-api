@@ -30,6 +30,11 @@ export const insertTopicSummaries = async (prisma: PrismaClient) => {
         },
       });
 
+      if (!existingTopic) {
+        console.log(`Topic not found for ${reference}`);
+        continue;
+      }
+
       if (existingTopic?.summary) {
         console.log(`Topic summary already exists for ${reference}`);
         continue;

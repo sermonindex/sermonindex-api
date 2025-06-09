@@ -1,25 +1,27 @@
 import { Module } from '@nestjs/common';
 import { BibleModule } from './bible/bible.module';
+import { BookModule } from './books/book.module';
+import { CommentaryModule } from './commentary/commentary.module';
+import { ConfigModule } from './config/config.module';
 import { ContributorsModule } from './contributors/contributors.module';
 import { DatabaseModule } from './database/database.module';
+import { HymnsModule } from './hymns/hymns.module';
 import { SermonsModule } from './sermons/sermons.module';
 import { TopicsModule } from './topics/topics.module';
-import { CommentaryController } from './commentary/commentary.controller';
-import { CommentaryService } from './commentary/commentary.service';
-import { CommentaryModule } from './commentary/commentary.module';
-import { HymnsModule } from './hymns/hymns.module';
 
 @Module({
   imports: [
-    DatabaseModule,
-    ContributorsModule,
-    SermonsModule,
-    TopicsModule,
     BibleModule,
     CommentaryModule,
+    ConfigModule,
+    ContributorsModule,
+    DatabaseModule,
     HymnsModule,
+    SermonsModule,
+    TopicsModule,
+    BookModule,
   ],
-  controllers: [CommentaryController],
-  providers: [CommentaryService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

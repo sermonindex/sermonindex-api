@@ -18,10 +18,13 @@ datasource db {
 enum MediaType {
   AUDIO
   VIDEO
+  IMAGE
   TEXT
 }
 
 enum MediaFormat {
+  JPG
+  PNG
   MP3
   MP4
   SRT
@@ -34,41 +37,3 @@ enum MediaSource {
   YOUTUBE
   BUNNY
 }
-
-model Topic {
-  name String @unique @id @db.Citext
-  // TODO: Make slug required and id
-  slug String? @unique @db.Citext
-  summary String
-
-  sermons Sermon[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// publication & sections
-// type book, commentary, article, devotional...
-
-// model Book {
-//   name String @unique @id @db.Citext
-
-//   chapters Chapter[]
-  
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
-// model Chapter {
-//   id Int @default(autoincrement()) @id
-
-//   book Book @relation(fields: [bookName], references: [name])
-//   bookName String
-
-//   number Int
-
-//   verses Verse[]
-  
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }

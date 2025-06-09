@@ -17,7 +17,7 @@ import {
 } from './constants';
 
 export const convertTextSermons = async (prisma: PrismaClient) => {
-  const uniqueContributors: Map<number, number[]> = new Map();
+  const uniqueContributors: Map<string, number[]> = new Map();
   const contributorIdsToSkip: number[] = [];
 
   let missingTranscriptCount = 0;
@@ -118,9 +118,9 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
 
     const c = await prisma.contributor.create({
       data: {
-        fullNameSlug,
+        slug: fullNameSlug,
         fullName: fullName,
-        description: description,
+        bio: description,
         imageUrl: imgSrc,
       },
     });
@@ -299,6 +299,7 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
         transcript,
         textSermon.id.toString(),
         description ?? null,
+        textSermon.id.toString(),
       );
 
       if (!sermonId) {

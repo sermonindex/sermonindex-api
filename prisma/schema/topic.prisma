@@ -1,0 +1,12 @@
+model Topic {
+  id String @id @default(uuid())
+
+  name String @db.Citext @unique
+  slug String @db.Citext @unique
+  summary String
+
+  sermons Sermon[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

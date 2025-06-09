@@ -39,3 +39,7 @@ sermonindex.sql
 sermonindex.tar.xz
 bible.eng.db
 /prisma/data/*
+/prisma/convert_schema/text-book*
+/prisma/convert_schema/adhoc-text*
+/prisma/convert_schema/audio-book*
+/prisma/convert_schema/quotes*

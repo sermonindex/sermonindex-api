@@ -16,7 +16,6 @@ import {
   upsertSermon,
 } from './common';
 import {
-  featuredContributors,
   featuredSermonId,
   videoContributorNamesToIgnore,
   videoSermonsToIgnore,
@@ -24,12 +23,13 @@ import {
 
 export const convertVideoSermons = async (prisma: PrismaClient) => {
   const contributorIdsToSkip: number[] = [];
-  const uniqueContributors: Map<number, number[]> = new Map();
+  const uniqueContributors: Map<string, number[]> = new Map();
 
   let missingTranscriptCount = 0;
   let missingMetadataCount = 0;
   let failedToParseScriptureCount = 0;
   let duplicateSermonCount = 0;
+  let sermonsAdded = 0;
 
   const videoContributors = JSON.parse(
     fs.readFileSync('prisma/data/xoops_myvideo_cat.json', 'utf8'),
@@ -120,11 +120,10 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
             id: existingContributor.id,
           },
           data: {
-            fullNameSlug,
+            slug: fullNameSlug,
             fullName: fullName,
-            description: description,
+            bio: description,
             imageUrl: imgSrc,
-            featured: featuredContributors.includes(fullName),
           },
         });
       }
@@ -134,11 +133,10 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
 
     const c = await prisma.contributor.create({
       data: {
-        fullNameSlug,
+        slug: fullNameSlug,
         fullName: fullName,
-        description: description,
+        bio: description,
         imageUrl: imgSrc,
-        featured: featuredContributors.includes(fullName),
       },
     });
     uniqueContributors.set(c.id, [videoContributor.cid]);
@@ -321,14 +319,19 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
       transcript,
       originalId,
       description,
+      videoSermon.lid.toString(),
     );
 
     if (!sermonId) {
       duplicateSermonCount++;
+    } else {
+      sermonsAdded++;
     }
   }
 
   console.log('Finished converting video sermons. Summary:');
+  console.log(`- Total sermons: ${videoSermons.length}`);
+  console.log(`- Sermons added: ${sermonsAdded}`);
   console.log(`- Duplicate sermons found: ${duplicateSermonCount}`);
   console.log(`- No transcript found for ${missingTranscriptCount} sermons`);
   console.log(`- No ai data found for ${missingMetadataCount} sermons`);

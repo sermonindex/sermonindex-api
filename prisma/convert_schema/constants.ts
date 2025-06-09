@@ -44,200 +44,196 @@ export const featuredSermonId = 14801;
 
 // These will be books, hymns, etc., rather than sermons
 export const textContributorNamesToIgnore = [
-  'Early Christian Dictionary',
-  'Book Of Common Prayer 1979',
-  'Gardiner Spring',
-  'Utmost For His Highest',
-  'Hymn Stories',
-  'Puritan Quotes',
-  'A Collection of Hymns',
-  'Bible Names of God',
-  'The Book of Enoch (apocrypha)',
-  'Short Biographies',
-  'Discernment Reasearch Articles',
-  'Christian Apologetics',
-  'Dictionary of Theology',
-  'Daily Light',
-  'Remarkable Answers To Prayer',
-  'Evening Light Songs',
-  'Puritan Prayers',
-  'Testimonies',
-  'Sermon Illustrations I',
-  'Sermon Illustrations II',
-  'Charles Wesley Hymns',
-  'Horatius Bonar Hymns',
-  'Amazing Hymn Stories',
-  'C.H. Spurgeon Quotes',
-  'Short Bios',
-  'Fundamental Wesleyan',
-  'Brethren Biographies',
-  'Advice to Young Preachers',
-  'Gleanings From the Word',
-  'Revival Articles',
-  'Liturgical Texts of Greek Orthodox Church',
-  'Victory in Christ',
-  'Victory Over Sin',
-  'Daily Portions',
-  'Historic Confessions',
-  'Pearls from Philpot',
-  'Grace Quotes',
-  'Puritan Hymns',
-  'Revival Messages',
-  'Revival Email List',
-  'Old Paths Magazine - Issue 13',
-  'Old Paths Magazine - Issue 12',
-  'Old Paths Magazine - Issue 14',
-  'Old Paths Magazine - Issue 15',
-  'Old Paths Magazine - Issue 16',
-  'Old Paths Magazine - Issue 17',
-  'Old Paths Magazine - Issue 18',
+  'Early Christian Dictionary', // Done
+  'Book Of Common Prayer 1979', // Done
+  'Utmost For His Highest', // Done
+  'Hymn Stories', // Done
+  'Puritan Quotes', // Done
+  'A Collection of Hymns', // Done
+  'Bible Names of God', // Done
+  'The Book of Enoch (apocrypha)', // Done
+  'Short Biographies', // Done
+  'Discernment Reasearch Articles', // Done
+  'Christian Apologetics', // Done
+  'Dictionary of Theology', // Done
+  'Daily Light', // Future
+  'Remarkable Answers To Prayer', // Done
+  'Evening Light Songs', // Done
+  'Puritan Prayers', // Done
+  'Testimonies', // Done
+  'Sermon Illustrations I', // Done
+  'Sermon Illustrations II', // Done
+  'Charles Wesley Hymns', // Done
+  'Horatius Bonar Hymns', // Done
+  'Amazing Hymn Stories', // Done
+  'C.H. Spurgeon Quotes', // Done
+  'Short Bios', // Done
+  'Fundamental Wesleyan', // Done
+  'Brethren Biographies', // Done
+  'Advice to Young Preachers', // Done
+  'Gleanings From the Word', // Done
+  'Revival Articles', // Done
+  'Liturgical Texts of Greek Orthodox Church', // Done
+  'Victory in Christ', // Done
+  'Victory Over Sin', // Done
+  'Daily Portions', // Future
+  'Historic Confessions', // Done
+  'Pearls from Philpot', // Done
+  'Grace Quotes', // Done
+  'Puritan Hymns', // Done
+  'Revival Messages', // Done
+  'Revival Email List', // Won't Do
+  'Old Paths Magazine - Issue 13', // Won't Do
+  'Old Paths Magazine - Issue 12', // Won't Do
+  'Old Paths Magazine - Issue 14', // Won't Do
+  'Old Paths Magazine - Issue 15', // Won't Do
+  'Old Paths Magazine - Issue 16', // Won't Do
+  'Old Paths Magazine - Issue 17', // Won't Do
+  'Old Paths Magazine - Issue 18', // Won't Do
   'Revival Conference 2007',
-  'William MacDonald Devotions',
-  'Old Paths Magazine - Issue 23',
-  'Revival Fellowship Devotionals',
-  '~miscellaneous',
-  '1828 Websters Dictionary',
-  'Classic Christian Writings',
-  'Classic Devotionals',
-  'Missionary Biographies',
-  "God's Simple Plan of Salvation",
-  'SermonIndex Newsletter',
-  'SI Interviews',
-  'Comparative Bible Study',
-  'Christian Quotes',
-  'Bible Verses On',
-  'Rich Carmicheal',
-  'Gospel Fellowships',
-  'Geneva Study Bible',
-  'Principles For The Gathering Of Believers',
-  'Precept Austin Commentary',
-  'Greek Word Studies',
-  'Matthew Henryâ€™s Matthew Commentary',
-  'Early Church Martyr Readings',
-  'Greek New Testament - Patriarchal text',
-  'Early Church Church Quotes',
-  'Longer Catechism of The Orthodox',
-  'Prayers For The Church Service League',
-  'Grace Gems',
-  'Daily Portions',
-  'Ambrose',
-  'The Scottish Metrical Psalter',
-  '~Other Speakers A-F',
-  '~Other Speakers G-L',
-  '~Other Speakers M-R',
-  '~Other Speakers S-Z',
-  "Matthew Henry's Matthew Commentary",
-  'Athanasian Grail Psalter',
+  'William MacDonald Devotions', // Done
+  'Old Paths Magazine - Issue 23', // Won't Do
+  'Revival Fellowship Devotionals', // Done
+  '~miscellaneous', // Won't Do
+  '1828 Websters Dictionary', // Won't Do
+  'Classic Christian Writings', // Done
+  'Classic Devotionals', // Done
+  'Missionary Biographies', // Done
+  "God's Simple Plan of Salvation", // Done
+  'SermonIndex Newsletter', // Won't Do
+  'SI Interviews', // Won't Do
+  'Comparative Bible Study', // Done
+  'Christian Quotes', // Done
+  'Bible Verses On', // Done
+  'Gospel Fellowships', // Done
+  'Geneva Study Bible', // Won't Do
+  'Principles For The Gathering Of Believers', // Done
+  'Precept Austin Commentary', // Won't Do
+  'Greek Word Studies', // Won't Do
+  'Matthew Henryâ€™s Matthew Commentary', // Won't Do
+  'Early Church Martyr Readings', // Done
+  'Greek New Testament - Patriarchal text', // Won't Do
+  'Early Church Church Quotes', // Done
+  'Longer Catechism of The Orthodox', // Done
+  'Prayers For The Church Service League', // Done
+  'Grace Gems', // Won't Do
+  'Daily Portions', // Future
+  'Ambrose', // Done
+  'The Scottish Metrical Psalter', // Done
+  '~Other Speakers A-F', // Done
+  '~Other Speakers G-L', // Done
+  '~Other Speakers M-R', // Done
+  '~Other Speakers S-Z', // Done
+  "Matthew Henry's Matthew Commentary", // Won't Do
+  'Athanasian Grail Psalter', // Done
 ];
 
 // Text sermon title to ignore
 // These are books, hymns, etc., rather than sermons
 export const partialTextSermonTitlesToIgnore = [
-  'Development of Antichrist',
-  'The Gospel pointing to the Person of Christ',
-  'Types of the Tabernacle',
-  'In the Pursuit of God',
-  'Man - The Dwelling Place of God',
-  'THE POWER OF GOD IN A REDEEMED LIFE',
-  "The Christian's Secret to a Happy Life",
-  'Collection of A W Tozer’s Prayers',
-  'Power From On High',
-  'You Will Never Be The Same',
-  'The Feast Of Tabernacles',
-  'Evening And Morning',
-  'Feed My Sheep',
-  'Grace Abounding to the Chief of Sinners',
-  "Mr. John Bunyan's Dying Sayings",
-  'War On The Saints',
-  'Journal Excerpts',
-  "Narrative of the Lord's Dealings with George Muller",
-  'Practical Religion',
-  'Warnings To the Churches',
-  'THE SEVEN FUNDAMENTALS OF SPIRITUAL GROWTH',
-  'Getting Back To Basics',
-  'GENUINE REPENTANCE',
-  'Consider Jesus',
-  'MORNING THOUGHTS',
-  'Abraham, My Friend',
-  'Letter of Antony',
-  'CATECHISM',
-  'RANTERS',
-  'The Spirit of Prayer ',
-  'The Way to Divine Knowledge',
-  'An Humble, Earnest and Affectionate Address to the Clergy',
-  'MORNING WATCH',
-  'SOUL HELP',
-  'Fix your eyes on Jesus',
-  'The Day of Doom',
-  'A True Hymn',
-  'CONFESSIONS',
-  'Ascent of Mount Carmel',
-  'Trophimus I Left Sick',
-  'Hell and Everlasting Punishment',
-  'The Doctrine of Nonaccumulation',
-  'Dear Pastor: Divorce and Remarriage',
-  'Primitive Christianity Revived',
-  'Objections To Calvanism',
-  'One Day at a Time',
-  'The Sovereignty of God',
-  'CAUSE OF GOD AND TRUTH',
-  'The Total Depravity of Man',
-  'THE LORD’S PRAYER  Chapter',
-  'The Satisfaction of Christ Studies in the Atonement',
-  'The Journal Of Charles Wesley',
-  'The Secret of the Strength',
-  'The Revelation',
-  'Disciple-Making Minister',
-  'One Day at a Time',
-  'Radiant Glory',
-  '(Salvation)',
-  '(Second Work of Grace)',
-  'THE INCARNATION OF THE WORD OF GOD',
-  'Prayerbook - Part',
-  'Prayers For Public',
-  'THE HOLY SPIRIT  Chapter',
-  'Exposition of the Gospel of John',
-  'THE DOCTRINE OF REVELATION',
-  'THE DOCTRINE OF RECONCILIATION',
-  'THE DOCTRINE OF MAN’S IMPOTENCE',
+  'Development of Antichrist', // Done
+  'The Gospel pointing to the Person of Christ', // Done
+  'Types of the Tabernacle', // Done
+  'In the Pursuit of God', // Done
+  'Man - The Dwelling Place of God', // Done
+  'THE POWER OF GOD IN A REDEEMED LIFE', // Done
+  "The Christian's Secret to a Happy Life", // Done
+  'Collection of A W Tozer’s Prayers', // Done
+  'Power From On High -', // Done
+  '(You Will Never Be The Same)', // Done
+  'The Feast Of Tabernacles -', // Done
+  'Evening And Morning -', // Done
+  'Feed My Sheep -', // Done
+  'Grace Abounding to the Chief of Sinners -', // Done
+  "Mr. John Bunyan's Dying Sayings", // Done
+  'War On The Saints -', // Done
+  'Journal Excerpts', // Done
+  "Narrative of the Lord's Dealings with George Muller", // Done
+  'Practical Religion', // Done
+  'Warnings To the Churches -', // Done
+  'THE SEVEN FUNDAMENTALS OF SPIRITUAL GROWTH', // Done
+  'Getting Back To Basics ', // Done
+  'GENUINE REPENTANCE ', // Done
+  'Consider Jesus–', // Done
+  'MORNING THOUGHTS', // Done
+  'Abraham, My Friend', // Done
+  'Letter of Antony', // Done
+  'CATECHISM -', // Done
+  'RANTERS -', // Done
+  'The Spirit of Prayer ', // Done
+  'The Way to Divine Knowledge', // Done
+  'An Humble, Earnest and Affectionate Address to the Clergy', // Done
+  'MORNING WATCH', // Done
+  'SOUL HELP', // Done
+  'Fix your eyes on Jesus', // Done
+  'The Day of Doom', // Done
+  'A True Hymn', // Won't Do
+  'CONFESSIONS', // Done
+  'Ascent of Mount Carmel', // Done
+  'Trophimus I Left Sick', // Done
+  'Hell and Everlasting Punishment', // Done
+  'The Doctrine of Nonaccumulation', // Done
+  'Dear Pastor: Divorce and Remarriage', // Done
+  'Primitive Christianity Revived', // Done
+  'Objections To Calvanism', // Done
+  'One Day at a Time', // Future
+  'The Sovereignty of God) ', // Done
+  'CAUSE OF GOD AND TRUTH', // Done
+  'The Total Depravity of Man', // Done
+  'THE LORD’S PRAYER  Chapter', // Done
+  'The Satisfaction of Christ Studies in the Atonement', // Done
+  'The Journal Of Charles Wesley', // Done
+  'The Secret of the Strength', // Done
+  '(The Revelation)', // Done
+  '(Disciple-Making Minister)', // Done
+  '(Radiant Glory)', // Done
+  '(Salvation)', // Done
+  '(Second Work of Grace)', // Done
+  'THE INCARNATION OF THE WORD OF GOD -', // Done
+  'Prayerbook - Part', // Done
+  'Prayers For Public', // Done
+  'THE HOLY SPIRIT  Chapter', // Done
+  'Exposition of the Gospel of John', // Done
+  'THE DOCTRINE OF REVELATION', // Done
+  'THE DOCTRINE OF RECONCILIATION', // Done
+  'THE DOCTRINE OF MAN’S IMPOTENCE', // Done
   'The Divine Inspiration of the Bible',
-  'The Antichrist',
-  'REGENERATION OR THE NEW BIRTH',
-  'PRACTICAL CHRISTIANITY',
-  'Meditations on First Peter',
-  'Re-Reading the Book of Acts',
-  '(The Final Triumph)',
-  'THE INCARNATION OF THE WORD OF GOD',
-  'The Ancient Fathers of the Desert',
-  'The Book of Enoch',
-  'What is it that Saves a Soul',
-  'PEARLS from PHILPOT',
-  'RICHES of J. C. PHILPOT',
-  'DAILY PORTIONS',
-  "DAILY WORDS FOR ZION'S WAYFARERS",
-  'The way of the Pilgrim and The pilgrim continues his Way',
-  '(The Ladder of Divine Ascent)',
-  'The Philokali Volume',
-  '(Pdf Book)',
+  'The Antichrist', // Done
+  'REGENERATION OR THE NEW BIRTH', // Done
+  'PRACTICAL CHRISTIANITY', // Done
+  'Meditations on First Peter', // Done
+  'Re-Reading the Book of Acts', // Done
+  '(The Final Triumph)', // Done
+  'The Ancient Fathers of the Desert', // Done
+  'The Book of Enoch', // Done
+  'What is it that Saves a Soul', // Done
+  'PEARLS from PHILPOT', // Done
+  'RICHES of J. C. PHILPOT', // Done
+  'DAILY PORTIONS', // Done
+  "DAILY WORDS FOR ZION'S WAYFARERS", // Done
+  'The way of the Pilgrim and The pilgrim continues his Way', // Done
+  '(The Ladder of Divine Ascent)', // Done
+  'The Philokali Volume', // Won't Do
+  '(Pdf Book)', // Done
   // AB Simpson
-  '(A Larger Christian Life)',
-  '(But God)',
-  '(Cross of Christ)',
-  '(Divine Emblems of Spiritual Life)',
-  '(Power From on High)',
-  '(Service for the King)',
-  '(Standing on Faith)',
-  '(The Fourfold Gospel)',
-  '(The Challenge of Missions)',
-  '(The Gospel of Healing)',
-  '(The Holy Spirit)',
-  '(The Names of Jesus)',
-  '(The Self Life and the Christ Life)',
+  '(A Larger Christian Life)', // Done
+  '(But God)', // Done
+  '(Cross of Christ)', // Done
+  '(Divine Emblems of Spiritual Life)', // Done
+  '(Power From on High)', // Done
+  '(Service for the King)', // Done
+  '(Standing on Faith)', // Done
+  '(The Fourfold Gospel)', // Done
+  '(The Challenge of Missions)', // Done
+  '(The Gospel of Healing)', // Done
+  '(The Holy Spirit)', // Done
+  '(The Names of Jesus)', // Done
+  '(The Self Life and the Christ Life)', // Done
   '(Walking in the Spirit)',
   // Commentaries
-  'Expository Thoughts On',
-  'Matthew chapter',
-  'Adam Clarke Commentary',
+  'Expository Thoughts On', // Done
+  'Matthew chapter', // Won't Do
+  'Adam Clarke Commentary', // Done
 ];
 
 // 507 = Duplicate Matthew Henry Commentary
@@ -252,49 +248,43 @@ export const textContributorIdsToIgnore = [507, 644, 863, 1056, 1057, 1084];
 //From the Pulpit & Classic Sermons
 
 export const audioContributorsThatAreAudioBooks = [
-  'A. Paget Wilkes',
-  'A.J. Gordon',
-  'A.W. Pink',
-  'A.W. Tozer Books',
-  'Andrew Murray',
-  'Asia Harvest',
-  'Audio Bible - NRSV',
-  'Audio Bible NT - KJV',
-  'Augustine',
-  'Brother Lawrence',
-  'Catherine Booth',
-  'Charles Finney',
-  'Clement of Rome',
-  'Eusebius History of the Christian Church',
-  'Francois Fenelon',
-  'G. Campbell Morgan',
-  'Gayle Erwin Books',
-  'George Verwer Books', //This is actually a sermon (change cid of sermon)
-  'Hannah Whitall Smith',
-  'Henry Drummond',
-  'Horatius Bonar',
-  'Hudson Taylor',
-  'J.C. Ryle', //Some of these are sermons (change cid of sermon)
-  'John Bunyan', //Some of these are sermons (change cid of sermon)
-  'John Flavel',
-  'K.P. Yohannan Books',
-  'KJV Dramatized Audio Bible',
-  'Martin Luther',
-  'Martyrs of the Catacombs',
-  'Principles For The Gathering of Believers',
-  'Puritan Audio Devotionals', // devotional?
-  'Puritan Readings', // devotional?
-  'Ray Comfort Books',
-  'Sadhu Sundar Singh',
-  'Shane Idleman', // this isn't actually a thing?
-  'Smith Wigglesworth', //Some of these are sermons (change cid of sermon)
-  'St. Athanasius',
-  'St. John of Damascus',
-  'The Teaching of the Twelve Apostles',
-  'Thomas a Kempis',
-  'Thomas Boston',
-  'Westminster Shorter Catechism',
-  'Zac Poonen Books',
+  'A. Paget Wilkes', // Done
+  'A.J. Gordon', // Done
+  'A.W. Pink', // Done
+  'A.W. Tozer Books', // Done
+  'Andrew Murray', // Done
+  'Asia Harvest', // Won't Do
+  'Audio Bible - NRSV', // Won't Do
+  'Audio Bible NT - KJV', // Won't Do
+  'Augustine', // Done
+  'Brother Lawrence', // Done
+  'Catherine Booth', // Done
+  'Clement of Rome', // Done
+  'E.M. Bounds', // Done
+  'Eusebius History of the Christian Church', // Done
+  'Francois Fenelon', // Done
+  'G. Campbell Morgan', // Done
+  'Gayle Erwin Books', // Done
+  'George Verwer Books', // Done
+  'Hannah Whitall Smith', // Done
+  'Henry Drummond', // Done
+  'Hudson Taylor', // Done
+  'K.P. Yohannan Books', // Done
+  'KJV Dramatized Audio Bible', // Won't Do
+  'Martin Luther', // Done
+  'Martyrs of the Catacombs', // Done
+  'Principles For The Gathering of Believers', // Done
+  'Puritan Audio Devotionals', // Done
+  'Puritan Readings', // Done
+  'Ray Comfort Books', // Done
+  'Sadhu Sundar Singh', // Done
+  'St. Athanasius', // Done
+  'St. John of Damascus', // Done
+  'The Teaching of the Twelve Apostles', // Done
+  'Thomas a Kempis', // Done
+  'Thomas Boston', // Done
+  'Westminster Shorter Catechism', // Done
+  'Zac Poonen Books', // Done
 ];
 
 export const audioContributorsThatAreHyms = [
@@ -365,31 +355,17 @@ export const audioContributorsThatAreHyms = [
 ];
 
 export const audioContributorNamesToIgnore = [
-  'Audio Bible - NRSV',
-  'Audio Bible NT - KJV',
-  'A.W. Tozer Books',
-  'BJU Students and Faculty',
-  'C.S. Lewis Books',
-  '~ Christian Audio Books',
-  '~Miscellaneous',
-  '~Other Speakers A-F',
-  '~Other Speakers G-L',
-  '~Other Speakers M-R',
-  '~Other Speakers S-Z',
-  '~ Worship Songs And Hymns',
-  'Eusebius History of the Christian Church',
-  'Gayle Erwin Books',
-  'George Verwer Books',
-  'KJV Dramatized Audio Bible',
-  'K.P. Yohannan Books',
-  'Martyrs of the Catacombs',
-  'McCoy Singers - Scripturessay.com',
-  'Old Paths Newsletters',
-  'Principles For The Gathering of Believers',
-  'Proverbs',
-  'Puritan Audio Devotionals',
-  'Puritan Readings',
-  'Ray Comfort Books',
+  'BJU Students and Faculty', // Won't Do
+  'C.S. Lewis Books', // Done
+  '~ Christian Audio Books', // Done
+  '~Miscellaneous', // Won't Do
+  '~Other Speakers A-F', // Done
+  '~Other Speakers G-L', // Done
+  '~Other Speakers M-R', // Done
+  '~Other Speakers S-Z', // Done
+  '~ Worship Songs And Hymns', // Done
+  'Old Paths Newsletters', // Won't Do
+  'Proverbs', // Won't Do
   'Refine Conference 2011',
   'Revival Conference Atlanta 2008',
   'Revival Conference Barnsdall 2009',
@@ -404,19 +380,17 @@ export const audioContributorNamesToIgnore = [
   'Revival Conference Victoria 2010',
   'Revival Conference Wales 2009',
   'Revival Forum 89',
-  'Roy Hession Books',
+  'Roy Hession Books', // Done
   'SermonIndex.net Classics Podcast',
   'SermonIndex.net Simulcast 2011',
   'SermonIndex.net Simulcast 2012',
   'SermonIndex.net Simulcast 2013',
   'SermonIndex.net Simulcast 2018',
-  'The Old Paths',
-  'The Teaching of the Twelve Apostles',
-  'Unknown Speaker',
+  'The Old Paths', // Won't Do
+  'Unknown Speaker', // Done
   'Wales Conference',
-  'Westminster Shorter Catechism',
-  'Zac Poonen Books',
   ...audioContributorsThatAreHyms,
+  ...audioContributorsThatAreAudioBooks,
 ];
 
 export const audioSermonsToIgnore = [
@@ -472,7 +446,6 @@ export const videoContributorNamesToIgnore = [
   'Asia Harvest',
   'brother Jesse',
   'brother John',
-  'Brother Lawrence',
   'Christian Documentary',
   'Christ Our Life - Music',
   'Discernment Videos',
@@ -660,7 +633,7 @@ const outlinesOfChristianDoctrine = [
     category_id: 88,
     title: 'CHAPTER XI. the doctrine of the sacraments.',
   },
-];
+]; // Done
 
 // Owen Murphy: When God stepped down from heaven
 const whenGodSteppedDown = [
@@ -700,7 +673,7 @@ const whenGodSteppedDown = [
     title: 'Chapter Six: The challenge of the Hebrides',
   },
   // There are more chapters, but this is all we have
-];
+]; // Done
 
 // A.T. Pierson: GEORGE Müller OF BRISTOL
 const georgeMullerOfBristol = [
@@ -824,7 +797,7 @@ const georgeMullerOfBristol = [
     category_id: 158,
     title: 'Chapter 24. Last Looks, Backward And Forward',
   },
-];
+]; // Done
 
 // John Owen: Doctrine of Justification by Faith
 const justificationByFaith = [
@@ -925,7 +898,7 @@ const justificationByFaith = [
     category_id: 81,
     title: 'Chapter XX. The doctrine of the apostle James',
   },
-];
+]; // Done
 
 // J. Vyrnwy Morgan: The Welsh Religious Revival
 const theWelshRevival = [
@@ -949,9 +922,9 @@ const theWelshRevival = [
     category_id: 628,
     title: 'Chapter IV. Theology And The Revival.',
   },
-];
+]; // Done
 
-// St.Ambrose: Exposition of the Christian Faith
+// St. Ambrose: Exposition of the Christian Faith
 const expositionOfChristianFaith = [
   {
     id: 17951,
@@ -1073,7 +1046,7 @@ const expositionOfChristianFaith = [
     title:
       'CHAPTER XX. St. Ambrose declares his desire that some angel would fly to',
   },
-];
+]; // Done
 
 // Didache: The Teaching of the Twelve Apostles
 const theTeachOfTheTwelve = [
@@ -1157,7 +1130,7 @@ const theTeachOfTheTwelve = [
     category_id: 922,
     title: 'Chapter 16. Watchfulness; the Coming of the Lord',
   },
-];
+]; // Done
 
 // A.W. Pink: The Life of Faith
 const theLifeOfFaith = [
@@ -1211,7 +1184,7 @@ const theLifeOfFaith = [
     category_id: 76,
     title: 'THE LIFE OF FAITH  Chapter 10  Grace Preparing for glory',
   },
-];
+]; // Done
 
 // Basil Miller: George Muller - The Man of Faith
 const theManOfFaith = [
@@ -1325,7 +1298,7 @@ const theManOfFaith = [
     category_id: 82,
     title: 'The Ministry Expands: Chapter 9',
   },
-];
+]; // Done
 
 // Andrew Bonar: Robert Murray Mc'Cheyne
 const robertMurrayMcCheyne = [
@@ -1361,7 +1334,7 @@ const robertMurrayMcCheyne = [
     category_id: 1,
     title: "Robert Murray Mc'Cheyne - The Latter Days of His Ministry 160",
   },
-];
+]; // Done
 
 // Blaise Pascal: Pensées
 const pensees = [
@@ -1435,7 +1408,7 @@ const pensees = [
     category_id: 472,
     title: 'SECTION XIV: APPENDIX: POLEMICAL FRAGMENTS',
   },
-];
+]; // Done
 
 // Alexander of Lycopolis: Of the Manicheans
 const theManicheans = [
@@ -1559,7 +1532,7 @@ const theManicheans = [
     category_id: 726,
     title: 'CHAP. XXVI.--THE MUCH-TALKED-OF FIRE OF THE',
   },
-];
+]; // Done
 
 // John Owen: Two Short Catetchisms
 const twoShortCatetchisms = [
@@ -1702,7 +1675,7 @@ const twoShortCatetchisms = [
     title:
       'Chap. XXVII. — Of the Last Privilege of Believers, — being the Door of Entrance into Glory',
   },
-];
+]; // Done
 
 // D.M Phillips: Even Roberts
 const evenRoberts = [
@@ -1854,7 +1827,7 @@ const evenRoberts = [
     category_id: 619,
     title: 'XXVI. The Epistles Of The Dawn Of The Revival At Loughor (cont.)',
   },
-];
+]; // Done
 
 // Arno Clemens Gaebelein: Gaebelein's Annotated Bible
 const clemensCommentary = [
@@ -2633,7 +2606,7 @@ const clemensCommentary = [
     category_id: 1060,
     title: 'Studies in Zechariah - Chapter 14',
   },
-];
+]; // Won't Do
 
 // Chuck Smith
 const chuchSmithCommentary = [
@@ -4242,7 +4215,7 @@ const chuchSmithCommentary = [
     category_id: 634,
     title: 'Commentary on Revelation 21-22',
   },
-];
+]; // Won't Do
 
 // Charles Wesley Hyms
 const wesleyHymns = [
@@ -8070,7 +8043,7 @@ const wesleyHymns = [
     category_id: 99,
     title: 'PLUNGED in a gulf of dark despair We wretched sinners lay',
   },
-];
+]; // Done
 
 // J.R. Miller: Devotions
 const millarDevotions = [
@@ -9894,7 +9867,7 @@ const millarDevotions = [
     category_id: 241,
     title: 'December 31. Follow Me',
   },
-];
+]; // Future
 
 export const textSermonsToIgnore = [
   {

@@ -1,20 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsOptional, IsPositive, IsString, Max } from 'class-validator';
 import { SortOrder } from 'src/common/types/sort-order.enum';
 import { TopicSortBy } from '../topic.types';
 
 export class TopicRequest {
-  @IsOptional()
   @ApiProperty({
-    description: 'A topic name',
+    description: 'The full or partial name of a topic',
     type: String,
     required: false,
   })
+  @IsOptional()
+  @IsString()
   name: string;
 
-  @IsEnum(TopicSortBy)
-  @IsOptional()
   @ApiProperty({
     description: 'A property to sort topics by',
     type: String,
@@ -22,11 +21,10 @@ export class TopicRequest {
     enum: TopicSortBy,
     default: TopicSortBy.Name,
   })
+  @IsEnum(TopicSortBy)
+  @IsOptional()
   sortBy: TopicSortBy = TopicSortBy.Name;
 
-  @IsEnum(SortOrder)
-  @IsOptional()
-  @Transform(({ value }) => value.toLowerCase())
   @ApiProperty({
     description: 'The order to sort in',
     type: String,
@@ -34,5 +32,15 @@ export class TopicRequest {
     enum: SortOrder,
     default: SortOrder.Asc,
   })
+  @IsEnum(SortOrder)
+  @IsOptional()
+  @Transform(({ value }) => value.toLowerCase())
   sortOrder: SortOrder = SortOrder.Asc;
+
+  // TODO: Paginate this request
+  @IsOptional()
+  @IsPositive()
+  @Max(5000)
+  @Transform(({ value }) => parseInt(value))
+  limit?: number;
 }

@@ -1,0 +1,43 @@
+model PublishedBook {
+  id String @id @default(uuid())
+  originalId String?
+
+  title String @db.Citext
+
+  contributor Contributor @relation(fields: [contributorId], references: [id], onDelete: Cascade)
+  contributorId String
+
+  mediaType MediaType @default(TEXT)
+
+  chapters PublishedChapter[]
+}
+
+model PublishedChapter {
+  @@unique([bookId, number])
+
+  id String @id @default(uuid())
+  originalId String?
+  originalMediaId String?
+
+  book PublishedBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookId String
+
+  title String @db.Citext
+  text String
+  number Int
+
+  urls PublishedChapterMedia[]
+}
+
+model PublishedChapterMedia {
+  id Int @default(autoincrement()) @id
+
+  source MediaSource
+  format MediaFormat
+  type MediaType
+
+  bookChapter PublishedChapter @relation(fields: [bookChapterId], references: [id], onDelete: Cascade)
+  bookChapterId String
+
+  url String
+}

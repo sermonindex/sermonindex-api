@@ -1,28 +1,25 @@
 model Sermon {
   @@unique([title, contributorId])
 
-  id Int @default(autoincrement()) @id
+  id String @id @default(uuid())
   originalId String?
+  originalMediaId String?
 
-  contributor Contributor @relation(fields: [contributorId], references: [id])
-  contributorId Int
+  contributor Contributor @relation(fields: [contributorId], references: [id], onDelete: Cascade)
+  contributorId String
 
   title String @db.Citext
   description String?
 
   mediaType MediaType
   urls SermonMedia[]
-  length Int?
+  duration Int @default(0)
+  views Int @default(0)
 
   bibleReferences SermonBibleReference[]
   topics Topic[]
   transcript SermonText?
-
-  hits Int @default(0)
-  featured Boolean @default(false)
-  previouslyFeatured Boolean @default(false)
-
-  preachedAt DateTime?
+  featured FeaturedSermon?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -35,10 +32,10 @@ model SermonMedia {
   format MediaFormat
   type MediaType
 
-  sermon Sermon @relation(fields: [sermonId], references: [id])
-  sermonId Int
+  sermon Sermon @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  sermonId String
 
-  url String @db.Citext
+  url String
 }
 
 model SermonBibleReference {
@@ -54,8 +51,8 @@ model SermonBibleReference {
 
   text String
 
-  sermon Sermon @relation(fields: [sermonId], references: [id])
-  sermonId Int
+  sermon Sermon @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  sermonId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -64,11 +61,20 @@ model SermonBibleReference {
 model SermonText {
   id Int @default(autoincrement()) @id
 
-  sermon Sermon @relation(fields: [sermonId], references: [id])
-  sermonId Int @unique
+  sermon Sermon @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  sermonId String @unique
 
   text String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model FeaturedSermon {
+  id Int @default(autoincrement()) @id
+
+  sermon Sermon @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  sermonId String @unique
+
+  createdAt DateTime @default(now())
 }

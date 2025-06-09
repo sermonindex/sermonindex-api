@@ -3,21 +3,28 @@ enum ContributorType {
   CONFERENCE
 }
 
+enum ContributorContent {
+  SERMONS
+  HYMNS
+  BOOKS
+}
+
 model Contributor {
-  id Int     @default(autoincrement()) @id
+  id String @id @default(uuid())
+  originalId String?
 
+  slug String @unique @db.Citext
   fullName String @unique @db.Citext
-  fullNameSlug String @unique @db.Citext
 
-  description String? // todo: bio
-  imageUrl String? // todo: profileImage & make required
-  featured Boolean @default(false)
-
+  bio String?
+  imageUrl String?
   type ContributorType @default(INDIVIDUAL)
+  featured FeaturedContributor[]
 
   images ContributorImage[]
   sermons Sermon[]
   hymns Hymn[]
+  books PublishedBook[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -27,8 +34,8 @@ model ContributorImage {
   id Int @default(autoincrement()) @id
   originalId Int?
 
-  contributor Contributor @relation(fields: [contributorId], references: [id])
-  contributorId Int
+  contributor Contributor @relation(fields: [contributorId], references: [id], onDelete: Cascade)
+  contributorId String
 
   url String @db.Citext
 
@@ -36,5 +43,18 @@ model ContributorImage {
   description String?
 
   takenAt DateTime?
+  createdAt DateTime @default(now())
+}
+
+model FeaturedContributor {
+  @@unique([contributorId, content])
+
+  id Int @default(autoincrement()) @id
+
+  contributor Contributor @relation(fields: [contributorId], references: [id], onDelete: Cascade)
+  contributorId String
+
+  content ContributorContent
+
   createdAt DateTime @default(now())
 }
