@@ -102,7 +102,6 @@ export class ContributorsController {
   })
   @ApiParam({
     name: 'slug',
-    example: 'francis-chan',
     description: 'The slug of the contributor to retrieve',
     type: String,
   })
@@ -167,7 +166,6 @@ export class ContributorsController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
     description: 'The id of the contributor to update',
     type: String,
   })
@@ -189,7 +187,6 @@ export class ContributorsController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
     description: 'The id of the contributor to delete',
     type: String,
   })
@@ -206,7 +203,6 @@ export class ContributorsController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
     description: 'The id of the contributor to delete',
     type: String,
   })

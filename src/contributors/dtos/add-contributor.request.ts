@@ -5,7 +5,6 @@ export class AddContributorRequest {
   @ApiProperty({
     type: String,
     description: 'Full name of the contributor',
-    example: 'Francis Chan',
   })
   @IsString()
   fullName: string;
@@ -13,7 +12,6 @@ export class AddContributorRequest {
   @ApiProperty({
     type: String,
     description: 'A brief biography of the contributor',
-    example: 'Francis Chan is a pastor, author, and speaker...',
   })
   @IsString()
   bio: string;
@@ -21,8 +19,7 @@ export class AddContributorRequest {
   @ApiProperty({
     type: String,
     description: 'Link to the contributor image',
-    example: 'https://sermonindex3.b-cdn.net/pdf/francischan2.jpg',
-    default: 'https://sermonindex1.b-cdn.net/default-si-speaker.png',
+    example: 'https://sermonindex1.b-cdn.net/default-si-speaker.png',
   })
   @IsString()
   imageUrl: string = 'https://sermonindex1.b-cdn.net/default-si-speaker.png';

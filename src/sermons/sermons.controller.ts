@@ -48,7 +48,6 @@ export class SermonsController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
     description: 'The id of the sermon to retrieve',
     type: String,
   })
@@ -103,7 +102,6 @@ export class SermonsController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
     description: 'The id of the sermon to add to the featured list',
     type: String,
   })
@@ -122,7 +120,6 @@ export class SermonsController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
     description: 'The id of the sermon to delete',
     type: String,
   })

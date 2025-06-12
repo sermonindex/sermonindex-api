@@ -51,7 +51,6 @@ export class TopicsController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
     description: 'The id of the topic to retrieve',
     type: String,
   })
@@ -75,7 +74,6 @@ export class TopicsController {
   })
   @ApiParam({
     name: 'slug',
-    example: 'end-times',
     description: 'The slug of the topic to retrieve',
     type: String,
   })
@@ -114,7 +112,6 @@ export class TopicsController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
     description: 'The id of the topic to delete',
     type: String,
   })
