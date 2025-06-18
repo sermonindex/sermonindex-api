@@ -14,19 +14,17 @@ npx prisma generate
 
 ## Setting up the Database
 
-Unfortunately the database dump is too large to host on GitHub. You'll need to download it from [here](https://drive.google.com/file/d/1xGUHcElaS9ldEWaeSgbjxKi9dI1y9olK/view?usp=drive_link), extract it, and save it in the project's root directory. Currently we're using all the production data to get a better feel for what the POC will look like, but in the future the api will only seed a small amount of data into a container for test purposes and this step will no longer be required for api development.
-
-Once you've downloaded the database dump:
+Once you've downloaded and extracted the database dump:
 
 ```bash
 # Start the postgresql container (use --force-recreate to start from scratch)
 docker-compose up
 
 # Seed the data
-docker exec -i si-api-pgsql-1 psql --echo-errors -U root -d sermonindex_local < ./sermonindex.sql
+docker exec -i sermonindex-api-pgsql-1 psql --echo-errors -U root -d sermonindex_local < ./sermonindex.sql
 ```
 
-**Note:**: If you've setup the db before with the previous methods, you'll need to destroy the postgres container: `docker rm si-api-pgsql-1`
+**Note:**: If you've setup the db before with the previous methods, you'll need to destroy the postgres container: `docker rm sermonindex-api-pgsql-1`
 
 ## Dumping the Database
 
@@ -80,15 +78,3 @@ npm run test:e2e
 # test coverage
 npm run test:cov
 ```
-
-## TODOs
-
-- add language column to sermons in prep for multi-language support
-- pull out Martyrs of the Catacombs
-- remove duplicate/misspelt topics
-- remove csv-parse, jsdom, @types/jsdom, titlecase dependencies once db scrubbing complete
-- unique visits/hits/downloads by IP
-- finish pagination
-- swagger docs
-- api client
-- contract tests
