@@ -74,6 +74,27 @@ export class CommentaryService {
     });
   }
 
+  async getCommentaryById(params: {
+    where: Prisma.CommentaryWhereUniqueInput;
+  }) {
+    const { where } = params;
+
+    const result = await this.db.commentary.findUnique({
+      where,
+      include: {
+        books: {
+          orderBy: {
+            order: 'asc',
+          },
+        },
+      },
+    });
+
+    if (!result) return null;
+
+    return result;
+  }
+
   async getCommentaryByChapter(params: {
     where: Prisma.CommentaryChapterWhereInput;
   }) {

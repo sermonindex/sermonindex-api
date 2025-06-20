@@ -18,7 +18,7 @@ export class CommentaryController {
   constructor(private readonly commentaryService: CommentaryService) {}
 
   @Get('/')
-  async getCommentaryBooks(
+  async getCommentaries(
     @Query('language') language: string,
   ): Promise<ListCommentaryResponse> {
     const result = await this.commentaryService.getCommentaries({
@@ -85,6 +85,21 @@ export class CommentaryController {
     return {
       values: result.map((verse) => CommentaryVerseResponse.fromDB(verse)),
     };
+  }
+
+  @Get('/:language/:commentaryId')
+  async getCommentaryById(
+    @Param('language') language: string,
+    @Param('commentaryId') commentaryId: string,
+  ) {
+    const result = await this.commentaryService.getCommentaryById({
+      where: {
+        language: language,
+        id: commentaryId,
+      },
+    });
+
+    return result;
   }
 
   @Get('/:language/:commentaryId/:book/:chapter')
