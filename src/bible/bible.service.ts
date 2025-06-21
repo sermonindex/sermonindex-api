@@ -249,9 +249,18 @@ export class BibleService {
         : null;
     }
 
+    // TODO: Remove this once the db is updated
+    let streamUrl = result.audioUrls.find((u) => u.reader === 'gilbert')?.url;
+    if (streamUrl) {
+      streamUrl = streamUrl.replace(
+        'https://openbible.com/audio/gilbert/',
+        'https://sermonindex1.b-cdn.net/bsb-audio/',
+      );
+    }
+
     return {
       ...result,
-      streamUrl: result.audioUrls.find(u => u.reader === 'gilbert')?.url,
+      streamUrl,
       translationName: result.translation.name,
       nextChapterNumber,
       nextBookId,
