@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationResponse } from 'src/common/dtos/pagination.response';
 import { ContributorInfoResponse } from './contributor-info.response';
 
 export class ListContributorResponse {
@@ -8,3 +9,5 @@ export class ListContributorResponse {
   })
   values: ContributorInfoResponse[];
 }
+
+export class ListContributorResponsePaged extends PaginationResponse {}

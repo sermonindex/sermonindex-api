@@ -11,7 +11,7 @@ import {
   Sermon,
 } from '@prisma/client';
 import AwokenRef from 'awoken-bible-reference';
-import { PaginationDTO } from 'src/common/dtos/pagination.dto';
+import { PaginationRequest } from 'src/common/dtos/pagination.request';
 import { getMediaFormat } from 'src/common/get-media-format.fn';
 import { DatabaseService } from 'src/database/database.service';
 import { AddSermonRequest } from './dtos/add-sermon.request';
@@ -202,7 +202,7 @@ export class SermonsService {
     };
   }
 
-  async listFeaturedSermons(query: PaginationDTO) {
+  async listFeaturedSermons(query: PaginationRequest) {
     const { limit = 25, offset = 0 } = query;
 
     const [result, totalCount] = await this.db.$transaction([

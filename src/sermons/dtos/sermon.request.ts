@@ -9,11 +9,11 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { PaginationDTO } from 'src/common/dtos/pagination.dto';
+import { PaginationRequest } from 'src/common/dtos/pagination.request';
 import { SortOrder } from 'src/common/types/sort-order.enum';
 import { SermonSortBy } from '../sermon.types';
 
-export class SermonRequest extends PaginationDTO {
+export class SermonRequest extends PaginationRequest {
   @ApiProperty({
     description: 'The id of a sermon',
     type: String,

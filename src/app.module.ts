@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { BibleModule } from './bible/bible.module';
-import { BookModule } from './books/book.module';
+import { BooksModule } from './books/books.module';
 import { CommentaryModule } from './commentary/commentary.module';
 import { ConfigModule } from './config/config.module';
 import { ContributorsModule } from './contributors/contributors.module';
@@ -19,7 +19,7 @@ import { TopicsModule } from './topics/topics.module';
     HymnsModule,
     SermonsModule,
     TopicsModule,
-    BookModule,
+    BooksModule,
   ],
   controllers: [],
   providers: [],

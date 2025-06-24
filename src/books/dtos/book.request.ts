@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { MediaType } from '@prisma/client';
+import { Transform } from 'class-transformer';
+import { IsArray, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
+import { PaginationRequest } from 'src/common/dtos/pagination.request';
 
-export class BookRequest {
+export class BookRequest extends PaginationRequest {
   @ApiProperty({
     description: 'The full or partial title of a book',
     type: String,
@@ -37,4 +40,16 @@ export class BookRequest {
   @IsOptional()
   @IsString()
   contributorFullName: string;
+
+  @ApiProperty({
+    description: 'The type of media the book is in',
+    enum: MediaType,
+    type: String,
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsEnum(MediaType, { each: true })
+  @Transform(({ value }) => String(value).split(','))
+  mediaType: MediaType[];
 }

@@ -1,10 +1,10 @@
 import { Transform } from 'class-transformer';
 import { IsOptional, IsPositive, Max, Min } from 'class-validator';
 
-export class PaginationDTO {
+export class PaginationRequest {
   @IsOptional()
   @IsPositive()
-  @Max(50)
+  @Max(25)
   @Transform(({ value }) => parseInt(value))
   limit?: number;
 

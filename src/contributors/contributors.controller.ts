@@ -22,10 +22,12 @@ import { ContributorContent } from '@prisma/client';
 import { ApiKeyAuthGuard } from 'src/auth/api-key-auth.guard';
 import { ContributorsService } from './contributors.service';
 import { AddContributorRequest } from './dtos/add-contributor.request';
-import { ContributorInfoResponse } from './dtos/contributor-info.response';
 import { ContributorRequest } from './dtos/contributor.request';
 import { ContributorResponse } from './dtos/contributor.response';
-import { ListContributorResponse } from './dtos/list-contributor.response';
+import {
+  ListContributorResponse,
+  ListContributorResponsePaged,
+} from './dtos/list-contributor.response';
 
 @Controller('contributors')
 export class ContributorsController {
@@ -37,16 +39,10 @@ export class ContributorsController {
     operationId: 'listContributors',
   })
   @ApiOkResponse({
-    type: ListContributorResponse,
+    type: ListContributorResponsePaged,
   })
   async listContributors(@Query() query: ContributorRequest) {
-    const result = await this.contributorsService.listContributors(query);
-
-    return {
-      values: result.map((contributor) =>
-        ContributorInfoResponse.fromDB(contributor),
-      ),
-    };
+    return this.contributorsService.listContributors(query);
   }
 
   @Get('/featured/content/:content')

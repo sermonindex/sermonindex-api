@@ -18,9 +18,9 @@ import {
   ApiSecurity,
 } from '@nestjs/swagger';
 import { ApiKeyAuthGuard } from 'src/auth/api-key-auth.guard';
-import { PaginationDTO } from 'src/common/dtos/pagination.dto';
+import { PaginationRequest } from 'src/common/dtos/pagination.request';
 import { AddSermonRequest } from './dtos/add-sermon.request';
-import { ListSermonResponse } from './dtos/list-sermon.response';
+import { ListSermonResponsePaged } from './dtos/list-sermon.response';
 import { SermonRequest } from './dtos/sermon.request';
 import { SermonResponse } from './dtos/sermon.response';
 import { SermonsService } from './sermons.service';
@@ -31,11 +31,11 @@ export class SermonsController {
 
   @Get('/')
   @ApiOperation({
-    summary: 'Retrieve a list of sermons with optional filters (max 50)',
+    summary: 'Retrieve a list of sermons with optional filters (max 25)',
     operationId: 'listSermons',
   })
   @ApiOkResponse({
-    type: ListSermonResponse,
+    type: ListSermonResponsePaged,
   })
   async listSermons(@Query() query: SermonRequest) {
     return this.sermonService.listSermons(query);
@@ -76,9 +76,9 @@ export class SermonsController {
     operationId: 'listFeaturedSermon',
   })
   @ApiOkResponse({
-    type: ListSermonResponse,
+    type: ListSermonResponsePaged,
   })
-  async getFeaturedSermon(@Query() query: PaginationDTO) {
+  async getFeaturedSermon(@Query() query: PaginationRequest) {
     return this.sermonService.listFeaturedSermons(query);
   }
 

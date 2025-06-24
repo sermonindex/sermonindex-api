@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ContributorContent } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString, Max } from 'class-validator';
+import { PaginationRequest } from 'src/common/dtos/pagination.request';
 import { ContributorSortBy } from 'src/contributors/contributor.types';
 import { SortOrder } from '../../common/types/sort-order.enum';
 
-export class ContributorRequest {
+export class ContributorRequest extends PaginationRequest {
   @ApiProperty({
     description: 'The id of a contributor',
     type: String,
@@ -65,4 +66,7 @@ export class ContributorRequest {
   @IsOptional()
   @Transform(({ value }) => value.toLowerCase())
   sortOrder: SortOrder = SortOrder.Asc;
+
+  @Max(100)
+  limit?: number;
 }

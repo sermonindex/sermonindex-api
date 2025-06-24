@@ -6,22 +6,31 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { ApiExcludeController, ApiOperation, ApiParam } from '@nestjs/swagger';
-import { BookService } from './book.service';
+import {
+  ApiExcludeController,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+} from '@nestjs/swagger';
+import { BooksService } from './books.service';
 import { BookRequest } from './dtos/book.request';
+import { ListBookResponse } from './dtos/list-book.response';
 
 @Controller('books')
 @ApiExcludeController()
-export class BookController {
-  constructor(private readonly bookService: BookService) {}
+export class BooksController {
+  constructor(private readonly bookService: BooksService) {}
 
   @Get('/')
+  @ApiOperation({
+    summary: 'Retrieve a list of books with optional filters (max 25)',
+    operationId: 'listBooks',
+  })
+  @ApiOkResponse({
+    type: ListBookResponse,
+  })
   async getBooks(@Query() query: BookRequest) {
-    const result = await this.bookService.getBooks(query);
-
-    return {
-      values: result,
-    };
+    return this.bookService.getBooks(query);
   }
 
   @Get('/id/:id')

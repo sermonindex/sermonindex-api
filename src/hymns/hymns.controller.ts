@@ -11,7 +11,7 @@ export class HymnsController {
 
   @Get('/')
   @ApiOperation({
-    summary: 'Retrieve a list of hymns with optional filters (max 50)',
+    summary: 'Retrieve a list of hymns with optional filters',
     operationId: 'listHymns',
   })
   @ApiOkResponse({

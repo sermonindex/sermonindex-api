@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationResponse } from 'src/common/dtos/pagination.response';
 import { SermonInfoResponse } from './sermon-info.response';
 
 export class ListSermonResponse {
@@ -7,29 +8,6 @@ export class ListSermonResponse {
     type: [SermonInfoResponse],
   })
   values: SermonInfoResponse[];
-
-  @ApiProperty({
-    description: 'The total number of sermons',
-    type: Number,
-  })
-  total: number;
-
-  @ApiProperty({
-    description: 'The number of sermons per page',
-    type: Number,
-  })
-  limit: number;
-
-  @ApiProperty({
-    description: 'The offset of the current page',
-    type: Number,
-  })
-  offset: number;
-
-  @ApiProperty({
-    description: 'The next page of sermons',
-    type: Number,
-    nullable: true,
-  })
-  nextPage: number | null;
 }
+
+export class ListSermonResponsePaged extends PaginationResponse {}

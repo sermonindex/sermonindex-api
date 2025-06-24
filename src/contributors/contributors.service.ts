@@ -11,7 +11,7 @@ import {
 } from '@prisma/client';
 import { createSlug } from 'src/common/create-slug.fn';
 import { DatabaseService } from 'src/database/database.service';
-import { ContributorInfoType, ContributorSortBy } from './contributor.types';
+import { ContributorSortBy } from './contributor.types';
 import { AddContributorRequest } from './dtos/add-contributor.request';
 import { ContributorInfoResponse } from './dtos/contributor-info.response';
 import { ContributorRequest } from './dtos/contributor.request';
@@ -34,10 +34,17 @@ export class ContributorsService {
     });
   }
 
-  async listContributors(
-    query: ContributorRequest,
-  ): Promise<ContributorInfoType[]> {
-    const { id, slug, fullName, content, sortBy, sortOrder } = query;
+  async listContributors(query: ContributorRequest) {
+    const {
+      id,
+      slug,
+      fullName,
+      content,
+      sortBy,
+      sortOrder,
+      limit = 100,
+      offset = 0,
+    } = query;
 
     let orderBy: Prisma.ContributorOrderByWithRelationInput = {
       [sortBy]: sortOrder,
@@ -48,31 +55,48 @@ export class ContributorsService {
       };
     }
 
-    return this.db.contributor.findMany({
-      where: {
-        id,
-        slug,
-        fullName: { contains: fullName, mode: 'insensitive' },
-        hymns:
-          content && content === ContributorContent.HYMNS
-            ? { some: {} }
-            : undefined,
-        sermons:
-          content && content === ContributorContent.SERMONS
-            ? { some: {} }
-            : undefined,
-        books:
-          content && content === ContributorContent.BOOKS
-            ? { some: {} }
-            : undefined,
-      },
-      orderBy: orderBy,
-      include: {
-        _count: {
-          select: { sermons: true, hymns: true, books: true },
+    const where: Prisma.ContributorWhereInput = {
+      id,
+      slug,
+      fullName: { contains: fullName, mode: 'insensitive' },
+      hymns:
+        content && content === ContributorContent.HYMNS
+          ? { some: {} }
+          : undefined,
+      sermons:
+        content && content === ContributorContent.SERMONS
+          ? { some: {} }
+          : undefined,
+      books:
+        content && content === ContributorContent.BOOKS
+          ? { some: {} }
+          : undefined,
+    };
+
+    const [result, totalCount] = await this.db.$transaction([
+      this.db.contributor.findMany({
+        skip: offset,
+        take: limit,
+        where,
+        orderBy: orderBy,
+        include: {
+          _count: {
+            select: { sermons: true, hymns: true, books: true },
+          },
         },
-      },
-    });
+      }),
+      this.db.contributor.count({ where }),
+    ]);
+
+    return {
+      values: result.map((contributor) =>
+        ContributorInfoResponse.fromDB(contributor),
+      ),
+      total: totalCount,
+      limit,
+      offset,
+      nextPage: totalCount > offset + limit ? offset + limit : null,
+    };
   }
 
   async listFeaturedContributors(content: ContributorContent) {
