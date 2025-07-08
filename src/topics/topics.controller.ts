@@ -19,7 +19,6 @@ import {
 import { ApiKeyAuthGuard } from 'src/auth/api-key-auth.guard';
 import { AddTopicRequest } from './dtos/add-topic.request';
 import { ListTopicsResponse } from './dtos/list-topics.response';
-import { TopicInfoResponse } from './dtos/topic-info.response';
 import { TopicRequest } from './dtos/topic.request';
 import { TopicResponse } from './dtos/topic.response';
 import { TopicsService } from './topics.service';
@@ -37,11 +36,7 @@ export class TopicsController {
     type: ListTopicsResponse,
   })
   async listTopics(@Query() query: TopicRequest) {
-    const result = await this.topicsService.listTopics(query);
-
-    return {
-      values: result.map((topic) => TopicInfoResponse.fromDB(topic)),
-    };
+    return this.topicsService.listTopics(query);
   }
 
   @Get('/id/:id')

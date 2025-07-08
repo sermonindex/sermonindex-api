@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { createSlug } from 'src/common/create-slug.fn';
 import { DatabaseService } from 'src/database/database.service';
 import { AddTopicRequest } from './dtos/add-topic.request';
+import { TopicInfoResponse } from './dtos/topic-info.response';
 import { TopicRequest } from './dtos/topic.request';
 import { TopicSortBy } from './topic.types';
 
@@ -28,7 +29,7 @@ export class TopicsService {
   }
 
   async listTopics(query: TopicRequest) {
-    const { name, sortBy, sortOrder, limit } = query;
+    const { name, sortBy, sortOrder, limit = 100, offset = 0 } = query;
 
     let orderBy: Prisma.TopicOrderByWithRelationInput = { [sortBy]: sortOrder };
     if (sortBy === TopicSortBy.Sermons) {
@@ -37,18 +38,32 @@ export class TopicsService {
       };
     }
 
-    return this.db.topic.findMany({
-      where: {
-        name: { contains: name, mode: 'insensitive' },
-      },
-      orderBy: orderBy,
-      take: limit,
-      include: {
-        _count: {
-          select: { sermons: true },
+    const where: Prisma.TopicWhereInput = {
+      name: { contains: name, mode: 'insensitive' },
+    };
+
+    const [result, totalCount] = await this.db.$transaction([
+      this.db.topic.findMany({
+        skip: offset,
+        take: limit,
+        where,
+        orderBy: orderBy,
+        include: {
+          _count: {
+            select: { sermons: true },
+          },
         },
-      },
-    });
+      }),
+      this.db.topic.count({ where }),
+    ]);
+
+    return {
+      values: result.map((topic) => TopicInfoResponse.fromDB(topic)),
+      total: totalCount,
+      limit,
+      offset,
+      nextPage: totalCount > offset + limit ? offset + limit : null,
+    };
   }
 
   async addTopic(data: AddTopicRequest) {

@@ -10,4 +10,10 @@ export class ListSermonResponse {
   values: SermonInfoResponse[];
 }
 
-export class ListSermonResponsePaged extends PaginationResponse {}
+export class ListSermonResponsePaged extends PaginationResponse {
+  @ApiProperty({
+    description: 'A list of sermons',
+    type: [SermonInfoResponse],
+  })
+  values: SermonInfoResponse[];
+}
