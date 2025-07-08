@@ -34,6 +34,7 @@ const convertSchema = async () => {
   // await insertVerseSummaries(prisma);
   // await insertTopicSummaries(prisma);
   // await insertSermonLengths(prisma);
+  // await insertHymnLengths(prisma);
   // await updateContributors(prisma);
   // await findMissingVideoTranscripts(prisma);
   // await addFeaturedContributors(prisma);
