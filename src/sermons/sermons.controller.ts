@@ -12,6 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiExcludeEndpoint,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -54,13 +55,7 @@ export class SermonsController {
   @ApiOkResponse({
     type: SermonResponse,
   })
-  async getSermonById(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Ip() ip: string,
-  ) {
-    // TODO: update the views count in the database
-    console.log(ip);
-
+  async getSermonById(@Param('id', new ParseUUIDPipe()) id: string) {
     const result = await this.sermonService.getSermon(id);
 
     if (!result) {
@@ -80,6 +75,15 @@ export class SermonsController {
   })
   async getFeaturedSermon(@Query() query: PaginationRequest) {
     return this.sermonService.listFeaturedSermons(query);
+  }
+
+  @Post('/viewed/id/:id')
+  @ApiExcludeEndpoint()
+  async recordSermonView(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Ip() ip: string,
+  ) {
+    return this.sermonService.recordSermonView(id, ip);
   }
 
   @Post('/')

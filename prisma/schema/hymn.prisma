@@ -16,6 +16,8 @@ model Hymn {
   duration Int @default(0)
   views Int @default(0)
 
+  recentViews RecentHymnView[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -31,4 +33,14 @@ model HymnMedia {
   hymnId String
 
   url String @db.Citext
+}
+
+model RecentHymnView {
+  id        String @id @default(uuid())
+  ipAddress String
+
+  hymn Hymn @relation(fields: [hymnId], references: [id], onDelete: Cascade)
+  hymnId String
+
+  createdAt DateTime @default(now())
 }

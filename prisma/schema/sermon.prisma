@@ -19,7 +19,9 @@ model Sermon {
   bibleReferences SermonBibleReference[]
   topics Topic[]
   transcript SermonText?
+
   featured FeaturedSermon?
+  recentViews RecentSermonView[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,5 +78,15 @@ model FeaturedSermon {
   sermon Sermon @relation(fields: [sermonId], references: [id], onDelete: Cascade)
   sermonId String @unique
 
+  createdAt DateTime @default(now())
+}
+
+model RecentSermonView {
+  id        String @id @default(uuid())
+  ipAddress String
+  
+  sermonId  String
+  sermon    Sermon @relation(fields: [sermonId], references: [id], onDelete: Cascade)
+  
   createdAt DateTime @default(now())
 }

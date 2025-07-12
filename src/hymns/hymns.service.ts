@@ -25,4 +25,32 @@ export class HymnsService {
       },
     });
   }
+
+  async recordHymnView(id: string, ip: string) {
+    const recentlyViewed = await this.db.recentHymnView.findFirst({
+      where: {
+        hymnId: id,
+        ipAddress: ip,
+        createdAt: {
+          gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        },
+      },
+    });
+
+    if (!recentlyViewed) {
+      await this.db.recentHymnView.create({
+        data: {
+          hymnId: id,
+          ipAddress: ip,
+        },
+      });
+
+      await this.db.hymn.update({
+        where: { id },
+        data: { views: { increment: 1 } },
+      });
+    }
+
+    return { status: 'OK' };
+  }
 }

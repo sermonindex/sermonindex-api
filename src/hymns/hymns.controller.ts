@@ -1,5 +1,17 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Ip,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiExcludeEndpoint,
+  ApiOkResponse,
+  ApiOperation,
+} from '@nestjs/swagger';
 import { HymnRequest } from './dtos/hymn.request';
 import { HymnResponse } from './dtos/hymn.response';
 import { ListHymnResponse } from './dtos/list-hymn.response';
@@ -23,5 +35,14 @@ export class HymnsController {
     return {
       values: result.map((hymn) => HymnResponse.fromDB(hymn)),
     };
+  }
+
+  @Post('/viewed/id/:id')
+  @ApiExcludeEndpoint()
+  async recordSermonView(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Ip() ip: string,
+  ) {
+    return this.hymnsService.recordHymnView(id, ip);
   }
 }
