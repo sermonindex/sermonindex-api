@@ -77,6 +77,18 @@ export class SermonsController {
     return this.sermonService.listFeaturedSermons(query);
   }
 
+  @Get('/viewed')
+  @ApiOperation({
+    summary: 'Retrieve a list of recently viewed sermons',
+    operationId: 'listRecentlyViewedSermons',
+  })
+  @ApiOkResponse({
+    type: ListSermonResponsePaged,
+  })
+  async listRecentlyViewedSermons(@Query() query: PaginationRequest) {
+    return this.sermonService.listRecentlyViewedSermons(query);
+  }
+
   @Post('/viewed/id/:id')
   @ApiExcludeEndpoint()
   async recordSermonView(

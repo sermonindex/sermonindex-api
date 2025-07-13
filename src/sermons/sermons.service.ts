@@ -235,6 +235,37 @@ export class SermonsService {
     };
   }
 
+  async listRecentlyViewedSermons(query: PaginationRequest) {
+    const { limit = 25, offset = 0 } = query;
+
+    const [result, totalCount] = await this.db.$transaction([
+      this.db.recentSermonView.findMany({
+        skip: offset,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          sermon: {
+            include: {
+              contributor: true,
+              urls: true,
+              bibleReferences: true,
+              topics: true,
+            },
+          },
+        },
+      }),
+      this.db.recentSermonView.count(),
+    ]);
+
+    return {
+      values: result.map((view) => SermonInfoResponse.fromDB(view.sermon)),
+      total: totalCount,
+      limit,
+      offset,
+      nextPage: totalCount > offset + limit ? offset + limit : null,
+    };
+  }
+
   async recordSermonView(id: string, ip: string) {
     const recentlyViewed = await this.db.recentSermonView.findFirst({
       where: {
