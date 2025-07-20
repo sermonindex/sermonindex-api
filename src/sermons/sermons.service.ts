@@ -238,10 +238,11 @@ export class SermonsService {
   async listRecentlyViewedSermons(query: PaginationRequest) {
     const { limit = 25, offset = 0 } = query;
 
-    const [result, totalCount] = await this.db.$transaction([
+    const [result, total] = await this.db.$transaction([
       this.db.recentSermonView.findMany({
         skip: offset,
         take: limit,
+        distinct: ['sermonId'],
         orderBy: { createdAt: 'desc' },
         include: {
           sermon: {
@@ -254,8 +255,12 @@ export class SermonsService {
           },
         },
       }),
-      this.db.recentSermonView.count(),
+      this.db.$queryRaw`
+        SELECT COUNT(DISTINCT rv."sermonId")
+        FROM "RecentSermonView" rv;
+      `,
     ]);
+    const totalCount = Number((total as { count: BigInt }[])[0]?.count) || 0;
 
     return {
       values: result.map((view) => SermonInfoResponse.fromDB(view.sermon)),
