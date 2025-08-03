@@ -1,23 +1,12 @@
-import {
-  Controller,
-  Get,
-  NotFoundException,
-  Param,
-  ParseUUIDPipe,
-  Query,
-} from '@nestjs/common';
-import {
-  ApiExcludeController,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-} from '@nestjs/swagger';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ApiOkResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { BooksService } from './books.service';
+import { BookChapterResponse } from './dtos/book-chapter.response';
+import { BookInfoResponseData } from './dtos/book-info.response';
 import { BookRequest } from './dtos/book.request';
 import { ListBookResponse } from './dtos/list-book.response';
 
 @Controller('books')
-@ApiExcludeController()
 export class BooksController {
   constructor(private readonly bookService: BooksService) {}
 
@@ -40,21 +29,15 @@ export class BooksController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
+    example: 'H2n9Xr1XDe2fnqES',
     description: 'The id of the book to retrieve',
     type: String,
   })
-  // @ApiOkResponse({
-  //   type: SermonResponse,
-  // })
-  async getBookById(@Param('id', new ParseUUIDPipe()) id: string) {
-    const result = await this.bookService.getBook(id);
-
-    if (!result) {
-      throw new NotFoundException(`Book with ID ${id} not found`);
-    }
-
-    return result;
+  @ApiOkResponse({
+    type: BookInfoResponseData,
+  })
+  async getBookById(@Param('id') id: string) {
+    return this.bookService.getBook(id);
   }
 
   @Get('/id/:id/chapter/:chapter')
@@ -64,23 +47,23 @@ export class BooksController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
+    example: 'H2n9Xr1XDe2fnqES',
     description: 'The id of the book to retrieve',
     type: String,
   })
-  // @ApiOkResponse({
-  //   type: SermonResponse,
-  // })
+  @ApiParam({
+    name: 'chapter',
+    example: '1',
+    description: 'The chapter number to retrieve',
+    type: String,
+  })
+  @ApiOkResponse({
+    type: BookChapterResponse,
+  })
   async getBookChapter(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id') id: string,
     @Param('chapter') chapter: number,
   ) {
-    const result = await this.bookService.getBookChapter(id, chapter);
-
-    if (!result) {
-      throw new NotFoundException(`Chapter ${chapter} not found`);
-    }
-
-    return result;
+    return await this.bookService.getBookChapter(id, chapter);
   }
 }

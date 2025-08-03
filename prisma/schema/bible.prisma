@@ -34,6 +34,8 @@ model Translation {
     verses       ChapterVerse[]
     footnotes    ChapterFootnote[]
     audioUrls    ChapterAudioUrl[]
+
+    @@index([language, shortName])
 }
 
 model Commentary {
@@ -52,6 +54,8 @@ model Commentary {
     books        CommentaryBook[]
     chapters     CommentaryChapter[]
     verses       CommentaryChapterVerse[]
+
+    @@index([id, language])
 }
 
 model InputFile {
@@ -136,6 +140,7 @@ model Chapter {
     audioUrls ChapterAudioUrl[]
 
     @@id([translationId, bookId, number])
+    @@index([bookId, number])
 }
 
 model CommentaryChapter {
@@ -156,6 +161,7 @@ model CommentaryChapter {
     verses CommentaryChapterVerse[]
 
     @@id([commentaryId, bookId, number])
+    @@index([bookId, number])
 }
 
 model ChapterAudioUrl {
@@ -172,6 +178,7 @@ model ChapterAudioUrl {
     url String
 
     @@id([translationId, bookId, number, reader])
+    @@index([bookId, number])
 }
 
 model ChapterVerse {
@@ -195,6 +202,7 @@ model ChapterVerse {
     footnotes ChapterFootnote[]
 
     @@id([translationId, bookId, chapterNumber, number])
+    @@index([bookId, chapterNumber, number])
 }
 
 model CommentaryChapterVerse {
@@ -216,6 +224,7 @@ model CommentaryChapterVerse {
     sha256 String?
 
     @@id([commentaryId, bookId, chapterNumber, number])
+    @@index([bookId, chapterNumber, number])
 }
 
 model ChapterFootnote {
@@ -239,4 +248,5 @@ model ChapterFootnote {
     verse ChapterVerse? @relation(fields: [translationId, bookId, chapterNumber, verseNumber], references: [translationId, bookId, chapterNumber, number])
 
     @@id([translationId, bookId, chapterNumber, id])
+    @@index([bookId, chapterNumber, id])
 }

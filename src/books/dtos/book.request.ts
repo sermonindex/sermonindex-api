@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaType } from '@prisma/client';
 import { Transform } from 'class-transformer';
-import { IsArray, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
 import { PaginationRequest } from 'src/common/dtos/pagination.request';
 
 export class BookRequest extends PaginationRequest {
@@ -20,7 +20,7 @@ export class BookRequest extends PaginationRequest {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @IsString()
   contributorId: string;
 
   @ApiProperty({

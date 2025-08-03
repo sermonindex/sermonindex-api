@@ -1,7 +1,5 @@
 model Hymn {
-  @@unique([title, contributorId])
-
-  id String @id @default(uuid())
+  id   String @id @default(nanoid(16))
   originalId String?
   originalMediaId String?
 
@@ -11,7 +9,8 @@ model Hymn {
   title String @db.Citext
   lyrics String? @db.Citext
 
-  mediaType MediaType
+  mediaType MediaType @default(AUDIO)
+
   urls HymnMedia[]
   duration Int @default(0)
   views Int @default(0)
@@ -20,6 +19,10 @@ model Hymn {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([title, contributorId])
+  @@index([contributorId])
+  @@index([views])
 }
 
 model HymnMedia {
@@ -33,14 +36,18 @@ model HymnMedia {
   hymnId String
 
   url String @db.Citext
+
+  @@index([hymnId])
 }
 
 model RecentHymnView {
-  id        String @id @default(uuid())
+  id Int @default(autoincrement()) @id
   ipAddress String
 
   hymn Hymn @relation(fields: [hymnId], references: [id], onDelete: Cascade)
   hymnId String
 
   createdAt DateTime @default(now())
+
+  @@index([hymnId])
 }

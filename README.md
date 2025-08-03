@@ -66,6 +66,27 @@ npm run start:dev
 npm run start:prod
 ```
 
+## Deploying the database
+
+```bash
+
+docker run --rm -it \
+    --network host \
+    -v ./:/backup \
+    postgres:16 \
+    pg_dump -U root -h localhost -Fc -f /backup/sermonindex.pgsql sermonindex_local
+
+docker run --rm \
+  -v $(pwd):/backup \
+  postgres:16 \
+  pg_restore \
+    -d "DATABASE_URL" \
+    --jobs=4 \
+    --no-owner \
+    -v \
+    /backup/sermonindex.pgsql
+```
+
 ## Test
 
 ```bash

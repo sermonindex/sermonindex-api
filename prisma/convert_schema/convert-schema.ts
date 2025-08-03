@@ -6,6 +6,7 @@ const convertSchema = async () => {
   // await convertAudioSermons(prisma);
   // await convertVideoSermons(prisma);
   // await convertTextSermons(prisma);
+  // await insertMissingMetadata(prisma);
   // Get all the contributors with no sermons
   // const contributors = await prisma.contributor.findMany({
   //   where: {

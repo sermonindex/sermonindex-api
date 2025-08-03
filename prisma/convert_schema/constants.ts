@@ -234,6 +234,17 @@ export const partialTextSermonTitlesToIgnore = [
   'Expository Thoughts On', // Done
   'Matthew chapter', // Won't Do
   'Adam Clarke Commentary', // Done
+  '(The Life of Prayer)', // Done
+  '(Present Truths or the Supernatural)', // Done
+  '(Missionary Messages)', // Done
+  '(Love Life of the Lord)', // Done
+  '(Danger Lines in the Deeper Life)', // Done
+  'Profiting From the Word ', // Done
+  'Spiritual Growth ', // Done
+  'STUDIES ON SAVING FAITH ', // Done
+  'THE ATTRIBUTES OF GOD  ', // Done
+  'The Doctrine of Election ', // Done
+  'The Doctrine of Sanctification ', // Done
 ];
 
 // 507 = Duplicate Matthew Henry Commentary
@@ -293,7 +304,7 @@ export const audioContributorsThatAreHyms = [
   'Acapella Singing - My Anchor Holds',
   'Acapella Singing - Unto Him',
   'Aileen Gilchrist',
-  'Alan Martin',
+  // 'Alan Martin',
   'Alan Thomas',
   'Believers in Grand Rapids',
   'Canaan Hymns',
@@ -433,6 +444,22 @@ export const audioSermonsToIgnore = [
   'SID28686',
   'SID29068',
   'SID29806',
+  'SID6958',
+  'SID6953',
+  'SID6955',
+  'SID6956',
+  'SID6969',
+  'SID6954',
+  'SID6964',
+  'SID6967',
+  'SID6957',
+  'SID6961',
+  'SID6965',
+  'SID6966',
+  'SID6959',
+  'SID6970',
+  'SID6960',
+  'SID6968',
 ];
 
 export const videoContributorsThatAreHymns = [
@@ -567,6 +594,63 @@ export const videoSermonsToIgnore = [
   'HQeW9jGFsaQ',
   'ItDcvXX1aOM',
   '3UCBvYxMcIA',
+];
+
+export const hymnsToIgnore = [
+  'SID20423',
+  'SID20424',
+  'SID11006',
+  'SID15296',
+  'SID20636',
+  'SID18830',
+  'SID19228',
+  'SID22797',
+  'SID15619',
+  'SID11000',
+  'SID29965',
+  'SID11004',
+  'SID15302',
+  'SID18905',
+  'SID14657',
+  'SID11010',
+  'SID11008',
+  'SID11003',
+  'SID15431',
+  'SID11012',
+  'SID16220',
+  'SID15420',
+  'SID11002',
+  'SID13868',
+  'SID15475',
+  'SID13867',
+  'SID28363',
+  'SID11011',
+  'SID7608',
+  'SID13441',
+  'SID13861',
+  'SID25055',
+  'SID13862',
+  'SID20425',
+  'SID27158',
+  'SID15363',
+  'SID18904',
+  'SID11005',
+  'SID28356',
+  'SID16145',
+  'SID28346',
+  'SID15847',
+  'SID19251',
+  'SID16228',
+  'SID28357',
+  'SID11001',
+  'SID15705',
+  'SID11007',
+  'SID11009',
+  'SID16144',
+  'SID13440',
+  'SID16052',
+  'SID19816',
+  'SID24894',
 ];
 
 /*************************************

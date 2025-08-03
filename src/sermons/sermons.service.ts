@@ -27,7 +27,6 @@ export class SermonsService {
     youtubeUrl: string | null | undefined,
     bunnyUrl: string | null | undefined,
     archiveUrl: string | null | undefined,
-    thumbnailUrl: string | null | undefined,
     srtUrl: string | null | undefined,
     vttUrl: string | null | undefined,
   ) {
@@ -47,21 +46,15 @@ export class SermonsService {
         source: MediaSource.ARCHIVE,
         format: getMediaFormat(archiveUrl),
       },
-      {
-        url: thumbnailUrl,
-        source: MediaSource.BUNNY,
-        format: getMediaFormat(thumbnailUrl),
-        type: MediaType.IMAGE,
-      },
       { url: srtUrl, source: MediaSource.BUNNY, format: MediaFormat.SRT },
       { url: vttUrl, source: MediaSource.BUNNY, format: MediaFormat.VTT },
     ];
 
     return sources
       .filter(({ url }) => !!url)
-      .map(({ url, source, format, type }) => ({
+      .map(({ url, source, format }) => ({
         url: url as string,
-        type: type ? type : mediaType,
+        type: mediaType,
         format,
         source,
       }));
@@ -185,7 +178,6 @@ export class SermonsService {
         orderBy: { [sortBy]: sortOrder },
         include: {
           contributor: true,
-          urls: true,
           bibleReferences: true,
           topics: true,
         },
@@ -214,7 +206,6 @@ export class SermonsService {
           sermon: {
             include: {
               contributor: true,
-              urls: true,
               bibleReferences: true,
               topics: true,
             },
@@ -248,7 +239,6 @@ export class SermonsService {
           sermon: {
             include: {
               contributor: true,
-              urls: true,
               bibleReferences: true,
               topics: true,
             },
@@ -264,6 +254,37 @@ export class SermonsService {
 
     return {
       values: result.map((view) => SermonInfoResponse.fromDB(view.sermon)),
+      total: totalCount,
+      limit,
+      offset,
+      nextPage: totalCount > offset + limit ? offset + limit : null,
+    };
+  }
+
+  async listRecentlyUploadedSermons(query: PaginationRequest) {
+    const { limit = 25, offset = 0 } = query;
+
+    const [result, totalCount] = await this.db.$transaction([
+      this.db.sermon.findMany({
+        skip: offset,
+        take: limit,
+        where: {
+          createdAt: {
+            gte: new Date('2025-08-01T00:00:00Z'),
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          contributor: true,
+          bibleReferences: true,
+          topics: true,
+        },
+      }),
+      this.db.featuredSermon.count(),
+    ]);
+
+    return {
+      values: result.map((sermon) => SermonInfoResponse.fromDB(sermon)),
       total: totalCount,
       limit,
       offset,
@@ -306,27 +327,34 @@ export class SermonsService {
       description,
       mediaType,
       duration,
-      youtubeUrl,
-      bunnyUrl,
-      archiveUrl,
       thumbnailUrl,
-      srtUrl,
-      vttUrl,
+      audio,
+      video,
       bibleReferences,
       topics,
       transcript,
     } = data;
 
-    // Construct SermonMedia objects from the urls
-    const sources = this.getMediaUrls(
-      mediaType,
-      youtubeUrl,
-      bunnyUrl,
-      archiveUrl,
-      thumbnailUrl,
-      srtUrl,
-      vttUrl,
+    const audioSources = this.getMediaUrls(
+      MediaType.AUDIO,
+      audio?.youtubeUrl,
+      audio?.bunnyUrl,
+      audio?.archiveUrl,
+      audio?.srtUrl,
+      audio?.vttUrl,
     );
+
+    const videoSources = this.getMediaUrls(
+      MediaType.VIDEO,
+      video?.youtubeUrl,
+      video?.bunnyUrl,
+      video?.archiveUrl,
+      video?.srtUrl,
+      video?.vttUrl,
+    );
+
+    // Construct SermonMedia objects from the urls
+    const sources = [...audioSources, ...videoSources];
 
     // Verify all topics exist
     await this.verifyTopicsExist(topics);
@@ -341,6 +369,7 @@ export class SermonsService {
         contributorId,
         mediaType,
         duration,
+        thumbnailUrl,
         transcript: {
           create: {
             text: transcript.trim(),

@@ -1,23 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
-import { ChapterResponse } from './dtos/book-chapter.response';
+import { BookChapterResponse } from './dtos/book-chapter.response';
+import { BookInfoResponse } from './dtos/book-info.response';
 import { BookRequest } from './dtos/book.request';
-import { BookInfoResponse } from './dtos/book.response';
+import { BookResponse } from './dtos/book.response';
 
 @Injectable()
 export class BooksService {
   constructor(private db: DatabaseService) {}
 
   async getBook(id: string) {
-    return this.db.publishedBook.findUnique({
+    const result = await this.db.publishedBook.findUnique({
       where: { id },
       select: {
         id: true,
         title: true,
+        mediaType: true,
         contributor: {
           select: {
             fullName: true,
+            slug: true,
+            imageUrl: true,
           },
         },
         chapters: {
@@ -31,19 +35,36 @@ export class BooksService {
         },
       },
     });
+
+    if (!result) {
+      throw new NotFoundException('Book not found');
+    }
+
+    return BookResponse.fromDB(result);
   }
 
   async getBookChapter(id: string, chapter: number) {
     const result = await this.db.publishedChapter.findUnique({
       where: { bookId_number: { bookId: id, number: chapter } },
-      include: { urls: true },
+      select: {
+        title: true,
+        number: true,
+        text: true,
+        urls: {
+          select: {
+            type: true,
+            url: true,
+            source: true,
+          },
+        },
+      },
     });
 
     if (!result) {
       throw new NotFoundException('Book chapter not found');
     }
 
-    return ChapterResponse.fromDB(result);
+    return BookChapterResponse.fromDB(result);
   }
 
   async getBooks(query: BookRequest) {
@@ -73,8 +94,17 @@ export class BooksService {
         take: limit,
         where,
         orderBy: { title: 'asc' },
-        include: {
-          contributor: true,
+        select: {
+          id: true,
+          title: true,
+          mediaType: true,
+          contributor: {
+            select: {
+              slug: true,
+              fullName: true,
+              imageUrl: true,
+            },
+          },
         },
       }),
       this.db.publishedBook.count({ where }),

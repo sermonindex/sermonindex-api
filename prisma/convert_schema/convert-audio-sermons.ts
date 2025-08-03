@@ -27,10 +27,14 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
   const contributorIdsToSkip: number[] = [];
   const uniqueContributors: Map<string, number[]> = new Map();
 
+  const audioContributorsReference: { [key: string]: string } = {};
+  const audioSermonsReference: { [key: string]: string } = {};
+
   let missingTranscriptCount = 0;
   let missingMetadataCount = 0;
   let failedToParseScriptureCount = 0;
   let duplicateSermonCount = 0;
+  let sermonsAdded = 0;
 
   const audioContributors = JSON.parse(
     fs.readFileSync('prisma/data/xoops_mydownloads_cat.json', 'utf8'),
@@ -117,6 +121,9 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
           : [audioContributor.cid],
       );
 
+      audioContributorsReference[audioContributor.cid.toString()] =
+        existingContributor.id;
+
       if (existingContributor.imageUrl !== imgSrc) {
         await prisma.contributor.update({
           where: {
@@ -142,6 +149,7 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
       },
     });
     uniqueContributors.set(c.id, [audioContributor.cid]);
+    audioContributorsReference[audioContributor.cid.toString()] = c.id;
   }
 
   for (const audioSermon of audioSermons) {
@@ -298,7 +306,7 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
         }
       }
 
-      const sermonId = await upsertSermon(
+      const { exists, sermonId } = await upsertSermon(
         prisma,
         contributorId,
         topics,
@@ -314,9 +322,12 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
         audioSermon.lid.toString(),
       );
 
-      if (!sermonId) {
+      if (exists) {
         duplicateSermonCount++;
+      } else {
+        sermonsAdded++;
       }
+      audioSermonsReference[audioSermon.lid.toString()] = sermonId;
     } catch (e) {
       console.log(`Failed to convert sermon: ${audioSermon.title}`);
       console.log(e);
@@ -325,7 +336,30 @@ export const convertAudioSermons = async (prisma: PrismaClient) => {
     }
   }
 
+  const audioContributorsReferenceJson = JSON.stringify(
+    audioContributorsReference,
+    null,
+    2,
+  );
+  fs.writeFileSync(
+    'audioContributorsReference.json',
+    audioContributorsReferenceJson,
+    'utf8',
+  );
+  const audioSermonsReferenceJson = JSON.stringify(
+    audioSermonsReference,
+    null,
+    2,
+  );
+  fs.writeFileSync(
+    'audioSermonsReference.json',
+    audioSermonsReferenceJson,
+    'utf8',
+  );
+
   console.log('Finished converting audio sermons. Summary:');
+  console.log(`- Total audio sermons: ${audioSermons.length}`);
+  console.log(`- Sermons added: ${sermonsAdded}`);
   console.log(`- Duplicate sermons found: ${duplicateSermonCount}`);
   console.log(`- No transcript found for ${missingTranscriptCount} sermons`);
   console.log(`- No ai data found for ${missingMetadataCount} sermons`);

@@ -1,34 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaType } from '@prisma/client';
-import { IsNumber, IsString, ValidateIf } from 'class-validator';
+import { IsString, ValidateIf } from 'class-validator';
 import { findStreamUrl } from 'src/common/find-urls.fn';
-import { ChapterType } from '../book.types';
+import { BookChapterType } from '../book.types';
+import { BookChapterInfo } from './book-chapter-info.response';
 
-export class ChapterResponseData {
-  @ApiProperty({
-    description: 'The unique id of the chapter',
-    example: 'cc3dcbb3-cd42-49d8-a87c-cd7f3197285f',
-    type: String,
-  })
-  @IsString()
-  id: string;
-
-  @ApiProperty({
-    description: 'The title of the chapter',
-    example: 'Chapter 1 - Have Faith in God',
-    type: String,
-  })
-  @IsString()
-  title: string;
-
-  @ApiProperty({
-    description: 'The chapter number',
-    example: 1,
-    type: Number,
-  })
-  @IsNumber()
-  number: number;
-
+export class BookChapterResponseData extends BookChapterInfo {
   @ApiProperty({
     description: 'A url used to stream the chapter audio',
     example: 'http://www.youtube.com/embed/_APxGs8wnM4',
@@ -48,15 +25,14 @@ export class ChapterResponseData {
   text: string;
 }
 
-export class ChapterResponse extends ChapterResponseData {
-  constructor(data: ChapterResponseData) {
+export class BookChapterResponse extends BookChapterResponseData {
+  constructor(data: BookChapterResponseData) {
     super();
     Object.assign(this, data);
   }
 
-  static fromDB(data: ChapterType): ChapterResponse {
-    return new ChapterResponse({
-      id: data.id,
+  static fromDB(data: BookChapterType): BookChapterResponse {
+    return new BookChapterResponse({
       title: data.title,
       number: data.number,
       streamUrl: data.urls ? findStreamUrl(MediaType.AUDIO, data.urls) : null,

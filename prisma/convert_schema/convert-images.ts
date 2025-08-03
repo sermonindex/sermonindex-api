@@ -5,6 +5,8 @@ import { findContributorId } from './common';
 export const convertImages = async (prisma: PrismaClient) => {
   const uniqueContributors: Map<string, number[]> = new Map();
 
+  const imageContributorsReference: { [key: string]: string } = {};
+
   let missingContributors = 0;
   let missingContributorNames = [];
   let imagesCreated = 0;
@@ -72,7 +74,15 @@ export const convertImages = async (prisma: PrismaClient) => {
       },
     });
     imagesCreated++;
+    imageContributorsReference[imagePhoto.cid.toString()] = contributorId;
   }
+
+  const imageReferenceJson = JSON.stringify(
+    imageContributorsReference,
+    null,
+    2,
+  );
+  fs.writeFileSync('imageReference.json', imageReferenceJson, 'utf8');
 
   console.log('Finished converting images. Summary:');
   console.log(`- Total images: ${imagePhotos.length}`);

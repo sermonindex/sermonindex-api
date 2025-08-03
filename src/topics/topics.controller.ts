@@ -5,7 +5,6 @@ import {
   Get,
   NotFoundException,
   Param,
-  ParseUUIDPipe,
   Post,
   Query,
   UseGuards,
@@ -52,7 +51,7 @@ export class TopicsController {
   @ApiOkResponse({
     type: TopicResponse,
   })
-  async getTopicById(@Param('id', new ParseUUIDPipe()) id: string) {
+  async getTopicById(@Param('id') id: string) {
     const result = await this.topicsService.getTopic({ id });
 
     if (!result) {
@@ -110,7 +109,7 @@ export class TopicsController {
     description: 'The id of the topic to delete',
     type: String,
   })
-  async deleteTopic(@Param('id', new ParseUUIDPipe()) id: string) {
+  async deleteTopic(@Param('id') id: string) {
     return this.topicsService.deleteTopic(id);
   }
 }

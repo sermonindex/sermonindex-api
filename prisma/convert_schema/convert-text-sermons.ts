@@ -20,10 +20,14 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
   const uniqueContributors: Map<string, number[]> = new Map();
   const contributorIdsToSkip: number[] = [];
 
+  const textContributorsReference: { [key: string]: string } = {};
+  const textSermonsReference: { [key: string]: string } = {};
+
   let missingTranscriptCount = 0;
   let missingMetadataCount = 0;
   let failedToParseScriptureCount = 0;
   let duplicateSermonCount = 0;
+  let sermonsAdded = 0;
 
   const textContributors = JSON.parse(
     fs.readFileSync('prisma/data/xoops_sermon_category.json', 'utf8'),
@@ -91,6 +95,9 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
           : [textContributor.id],
       );
 
+      textContributorsReference[textContributor.id.toString()] =
+        existingContributor.id;
+
       continue;
     }
 
@@ -125,6 +132,7 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
       },
     });
     uniqueContributors.set(c.id, [textContributor.id]);
+    textContributorsReference[textContributor.id.toString()] = c.id;
   }
 
   for (const textSermon of textSermons) {
@@ -286,7 +294,7 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
         transcript = transcript.replace(/\\/g, '');
       }
 
-      const sermonId = await upsertSermon(
+      const { exists, sermonId } = await upsertSermon(
         prisma,
         contributorId,
         [],
@@ -302,16 +310,42 @@ export const convertTextSermons = async (prisma: PrismaClient) => {
         textSermon.id.toString(),
       );
 
-      if (!sermonId) {
+      if (exists) {
         duplicateSermonCount++;
+      } else {
+        sermonsAdded++;
       }
+      textSermonsReference[textSermon.id.toString()] = sermonId;
     } catch (e) {
       console.log(`Failed to convert text sermon: ${textSermon.id}`);
       console.log(e);
     }
   }
 
+  const textContributorsReferenceJson = JSON.stringify(
+    textContributorsReference,
+    null,
+    2,
+  );
+  fs.writeFileSync(
+    'textContributorsReference.json',
+    textContributorsReferenceJson,
+    'utf8',
+  );
+  const textSermonsReferenceJson = JSON.stringify(
+    textSermonsReference,
+    null,
+    2,
+  );
+  fs.writeFileSync(
+    'textSermonsReference.json',
+    textSermonsReferenceJson,
+    'utf8',
+  );
+
   console.log('Finished converting text sermons. Summary:');
+  console.log(`- Total text sermons: ${textSermons.length}`);
+  console.log(`- Sermons added: ${sermonsAdded}`);
   console.log(`- Duplicate sermons found: ${duplicateSermonCount}`);
   console.log(`- Failed to clean ${missingTranscriptCount} sermons`);
   console.log(`- No ai data found for ${missingMetadataCount} sermons`);

@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsDate,
-  IsString,
-  ValidateIf,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsString, ValidateIf, ValidateNested } from 'class-validator';
 import { ContributorFullType } from 'src/contributors/contributor.types';
 import { ContributorInfoResponseData } from './contributor-info.response';
 
@@ -57,14 +51,6 @@ export class ContributorResponseData extends ContributorInfoResponseData {
   @ValidateNested({ each: true })
   @Type(() => ContributorImage)
   images: ContributorImage[];
-
-  @ApiProperty({
-    description: 'The date the contributor was created',
-    example: '2023-10-01T00:00:00.000Z',
-    type: Date,
-  })
-  @IsDate()
-  createdAt: Date;
 }
 
 export class ContributorResponse extends ContributorResponseData {
@@ -89,7 +75,6 @@ export class ContributorResponse extends ContributorResponseData {
         title: image.title,
         description: image.description,
       })),
-      createdAt: data.createdAt,
     });
   }
 }

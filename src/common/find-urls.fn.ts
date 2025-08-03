@@ -8,7 +8,12 @@ import {
 
 export const findStreamUrl = (
   mediaType: MediaType,
-  urls: (SermonMedia | HymnMedia | PublishedChapterMedia)[],
+  urls: (
+    | SermonMedia
+    | HymnMedia
+    | PublishedChapterMedia
+    | { url: string; type: MediaType; source: MediaSource }
+  )[],
 ) => {
   return (
     urls.find(

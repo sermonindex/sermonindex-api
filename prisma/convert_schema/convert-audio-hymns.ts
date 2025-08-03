@@ -12,7 +12,7 @@ import {
   getArchiveAudioUrl,
   upsertHymn,
 } from './common';
-import { audioContributorsThatAreHyms } from './constants';
+import { audioContributorsThatAreHyms, hymnsToIgnore } from './constants';
 
 export const convertHymns = async (prisma: PrismaClient) => {
   const contributorIdsToSkip: number[] = [];
@@ -138,6 +138,13 @@ export const convertHymns = async (prisma: PrismaClient) => {
       }
 
       let originalId = audioSermon.url.split('/').pop().split('.')[0];
+      if (hymnsToIgnore.includes(originalId)) {
+        console.log(
+          `Skipping audio sermon: ${audioSermon.title}, ID: ${originalId}`,
+        );
+        continue;
+      }
+
       let transcript;
       try {
         transcript = fs.readFileSync(

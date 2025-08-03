@@ -25,6 +25,9 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
   const contributorIdsToSkip: number[] = [];
   const uniqueContributors: Map<string, number[]> = new Map();
 
+  const videoContributorsReference: { [key: string]: string } = {};
+  const videoSermonsReference: { [key: string]: string } = {};
+
   let missingTranscriptCount = 0;
   let missingMetadataCount = 0;
   let failedToParseScriptureCount = 0;
@@ -114,6 +117,9 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
           : [videoContributor.cid],
       );
 
+      videoContributorsReference[videoContributor.cid.toString()] =
+        existingContributor.id;
+
       if (!existingContributor.imageUrl && imgSrc) {
         await prisma.contributor.update({
           where: {
@@ -140,6 +146,7 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
       },
     });
     uniqueContributors.set(c.id, [videoContributor.cid]);
+    videoContributorsReference[videoContributor.cid.toString()] = c.id;
   }
 
   for (const videoSermon of videoSermons) {
@@ -224,6 +231,12 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
         source: MediaSource.BUNNY,
         format: MediaFormat.VTT,
       },
+      {
+        url: `https://img.youtube.com/vi/${originalId}/0.jpg`,
+        type: MediaType.IMAGE,
+        source: MediaSource.YOUTUBE,
+        format: MediaFormat.JPG,
+      },
     ];
 
     // Get the video sermon transcript
@@ -306,7 +319,7 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
       }
     }
 
-    const sermonId = await upsertSermon(
+    const { exists, sermonId } = await upsertSermon(
       prisma,
       contributorId,
       [],
@@ -322,12 +335,34 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
       videoSermon.lid.toString(),
     );
 
-    if (!sermonId) {
+    if (exists) {
       duplicateSermonCount++;
     } else {
       sermonsAdded++;
     }
+    videoSermonsReference[videoSermon.lid.toString()] = sermonId;
   }
+
+  const videoContributorsReferenceJson = JSON.stringify(
+    videoContributorsReference,
+    null,
+    2,
+  );
+  fs.writeFileSync(
+    'videoContributorsReference.json',
+    videoContributorsReferenceJson,
+    'utf8',
+  );
+  const videoSermonsReferenceJson = JSON.stringify(
+    videoSermonsReference,
+    null,
+    2,
+  );
+  fs.writeFileSync(
+    'videoSermonsReference.json',
+    videoSermonsReferenceJson,
+    'utf8',
+  );
 
   console.log('Finished converting video sermons. Summary:');
   console.log(`- Total sermons: ${videoSermons.length}`);

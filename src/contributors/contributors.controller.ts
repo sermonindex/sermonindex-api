@@ -6,7 +6,6 @@ import {
   NotFoundException,
   Param,
   ParseEnumPipe,
-  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -74,14 +73,14 @@ export class ContributorsController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
+    example: 'H2n9Xr1XDe2fnqES',
     description: 'The id of the contributor to retrieve',
     type: String,
   })
   @ApiOkResponse({
     type: ContributorResponse,
   })
-  async getContributorById(@Param('id', new ParseUUIDPipe()) id: string) {
+  async getContributorById(@Param('id') id: string) {
     const result = await this.contributorsService.getContributor({ id });
 
     if (!result) {
@@ -134,7 +133,7 @@ export class ContributorsController {
   })
   @ApiParam({
     name: 'id',
-    example: 'ae978e79-56e4-43b8-bb2b-77b979928137',
+    example: 'H2n9Xr1XDe2fnqES',
     description: 'The id of the contributor to update',
     type: String,
   })
@@ -146,7 +145,7 @@ export class ContributorsController {
     type: String,
   })
   async updateFeaturedContributorList(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id') id: string,
     @Param('content', new ParseEnumPipe(ContributorContent))
     content: ContributorContent,
   ) {
@@ -166,7 +165,7 @@ export class ContributorsController {
     type: String,
   })
   async updateContributor(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id') id: string,
     @Body() data: Partial<AddContributorRequest>,
   ) {
     return this.contributorsService.updateContributor(id, data);
@@ -186,7 +185,7 @@ export class ContributorsController {
     description: 'The id of the contributor to delete',
     type: String,
   })
-  async deleteContributor(@Param('id', new ParseUUIDPipe()) id: string) {
+  async deleteContributor(@Param('id') id: string) {
     return this.contributorsService.deleteContributor(id);
   }
 
@@ -210,7 +209,7 @@ export class ContributorsController {
     type: String,
   })
   async deleteFeaturedContributor(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id') id: string,
     @Param('content', new ParseEnumPipe(ContributorContent))
     content: ContributorContent,
   ) {

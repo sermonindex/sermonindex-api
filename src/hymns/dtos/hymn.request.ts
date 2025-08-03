@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class HymnRequest {
   @ApiProperty({
@@ -17,7 +17,7 @@ export class HymnRequest {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @IsString()
   contributorId: string;
 
   @ApiProperty({

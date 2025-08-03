@@ -1,7 +1,5 @@
 model Sermon {
-  @@unique([title, contributorId])
-
-  id String @id @default(uuid())
+  id   String @id @default(nanoid(16))
   originalId String?
   originalMediaId String?
 
@@ -10,8 +8,11 @@ model Sermon {
 
   title String @db.Citext
   description String?
+  
+  mediaType MediaType @default(TEXT)
+  hasAudio Boolean @default(false)
+  thumbnailUrl String?
 
-  mediaType MediaType
   urls SermonMedia[]
   duration Int @default(0)
   views Int @default(0)
@@ -25,6 +26,11 @@ model Sermon {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([title, contributorId])
+  @@index([contributorId])
+  @@index([createdAt])
+  @@index([views])
 }
 
 model SermonMedia {
@@ -38,10 +44,12 @@ model SermonMedia {
   sermonId String
 
   url String
+
+  @@index([sermonId])
 }
 
 model SermonBibleReference {
-  id Int @default(autoincrement()) @id  
+  id Int @default(autoincrement()) @id
 
   bookId String @db.Citext
 
@@ -58,6 +66,9 @@ model SermonBibleReference {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([sermonId])
+  @@index([bookId])
 }
 
 model SermonText {
@@ -82,11 +93,14 @@ model FeaturedSermon {
 }
 
 model RecentSermonView {
-  id        String @id @default(uuid())
+  id        Int @default(autoincrement()) @id
   ipAddress String
   
   sermonId  String
   sermon    Sermon @relation(fields: [sermonId], references: [id], onDelete: Cascade)
   
   createdAt DateTime @default(now())
+
+  @@index([sermonId])
+  @@index([createdAt])
 }

@@ -6,6 +6,9 @@ export const convertBooks = async (prisma: PrismaClient) => {
   const uniqueContributors: Map<string, number[]> = new Map();
   const bookIds: Map<number, string> = new Map();
 
+  const bookReference: { [key: string]: string } = {};
+  const chapterReference: { [key: string]: string } = {};
+
   let existingContributors = 0;
   let newContributors = 0;
   let newBooks = 0;
@@ -83,6 +86,7 @@ export const convertBooks = async (prisma: PrismaClient) => {
         },
       });
       bookIds.set(id, newBook.id);
+      bookReference[id.toString()] = newBook.id;
     }
 
     newBooks++;
@@ -118,7 +122,13 @@ export const convertBooks = async (prisma: PrismaClient) => {
         number: order,
       },
     });
+    chapterReference[id.toString()] = `/books/${bookId}/contents/${order}`;
   }
+
+  const bookReferenceJSON = JSON.stringify(bookReference, null, 2);
+  fs.writeFileSync('bookReference.json', bookReferenceJSON, 'utf8');
+  const chapterReferenceJSON = JSON.stringify(chapterReference, null, 2);
+  fs.writeFileSync('chapterReference.json', chapterReferenceJSON, 'utf8');
 
   console.log('Finished converting books. Summary:');
   console.log(

@@ -82,7 +82,7 @@
 //               contributorId: contributorId,
 //             },
 //           });
-//         }else {
+//         } else {
 //           continue; // Skip if the book already exists
 //         }
 //         console.log('Converting book:', book, 'by', bookAuthor);

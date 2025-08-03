@@ -1,5 +1,5 @@
 model PublishedBook {
-  id String @id @default(uuid())
+  id   String @id @default(nanoid(16))
   originalId String?
 
   title String @db.Citext
@@ -13,9 +13,7 @@ model PublishedBook {
 }
 
 model PublishedChapter {
-  @@unique([bookId, number])
-
-  id String @id @default(uuid())
+  id Int @default(autoincrement()) @id
   originalId String?
   originalMediaId String?
 
@@ -27,6 +25,8 @@ model PublishedChapter {
   number Int
 
   urls PublishedChapterMedia[]
+
+  @@unique([bookId, number])
 }
 
 model PublishedChapterMedia {
@@ -37,7 +37,7 @@ model PublishedChapterMedia {
   type MediaType
 
   bookChapter PublishedChapter @relation(fields: [bookChapterId], references: [id], onDelete: Cascade)
-  bookChapterId String
+  bookChapterId Int
 
   url String
 }

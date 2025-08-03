@@ -1,13 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaType } from '@prisma/client';
-import { IsEnum, IsNumber, IsString, ValidateIf } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsEnum,
+  IsNumber,
+  IsString,
+  ValidateIf,
+  ValidateNested,
+} from 'class-validator';
+import { MediaElement } from 'src/common/dtos/media.response';
 import { findDownloadUrl, findStreamUrl } from 'src/common/find-urls.fn';
 import { HymnFullType } from '../hymn.types';
 
 export class HymnResponseData {
   @ApiProperty({
     description: 'The unique id of the hymn',
-    example: 'cc3dcbb3-cd42-49d8-a87c-cd7f3197285f',
+    example: 'H2n9Xr1XDe2fnqES',
     type: String,
   })
   @IsString()
@@ -64,24 +72,13 @@ export class HymnResponseData {
   duration: number;
 
   @ApiProperty({
-    description: 'A url used to stream the hymn',
-    example: 'http://www.youtube.com/embed/_APxGs8wnM4',
-    type: String,
-    nullable: true,
+    description:
+      'A media element containing URLs for streaming, downloading, and subtitles',
+    type: [MediaElement],
   })
-  @IsString()
-  @ValidateIf((o, value) => value !== null)
-  streamUrl: string | null;
-
-  @ApiProperty({
-    description: 'A url used to download the hymn',
-    example: 'https://sermonindex2.b-cdn.net/_APxGs8wnM4.mp4',
-    type: String,
-    nullable: true,
-  })
-  @IsString()
-  @ValidateIf((o, value) => value !== null)
-  downloadUrl: string | null;
+  @ValidateNested({ each: true })
+  @Type(() => MediaElement)
+  audio: MediaElement;
 
   @ApiProperty({
     description: 'The number of times the hymn has been viewed',
@@ -107,8 +104,12 @@ export class HymnResponse extends HymnResponseData {
       title: data.title,
       mediaType: data.mediaType,
       duration: data.duration,
-      streamUrl: findStreamUrl(data.mediaType, data.urls),
-      downloadUrl: findDownloadUrl(data.mediaType, data.urls),
+      audio: {
+        streamUrl: findStreamUrl(data.mediaType, data.urls),
+        downloadUrl: findDownloadUrl(data.mediaType, data.urls),
+        srtUrl: null,
+        vttUrl: null,
+      },
       views: data.views,
     });
   }

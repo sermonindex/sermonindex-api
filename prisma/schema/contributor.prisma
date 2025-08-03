@@ -10,7 +10,7 @@ enum ContributorContent {
 }
 
 model Contributor {
-  id String @id @default(uuid())
+  id   String @id @default(nanoid(16))
   originalId String?
 
   slug String @unique @db.Citext
@@ -44,11 +44,11 @@ model ContributorImage {
 
   takenAt DateTime?
   createdAt DateTime @default(now())
+
+  @@index([contributorId])
 }
 
 model FeaturedContributor {
-  @@unique([contributorId, content])
-
   id Int @default(autoincrement()) @id
 
   contributor Contributor @relation(fields: [contributorId], references: [id], onDelete: Cascade)
@@ -57,4 +57,6 @@ model FeaturedContributor {
   content ContributorContent
 
   createdAt DateTime @default(now())
+
+  @@unique([contributorId, content])
 }

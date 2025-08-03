@@ -5,7 +5,7 @@ import { TopicInfoType } from 'src/topics/topic.types';
 export class TopicInfoResponseData {
   @ApiProperty({
     description: 'The unique id of the topic',
-    example: 'cc3dcbb3-cd42-49d8-a87c-cd7f3197285f',
+    example: 'H2n9Xr1XDe2fnqES',
     type: String,
   })
   @IsString()

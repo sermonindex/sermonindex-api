@@ -1,17 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaType } from '@prisma/client';
-import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsEnum,
-  IsString,
-  ValidateIf,
-  ValidateNested,
-} from 'class-validator';
-import { BookType } from '../book.types';
-import { BookChapterInfo } from './book-chapter-info.response';
+import { IsEnum, IsString, ValidateIf } from 'class-validator';
+import { BookInfoType } from '../book.types';
 
-export class BookResponseData {
+export class BookInfoResponseData {
   @ApiProperty({
     description: 'The unique id of the book',
     example: 'H2n9Xr1XDe2fnqES',
@@ -61,25 +53,16 @@ export class BookResponseData {
   })
   @IsEnum(MediaType)
   mediaType: MediaType;
-
-  @ApiProperty({
-    description: 'A list of chapters in the book',
-    type: [BookChapterInfo],
-  })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => BookChapterInfo)
-  chapters: BookChapterInfo[];
 }
 
-export class BookResponse extends BookResponseData {
-  constructor(data: BookResponseData) {
+export class BookInfoResponse extends BookInfoResponseData {
+  constructor(data: BookInfoResponseData) {
     super();
     Object.assign(this, data);
   }
 
-  static fromDB(data: BookType): BookResponse {
-    return new BookResponse({
+  static fromDB(data: BookInfoType): BookInfoResponse {
+    return new BookInfoResponse({
       id: data.id,
 
       contributorSlug: data.contributor.slug,
@@ -88,11 +71,6 @@ export class BookResponse extends BookResponseData {
 
       title: data.title,
       mediaType: data.mediaType,
-
-      chapters: data.chapters.map((chapter) => ({
-        title: chapter.title,
-        number: chapter.number,
-      })),
     });
   }
 }

@@ -6,7 +6,7 @@ import { ContributorInfoType } from 'src/contributors/contributor.types';
 export class ContributorInfoResponseData {
   @ApiProperty({
     description: 'The unique id of the contributor',
-    example: 'cc3dcbb3-cd42-49d8-a87c-cd7f3197285f',
+    example: 'H2n9Xr1XDe2fnqES',
     type: String,
   })
   @IsString()

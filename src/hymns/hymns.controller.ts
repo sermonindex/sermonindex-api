@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Ip,
-  Param,
-  ParseUUIDPipe,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Ip, Param, Post, Query } from '@nestjs/common';
 import {
   ApiExcludeEndpoint,
   ApiOkResponse,
@@ -39,10 +31,7 @@ export class HymnsController {
 
   @Post('/viewed/id/:id')
   @ApiExcludeEndpoint()
-  async recordSermonView(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Ip() ip: string,
-  ) {
+  async recordSermonView(@Param('id') id: string, @Ip() ip: string) {
     return this.hymnsService.recordHymnView(id, ip);
   }
 }

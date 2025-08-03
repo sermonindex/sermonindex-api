@@ -1,30 +1,34 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaFormat, MediaType } from '@prisma/client';
-import { IsString, ValidateIf } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, ValidateIf, ValidateNested } from 'class-validator';
+import { MediaElement } from 'src/common/dtos/media.response';
 import { findDownloadUrl, findStreamUrl } from 'src/common/find-urls.fn';
 import { SermonFullType } from 'src/sermons/sermon.types';
 import { SermonInfoResponseData } from './sermon-info.response';
 
 export class SermonResponseData extends SermonInfoResponseData {
   @ApiProperty({
-    description: 'A url used to show subtitles for the sermon',
-    example: 'https://sermonindex3.b-cdn.net/srt-video/_APxGs8wnM4.srt',
-    type: String,
+    description:
+      'A media element containing URLs for streaming, downloading, and subtitles',
+    type: MediaElement,
     nullable: true,
   })
-  @IsString()
   @ValidateIf((o, value) => value !== null)
-  srtUrl: string | null;
+  @ValidateNested({ each: true })
+  @Type(() => MediaElement)
+  audio: MediaElement | null;
 
   @ApiProperty({
-    description: 'A url used to show subtitles for the sermon',
-    example: 'https://sermonindex3.b-cdn.net/vtt-video/_APxGs8wnM4.vtt',
-    type: String,
+    description:
+      'A media element containing URLs for streaming, downloading, and subtitles',
+    type: MediaElement,
     nullable: true,
   })
-  @IsString()
   @ValidateIf((o, value) => value !== null)
-  vttUrl: string | null;
+  @ValidateNested({ each: true })
+  @Type(() => MediaElement)
+  video: MediaElement | null;
 
   @ApiProperty({
     description: 'The sermon transcript',
@@ -44,6 +48,9 @@ export class SermonResponse extends SermonResponseData {
   }
 
   static fromDB(data: SermonFullType): SermonResponse {
+    const audioStreamUrl = findStreamUrl(MediaType.AUDIO, data.urls);
+    const audioDownloadUrl = findDownloadUrl(MediaType.AUDIO, data.urls);
+
     return new SermonResponse({
       id: data.id,
 
@@ -55,19 +62,46 @@ export class SermonResponse extends SermonResponseData {
       description: data.description,
       mediaType: data.mediaType,
       duration: data.duration,
+      thumbnailUrl: data.thumbnailUrl,
 
-      streamUrl: findStreamUrl(data.mediaType, data.urls),
-      downloadUrl: findDownloadUrl(data.mediaType, data.urls),
+      audio:
+        audioStreamUrl || audioDownloadUrl
+          ? {
+              streamUrl: audioStreamUrl,
+              downloadUrl: audioDownloadUrl,
+              srtUrl:
+                data.urls.find(
+                  (url) =>
+                    url.format === MediaFormat.SRT &&
+                    url.type === MediaType.AUDIO,
+                )?.url ?? null,
+              vttUrl:
+                data.urls.find(
+                  (url) =>
+                    url.format === MediaFormat.VTT &&
+                    url.type === MediaType.AUDIO,
+                )?.url ?? null,
+            }
+          : null,
 
-      srtUrl:
-        data.urls.find((url) => url.format === MediaFormat.SRT)?.url ?? null,
-      vttUrl:
-        data.urls.find((url) => url.format === MediaFormat.VTT)?.url ?? null,
-
-      // TODO: Store thumbnail URLs in the database
-      thumbnailUrl:
+      video:
         data.mediaType === MediaType.VIDEO
-          ? `https://img.youtube.com/vi/${data.originalMediaId}/0.jpg`
+          ? {
+              streamUrl: findStreamUrl(MediaType.VIDEO, data.urls),
+              downloadUrl: findDownloadUrl(MediaType.VIDEO, data.urls),
+              srtUrl:
+                data.urls.find(
+                  (url) =>
+                    url.format === MediaFormat.SRT &&
+                    url.type === MediaType.VIDEO,
+                )?.url ?? null,
+              vttUrl:
+                data.urls.find(
+                  (url) =>
+                    url.format === MediaFormat.VTT &&
+                    url.type === MediaType.VIDEO,
+                )?.url ?? null,
+            }
           : null,
 
       bibleReferences: data.bibleReferences.map((ref) => ({

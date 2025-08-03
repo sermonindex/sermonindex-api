@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaType } from '@prisma/client';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
@@ -9,12 +9,14 @@ import {
   Max,
   Min,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
+import { AddMediaElement } from 'src/common/dtos/add-media.request';
 
 export class AddSermonRequest {
   @ApiProperty({
     description: 'The unique id of the contributor',
-    example: 'cc3dcbb3-cd42-49d8-a87c-cd7f3197285f',
+    example: 'H2n9Xr1XDe2fnqES',
     type: String,
   })
   @IsString()
@@ -54,36 +56,6 @@ export class AddSermonRequest {
   duration: number;
 
   @ApiProperty({
-    description: 'A url that points to the sermon on youtube',
-    example: 'http://www.youtube.com/embed/_APxGs8wnM4',
-    type: String,
-    nullable: true,
-  })
-  @IsString()
-  @ValidateIf((o, value) => value !== null)
-  youtubeUrl: string | null;
-
-  @ApiProperty({
-    description: 'A url that points to the sermon on b-cdn.net',
-    example: 'https://sermonindex2.b-cdn.net/_APxGs8wnM4.mp4',
-    type: String,
-    nullable: true,
-  })
-  @IsString()
-  @ValidateIf((o, value) => value !== null)
-  bunnyUrl: string | null;
-
-  @ApiProperty({
-    description: 'A url that points to the sermon on archive.org',
-    example: 'https://sermonindex2.b-cdn.net/_APxGs8wnM4.mp4',
-    type: String,
-    nullable: true,
-  })
-  @IsString()
-  @ValidateIf((o, value) => value !== null)
-  archiveUrl: string | null;
-
-  @ApiProperty({
     description: 'A url used to display the sermon thumbnail',
     example: 'https://img.youtube.com/vi/_APxGs8wnM4/0.jpg',
     type: String,
@@ -94,24 +66,26 @@ export class AddSermonRequest {
   thumbnailUrl: string | null;
 
   @ApiProperty({
-    description: 'A url used to show subtitles for the sermon',
-    example: 'https://sermonindex3.b-cdn.net/srt-video/_APxGs8wnM4.srt',
-    type: String,
+    description:
+      'A media element containing URLs for streaming, downloading, and subtitles',
+    type: AddMediaElement,
     nullable: true,
   })
-  @IsString()
   @ValidateIf((o, value) => value !== null)
-  srtUrl: string | null;
+  @ValidateNested({ each: true })
+  @Type(() => AddMediaElement)
+  audio: AddMediaElement | null;
 
   @ApiProperty({
-    description: 'A url used to show subtitles for the sermon',
-    example: 'https://sermonindex3.b-cdn.net/vtt-video/_APxGs8wnM4.vtt',
-    type: String,
+    description:
+      'A media element containing URLs for streaming, downloading, and subtitles',
+    type: AddMediaElement,
     nullable: true,
   })
-  @IsString()
   @ValidateIf((o, value) => value !== null)
-  vttUrl: string | null;
+  @ValidateNested({ each: true })
+  @Type(() => AddMediaElement)
+  video: AddMediaElement | null;
 
   @ApiProperty({
     description: 'A list of bible references',

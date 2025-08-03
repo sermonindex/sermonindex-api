@@ -6,7 +6,6 @@ import {
   Ip,
   NotFoundException,
   Param,
-  ParseUUIDPipe,
   Post,
   Query,
   UseGuards,
@@ -55,7 +54,7 @@ export class SermonsController {
   @ApiOkResponse({
     type: SermonResponse,
   })
-  async getSermonById(@Param('id', new ParseUUIDPipe()) id: string) {
+  async getSermonById(@Param('id') id: string) {
     const result = await this.sermonService.getSermon(id);
 
     if (!result) {
@@ -89,12 +88,21 @@ export class SermonsController {
     return this.sermonService.listRecentlyViewedSermons(query);
   }
 
+  @Get('/uploaded')
+  @ApiOperation({
+    summary: 'Retrieve a list of recently uploaded sermons',
+    operationId: 'listRecentlyUploadedSermons',
+  })
+  @ApiOkResponse({
+    type: ListSermonResponsePaged,
+  })
+  async listRecentlyUploadedSermons(@Query() query: PaginationRequest) {
+    return this.sermonService.listRecentlyUploadedSermons(query);
+  }
+
   @Post('/viewed/id/:id')
   @ApiExcludeEndpoint()
-  async recordSermonView(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Ip() ip: string,
-  ) {
+  async recordSermonView(@Param('id') id: string, @Ip() ip: string) {
     return this.sermonService.recordSermonView(id, ip);
   }
 
@@ -121,7 +129,7 @@ export class SermonsController {
     description: 'The id of the sermon to add to the featured list',
     type: String,
   })
-  async updateFeaturedSermonList(@Param('id', new ParseUUIDPipe()) id: string) {
+  async updateFeaturedSermonList(@Param('id') id: string) {
     return this.sermonService.updateFeaturedSermonList(id);
   }
 
@@ -139,7 +147,7 @@ export class SermonsController {
     description: 'The id of the sermon to delete',
     type: String,
   })
-  async deleteSermon(@Param('id', new ParseUUIDPipe()) id: string) {
+  async deleteSermon(@Param('id') id: string) {
     return this.sermonService.deleteSermon(id);
   }
 }

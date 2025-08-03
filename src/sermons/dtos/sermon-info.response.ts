@@ -10,7 +10,6 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { findDownloadUrl, findStreamUrl } from 'src/common/find-urls.fn';
 import { SermonInfoType } from 'src/sermons/sermon.types';
 import { TopicInfoResponse } from 'src/topics/dtos/topic-info.response';
 
@@ -75,7 +74,7 @@ export class BiblePassage {
 export class SermonInfoResponseData {
   @ApiProperty({
     description: 'The unique id of the sermon',
-    example: 'cc3dcbb3-cd42-49d8-a87c-cd7f3197285f',
+    example: 'H2n9Xr1XDe2fnqES',
     type: String,
   })
   @IsString()
@@ -141,26 +140,6 @@ export class SermonInfoResponseData {
   duration: number;
 
   @ApiProperty({
-    description: 'A url used to stream the sermon',
-    example: 'http://www.youtube.com/embed/_APxGs8wnM4',
-    type: String,
-    nullable: true,
-  })
-  @IsString()
-  @ValidateIf((o, value) => value !== null)
-  streamUrl: string | null;
-
-  @ApiProperty({
-    description: 'A url used to download the sermon',
-    example: 'https://sermonindex2.b-cdn.net/_APxGs8wnM4.mp4',
-    type: String,
-    nullable: true,
-  })
-  @IsString()
-  @ValidateIf((o, value) => value !== null)
-  downloadUrl: string | null;
-
-  @ApiProperty({
     description: 'A url used to display the sermon thumbnail',
     example: 'https://img.youtube.com/vi/_APxGs8wnM4/0.jpg',
     type: String,
@@ -223,15 +202,7 @@ export class SermonInfoResponse extends SermonInfoResponseData {
       description: data.description,
       mediaType: data.mediaType,
       duration: data.duration,
-
-      streamUrl: findStreamUrl(data.mediaType, data.urls),
-      downloadUrl: findDownloadUrl(data.mediaType, data.urls),
-
-      // TODO: Store thumbnail URLs in the database
-      thumbnailUrl:
-        data.mediaType === MediaType.VIDEO
-          ? `https://img.youtube.com/vi/${data.originalMediaId}/0.jpg`
-          : null,
+      thumbnailUrl: data.thumbnailUrl,
 
       bibleReferences: data.bibleReferences.map((ref) => ({
         text: ref.text,

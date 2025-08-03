@@ -129,6 +129,27 @@ export const upsertSermon = async (
       },
     });
 
+    if (mediaType === MediaType.VIDEO) {
+      await prisma.sermon.update({
+        where: {
+          id: existingSermon.id,
+        },
+        data: {
+          hasVideo: true,
+        },
+      });
+    }
+    if (mediaType === MediaType.AUDIO) {
+      await prisma.sermon.update({
+        where: {
+          id: existingSermon.id,
+        },
+        data: {
+          hasAudio: true,
+        },
+      });
+    }
+
     for (const u of urls) {
       const existingUrl = SermonMedias.find((url) => url.url === u.url);
       if (!existingUrl) {
@@ -144,7 +165,7 @@ export const upsertSermon = async (
       }
     }
 
-    return null;
+    return { exists: true, sermonId: existingSermon.id };
   }
 
   const newSermon = await prisma.sermon.create({
@@ -155,7 +176,8 @@ export const upsertSermon = async (
       views: parseInt(hits),
       description: description?.trim(),
       contributorId: contributorId,
-      mediaType: mediaType,
+      hasAudio: mediaType === MediaType.AUDIO,
+      hasVideo: mediaType === MediaType.VIDEO,
       transcript: transcript
         ? {
             create: {
@@ -187,7 +209,7 @@ export const upsertSermon = async (
     },
   });
 
-  return newSermon.id;
+  return { exists: false, sermonId: newSermon.id };
 };
 
 export const upsertHymn = async (
@@ -243,7 +265,6 @@ export const upsertHymn = async (
       views: parseInt(hits),
       contributorId: contributorId,
       lyrics: lyrics,
-      mediaType: mediaType,
       urls: {
         create: urls.map((url) => ({
           url: url.url,

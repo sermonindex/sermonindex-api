@@ -8,7 +8,7 @@ function reverseListFromJson() {
       'utf-8',
     );
 
-    const key = 'The Mystery of Providence';
+    const key = 'The Fountain of Life Opened Up';
 
     // Parse the JSON
     const data = JSON.parse(fileContent);
@@ -19,14 +19,14 @@ function reverseListFromJson() {
     }
 
     // Reverse the array
-    const result = data[key].slice().reverse(); // slice() to avoid mutating original
+    // const result = data[key].slice().reverse(); // slice() to avoid mutating original
 
     // Sort the array in descending order based on a specific property
-    // const result = data[key].sort((a, b) => {
-    //   if (a.id < b.id) return 1; // Sort in descending order
-    //   if (a.id > b.id) return -1;
-    //   return 0;
-    // });
+    const result = data[key].sort((a, b) => {
+      if (a.duration < b.duration) return 1; // Sort in descending order
+      if (a.duration > b.duration) return -1;
+      return 0;
+    });
 
     fs.writeFileSync(
       '/home/r104000/Documents/Personal/Projects/sermonindex-api/prisma/data/output.json',

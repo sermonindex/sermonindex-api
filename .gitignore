@@ -35,6 +35,7 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # TODO: Remove these later
+sermonindex.pgsql
 sermonindex.sql
 sermonindex.tar.xz
 bible.eng.db
@@ -43,3 +44,5 @@ bible.eng.db
 /prisma/convert_schema/adhoc-text*
 /prisma/convert_schema/audio-book*
 /prisma/convert_schema/quotes*
+*Reference.json
+/prisma/convert_schema/add-youtube*

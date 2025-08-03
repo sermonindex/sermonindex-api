@@ -7,7 +7,6 @@ import {
   IsOptional,
   IsPositive,
   IsString,
-  IsUUID,
 } from 'class-validator';
 import { PaginationRequest } from 'src/common/dtos/pagination.request';
 import { SortOrder } from 'src/common/types/sort-order.enum';
@@ -20,7 +19,7 @@ export class SermonRequest extends PaginationRequest {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @IsString()
   id: string;
 
   @ApiProperty({
@@ -38,7 +37,7 @@ export class SermonRequest extends PaginationRequest {
     required: false,
   })
   @IsOptional()
-  @IsUUID()
+  @IsString()
   contributorId: string;
 
   @ApiProperty({

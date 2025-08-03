@@ -5,7 +5,7 @@ export enum SermonSortBy {
   CreatedAt = 'createdAt',
 }
 
-export type SermonInfoType = Omit<SermonFullType, 'transcript'>;
+export type SermonInfoType = Omit<SermonFullType, 'transcript' | 'urls'>;
 
 export type SermonFullType = Prisma.SermonGetPayload<{
   include: {
