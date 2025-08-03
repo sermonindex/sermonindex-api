@@ -129,16 +129,16 @@ export const upsertSermon = async (
       },
     });
 
-    if (mediaType === MediaType.VIDEO) {
-      await prisma.sermon.update({
-        where: {
-          id: existingSermon.id,
-        },
-        data: {
-          hasVideo: true,
-        },
-      });
-    }
+    // if (mediaType === MediaType.VIDEO) {
+    //   await prisma.sermon.update({
+    //     where: {
+    //       id: existingSermon.id,
+    //     },
+    //     data: {
+    //       hasVideo: true,
+    //     },
+    //   });
+    // }
     if (mediaType === MediaType.AUDIO) {
       await prisma.sermon.update({
         where: {
@@ -177,7 +177,7 @@ export const upsertSermon = async (
       description: description?.trim(),
       contributorId: contributorId,
       hasAudio: mediaType === MediaType.AUDIO,
-      hasVideo: mediaType === MediaType.VIDEO,
+      // hasVideo: mediaType === MediaType.VIDEO,
       transcript: transcript
         ? {
             create: {
