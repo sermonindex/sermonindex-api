@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MediaType } from '@prisma/client';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
   IsEnum,
   IsNumber,
   IsString,
-  Max,
-  Min,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
@@ -93,22 +93,20 @@ export class AddSermonRequest {
     type: [String],
   })
   @IsArray()
-  @Min(1)
-  @Max(5)
+  @ArrayMinSize(1)
+  @ArrayMaxSize(5)
   @IsString({ each: true })
-  @Transform(({ value }) => String(value).split(','))
   bibleReferences: string[];
 
   @ApiProperty({
     description: 'A list of topics covered in the sermon',
-    example: ['faith', 'love'],
+    example: ['Faith', 'Love'],
     type: [String],
   })
   @IsArray()
-  @Min(1)
-  @Max(2)
+  @ArrayMinSize(1)
+  @ArrayMaxSize(2)
   @IsString({ each: true })
-  @Transform(({ value }) => String(value).split(','))
   topics: string[];
 
   @ApiProperty({

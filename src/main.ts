@@ -14,7 +14,10 @@ async function bootstrap() {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('SermonIndex API')
-    .setDescription('An api for SermonIndex')
+    .setDescription(
+      `SermonIndex is an open-source project and is available to all for free use.<br/><br/>
+      You can read more about our copying permissions <a href="https://sermonindex.net/md/copying-permissions">here</a>`,
+    )
     .setVersion('1.0')
     .addApiKey({ type: 'apiKey', name: 'x-api-key', in: 'header' }, 'Api-Key')
     .build();
@@ -23,6 +26,7 @@ async function bootstrap() {
       defaultModelsExpandDepth: 10,
       defaultModelExpandDepth: 10,
       persistAuthorization: true,
+      layout: 'BaseLayout',
     },
   };
   const documentFactory = () =>
