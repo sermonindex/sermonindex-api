@@ -231,12 +231,12 @@ export const convertVideoSermons = async (prisma: PrismaClient) => {
         source: MediaSource.BUNNY,
         format: MediaFormat.VTT,
       },
-      {
-        url: `https://img.youtube.com/vi/${originalId}/0.jpg`,
-        type: MediaType.IMAGE,
-        source: MediaSource.YOUTUBE,
-        format: MediaFormat.JPG,
-      },
+      // {
+      //   url: `https://img.youtube.com/vi/${originalId}/0.jpg`,
+      //   type: MediaType.IMAGE,
+      //   source: MediaSource.YOUTUBE,
+      //   format: MediaFormat.JPG,
+      // },
     ];
 
     // Get the video sermon transcript

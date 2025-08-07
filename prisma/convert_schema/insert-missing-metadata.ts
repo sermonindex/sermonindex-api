@@ -35,7 +35,10 @@ export const insertMissingMetadata = async (prisma: PrismaClient) => {
     try {
       let sermon = await prisma.sermon.findFirst({
         where: {
-          originalId: id,
+          AND: {
+            originalId: id,
+            originalMediaId: id,
+          },
         },
       });
       if (!sermon) {

@@ -168,6 +168,11 @@ export const upsertSermon = async (
     return { exists: true, sermonId: existingSermon.id };
   }
 
+  const thumbnailUrl =
+    mediaType === MediaType.VIDEO
+      ? `https://img.youtube.com/vi/${originalId}/0.jpg`
+      : undefined;
+
   const newSermon = await prisma.sermon.create({
     data: {
       originalId: originalId,
@@ -178,6 +183,8 @@ export const upsertSermon = async (
       contributorId: contributorId,
       hasAudio: mediaType === MediaType.AUDIO,
       // hasVideo: mediaType === MediaType.VIDEO,
+      mediaType: mediaType,
+      thumbnailUrl: thumbnailUrl,
       transcript: transcript
         ? {
             create: {
