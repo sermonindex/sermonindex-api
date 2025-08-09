@@ -101,6 +101,5 @@ model RecentSermonView {
   
   createdAt DateTime @default(now())
 
-  @@index([sermonId])
   @@index([createdAt])
 }
