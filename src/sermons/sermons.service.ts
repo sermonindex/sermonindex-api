@@ -270,7 +270,7 @@ export class SermonsService {
         take: limit,
         where: {
           createdAt: {
-            gte: new Date('2025-08-01T00:00:00Z'),
+            gte: new Date('2025-08-08T00:00:00Z'),
           },
         },
         orderBy: { createdAt: 'desc' },
