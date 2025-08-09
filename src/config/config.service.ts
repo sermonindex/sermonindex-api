@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MediaSource } from '@prisma/client';
-import { IsEnum, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 @Injectable()
 export class ConfigService {

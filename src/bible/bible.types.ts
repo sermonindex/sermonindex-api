@@ -12,7 +12,7 @@ export type BibleVerseWithTranslationType = Prisma.ChapterVerseGetPayload<{
   };
 }>;
 
-enum BibleBookAbbreviations {
+export enum BibleBookAbbreviations {
   GEN = 'Genesis',
   EXO = 'Exodus',
   LEV = 'Leviticus',

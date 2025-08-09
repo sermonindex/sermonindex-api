@@ -10,7 +10,7 @@ export class BibleService {
 
   getVerseContext(targetVerse: number, data: any) {
     // Initialize an array to store the result
-    let result: any[] = [];
+    const result: any[] = [];
 
     // Extract the content array from the JSON
     const content = data.content;

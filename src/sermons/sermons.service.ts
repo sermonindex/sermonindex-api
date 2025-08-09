@@ -250,7 +250,7 @@ export class SermonsService {
         FROM "RecentSermonView" rv;
       `,
     ]);
-    const totalCount = Number((total as { count: BigInt }[])[0]?.count) || 0;
+    const totalCount = Number((total as { count: bigint }[])[0]?.count) || 0;
 
     return {
       values: result.map((view) => SermonInfoResponse.fromDB(view.sermon)),
