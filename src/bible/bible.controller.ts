@@ -142,7 +142,7 @@ export class BibleController {
     @Param('book') book: string,
     @Param('chapter') chapter: number,
   ) {
-    const result = this.bibleService.getChapter({
+    const result = await this.bibleService.getChapter({
       where: {
         translation: {
           language,
