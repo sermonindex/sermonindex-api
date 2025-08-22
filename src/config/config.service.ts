@@ -7,5 +7,5 @@ export class ConfigService {
   GLOBAL_PREFIX: 'v1' = 'v1' as const;
 
   @IsString()
-  API_KEY: string = 'test-api-key';
+  API_KEY: string = process.env.API_KEY ?? 'test-api-key';
 }
