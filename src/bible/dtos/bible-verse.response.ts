@@ -23,7 +23,7 @@ export class BibleVerseResponse extends BibleVerseResponseData {
       book: data.bookId,
       chapter: data.chapterNumber,
       verse: data.number,
-      translationId: data.translationId,
+      translationId: data.translation.shortName || data.translation.id,
       translationName: data.translation.name,
       text: data.text,
       contentJson: data.contentJson,
