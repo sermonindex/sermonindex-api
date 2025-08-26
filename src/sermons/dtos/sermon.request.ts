@@ -68,6 +68,15 @@ export class SermonRequest extends PaginationRequest {
   topic: string;
 
   @ApiProperty({
+    description: 'The topic slug of the sermon',
+    type: String,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  topicSlug: string;
+
+  @ApiProperty({
     description: 'The book of the Bible the sermon covers',
     type: String,
     required: false,

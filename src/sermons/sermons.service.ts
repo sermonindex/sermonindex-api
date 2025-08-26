@@ -134,6 +134,7 @@ export class SermonsService {
       contributorSlug,
       contributorId,
       topic,
+      topicSlug,
       book,
       chapter,
       verse,
@@ -154,7 +155,10 @@ export class SermonsService {
         slug: contributorSlug,
         fullName: contributorFullName,
       },
-      topics: topic ? { some: { name: topic } } : undefined,
+      topics:
+        topic || topicSlug
+          ? { some: { name: topic, slug: topicSlug } }
+          : undefined,
       bibleReferences:
         book || chapter || verse
           ? {
