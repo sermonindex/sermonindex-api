@@ -1,9 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsArray, IsString, ValidateNested } from 'class-validator';
-import { SermonFullType } from 'src/sermons/sermon.types';
+import { IsString } from 'class-validator';
 import { TopicFullType } from 'src/topics/topic.types';
-import { SermonResponse } from '../../sermons/dtos/sermon.response';
 import { TopicInfoResponseData } from './topic-info.response';
 
 export class TopicResponseData extends TopicInfoResponseData {
@@ -14,15 +11,6 @@ export class TopicResponseData extends TopicInfoResponseData {
   })
   @IsString()
   summary: string;
-
-  @ApiProperty({
-    description: 'A list of sermons associated with the topic',
-    type: [SermonResponse],
-  })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => SermonResponse)
-  sermons: SermonResponse[];
 }
 
 export class TopicResponse extends TopicResponseData {
@@ -38,10 +26,7 @@ export class TopicResponse extends TopicResponseData {
       name: data.name,
       summary: data.summary,
 
-      sermonCount: data.sermons.length,
-      sermons: data.sermons.map((sermon) =>
-        SermonResponse.fromDB(sermon as SermonFullType),
-      ),
+      sermonCount: data._count.sermons,
     });
   }
 }

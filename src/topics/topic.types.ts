@@ -15,12 +15,8 @@ export type TopicInfoType = Prisma.TopicGetPayload<{
 
 export type TopicFullType = Prisma.TopicGetPayload<{
   include: {
-    sermons: {
-      include: {
-        contributor: true;
-        urls: true;
-        bibleReferences: true;
-      };
+    _count: {
+      select: { sermons: true };
     };
   };
 }>;

@@ -17,12 +17,8 @@ export class TopicsService {
     return this.db.topic.findFirst({
       where: { id, slug },
       include: {
-        sermons: {
-          include: {
-            contributor: true,
-            urls: true,
-            bibleReferences: true,
-          },
+        _count: {
+          select: { sermons: true },
         },
       },
     });
