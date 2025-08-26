@@ -69,6 +69,7 @@ model SermonBibleReference {
 
   @@index([sermonId])
   @@index([bookId])
+  @@index([bookId, startChapter, endChapter, startVerse, endVerse])
 }
 
 model SermonText {
