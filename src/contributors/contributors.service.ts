@@ -149,7 +149,6 @@ export class ContributorsService {
     data: Partial<AddContributorRequest>,
   ): Promise<Contributor> {
     const { fullName, bio, imageUrl } = data;
-    const slug = createSlug(fullName);
 
     const existing = await this.db.contributor.findUnique({
       where: { id },
@@ -159,7 +158,7 @@ export class ContributorsService {
     }
 
     return this.db.contributor.update({
-      data: { slug, fullName, bio, imageUrl },
+      data: { fullName, bio, imageUrl },
       where: { id },
     });
   }
