@@ -12,10 +12,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBody,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiSecurity,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { ContributorContent } from '@prisma/client';
 import { ApiKeyAuthGuard } from 'src/auth/api-key-auth.guard';
@@ -163,6 +165,11 @@ export class ContributorsController {
     name: 'id',
     description: 'The id of the contributor to update',
     type: String,
+  })
+  @ApiBody({
+    schema: {
+      $ref: getSchemaPath(AddContributorRequest),
+    },
   })
   async updateContributor(
     @Param('id') id: string,
